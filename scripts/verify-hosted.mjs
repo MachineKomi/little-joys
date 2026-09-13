@@ -73,7 +73,7 @@ async function useEveryToy(page) {
 }
 
 async function main() {
-  check(process.argv.length === 3, 'USAGE: node .local/verify-hosted.mjs https://public-deployment.example/');
+  check(process.argv.length === 3, 'USAGE: node scripts/verify-hosted.mjs https://public-deployment.example/');
   let url;
   try { url = new URL(process.argv[2]); } catch { throw new Error('INVALID_PUBLIC_URL'); }
   check(url.protocol === 'https:' && !url.username && !url.password && !url.search && !url.hash && url.pathname === '/', 'REQUIRE_PUBLIC_HTTPS_ROOT_URL_WITHOUT_CREDENTIALS_OR_QUERY');

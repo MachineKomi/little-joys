@@ -10,13 +10,13 @@ Quiet presentation should still feel polished, tactile, and appealing. Preserve 
 
 ## Approved next toy: Penguin Bounce
 
-The next material playtest patch is **v0.1.1**, adding a fourth toy with forgiving, pinball-style bouncing physics. Its working name is **Penguin Bounce**. Penguins are the first new character theme.
+The current material playtest patch is **v0.1.1**, adding a fourth toy with forgiving, pinball-style bouncing physics: **Penguin Bounce**. Penguins are the first new character theme.
 
 Tapping the play area should do something useful without precise aiming. Large balls, readable obstacles, generous contacts, and clear cause and effect should make both brief taps and continued exploration worthwhile. The approved interaction direction includes adding balls and touching large mechanisms to turn or toggle their behavior. The implementation must keep finite object counts, bounded speed and effects, and a stable simulation suitable for the existing Canvas2D runtime. A settled scene should sleep; pausing must stop simulation and audio immediately.
 
 This is free exploration: no gambling presentation, stakes, scores, failure, life counter, loss of earned progress, or required finishing sequence. Repeated bounces must not multiply sounds or stimulation without bounds. Every ball must stay recoverable; no precise launch, successful shot, or timed input is required to continue. The current three toys and their shared access features remain available.
 
-The fourth toy is implemented and its complete automated checks have passed. Final measurements and actual hosting are recorded in [DELIVERY.md](DELIVERY.md); they must be checked separately. Its interaction tuning remains open to feedback, and physical iPad validation remains pending.
+The fourth toy is deployed as part of the four-toy MVP, with complete automated checks, final desktop measurements and actual online/offline hosting verification recorded in [DELIVERY.md](DELIVERY.md). Its interaction tuning remains open to feedback, and physical iPad validation remains pending.
 
 ## Reported phone feedback and next refinements
 

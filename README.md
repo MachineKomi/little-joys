@@ -4,7 +4,7 @@ A small, quiet touchscreen toybox: stretch **Squishy Friend**, sweep through **B
 
 **Preview; physical iPad validation pending.** The engineering target is an eighth-generation iPad and similarly modest devices. Desktop browser tests do not qualify that hardware. See [delivery evidence](docs/DELIVERY.md), [requirements](docs/SPEC.md), and [review](docs/REVIEW.md).
 
-**[Open the playtest](https://littlejoys-play.vercel.app/).** [Penguin Bounce](docs/PENGUIN-BOUNCE-SPEC.md) is implemented for v0.1.1. The four-toy release has passed its final local checks and measurements; [DELIVERY.md](docs/DELIVERY.md) distinguishes that artifact from the last verified hosted release. See the [owner direction](docs/OWNER-DIRECTION.md), [roadmap](docs/ROADMAP.md), and [backlog](docs/BACKLOG.md) for recoverable public planning.
+**[Play the four-toy MVP](https://littlejoys-play.vercel.app/).** Version **0.1.1**, including [Penguin Bounce](docs/PENGUIN-BOUNCE-SPEC.md), is deployed and verified online and offline. Open **Toybox → Penguin Bounce**; choose **Playful** in Parents for brighter collision lights and a small penguin reaction. Sound and music remain optional and start silent. [DELIVERY.md](docs/DELIVERY.md) records the exact build, checks and pending device work. See the [owner direction](docs/OWNER-DIRECTION.md), [roadmap](docs/ROADMAP.md), and [backlog](docs/BACKLOG.md) for recoverable public planning.
 
 ## Run locally
 
@@ -68,6 +68,8 @@ GitHub remains the backup and collaboration source. Automatic Vercel builds are 
 The dependency-free `scripts/should-build.mjs` gate runs before installation. Missing deployment history fails closed, so an explicitly reviewed first deployment or rollback can require a manual dashboard deployment. An ignored push can leave a skipped/canceled history entry without uploading another game build. Vercel's [ignored-build documentation](https://vercel.com/docs/project-configuration/vercel-json#ignorecommand) specifies exit `0` to skip and `1` to build; its [system variables](https://vercel.com/docs/environment-variables/system-environment-variables#vercel_git_previous_sha) supply the last successful source revision. See [deployment policy](DEPLOYMENT.md) for the baseline and recovery procedure.
 
 Updates download and verify in the background and wait until all old app windows close. They never force a reload during play. Parent settings shows cache readiness and update availability. To roll back, redeploy a previously checked source revision; close all existing tabs/Home Screen windows and relaunch after the replacement cache has completed. Browser storage can be evicted: offline availability is verified, not permanent.
+
+If an existing window still has three toys, open Parents and select **Check for update**. Once an update is waiting or a different saved version is reported, close all Little Joys tabs/Home Screen windows and reopen the same address.
 
 ## Architecture and assets
 
