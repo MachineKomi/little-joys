@@ -8,6 +8,8 @@ New owner feedback is organized in [OWNER-DIRECTION.md](OWNER-DIRECTION.md), [RO
 
 ## Start here
 
+Current Bubble Pond / Roll & Nest lane: [refinement contract and ownership](BUBBLE-NEST-REFINEMENT.md), including the visible build label. Track source, automated evidence and deployment separately.
+
 Give the implementation agent this folder and `CODEX-PROMPT.md`. `SPEC.md` is the normative product and engineering contract. `TASKS-AND-ACCEPTANCE.md` provides the execution order and release tests. `ASSETS.md` contains the art brief and generation prompts. `RESEARCH.md` explains the evidence and its limits. `SOURCES.md` contains the source register. `PLAYTEST.md` is the family's observation template.
 
 The first deployable vertical slice is **Squishy Friend plus the reliable app shell**. The original complete scope was three toys and shared requirements; the owner-amended MVP adds **Penguin Bounce**. A one-toy preview must not be described as the complete MVP.

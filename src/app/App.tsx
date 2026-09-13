@@ -17,6 +17,7 @@ import { Icon } from "./icons";
 import { ParentPanel, type OfflineStatus } from "./ParentPanel";
 import { Toolbar } from "./Toolbar";
 import { ToyPicker, toyNames } from "./ToyPicker";
+import "../styles/build-label.css";
 
 export function App() {
   const [settings, setSettings] = useState(loadSettings);
@@ -52,6 +53,13 @@ export function App() {
     toy,
     settings: effectiveSettings(settings, reduced),
   });
+  const buildDigest = __BUILD_ID__.includes("-")
+    ? __BUILD_ID__.split("-", 2)
+    : [__BUILD_ID__];
+  const shortBuild =
+    buildDigest.length === 2
+      ? `${buildDigest[0]}-${buildDigest[1].slice(0, 6)}`
+      : buildDigest[0];
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -199,6 +207,13 @@ export function App() {
         onSettings={() => setPanel("parents")}
       />
       <main className={`play-region play-${toy}`} aria-label={toyNames[toy]}>
+        <div
+          className="build-label"
+          title={__BUILD_ID__}
+          aria-label={`Build ${__BUILD_ID__}`}
+        >
+          {shortBuild}
+        </div>
         <canvas
           ref={canvasRef}
           data-testid="play-canvas"

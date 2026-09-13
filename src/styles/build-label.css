@@ -1,0 +1,18 @@
+.build-label {
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  z-index: 1;
+  padding: 0.24rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #39565b;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  user-select: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}

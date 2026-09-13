@@ -4,6 +4,7 @@ import type {
   ToyScene,
   View,
 } from "../../core/types";
+import { rollStep } from "./rolling";
 import {
   acceptsDrop,
   clampBall,
@@ -20,6 +21,12 @@ interface Ball extends Point {
   target: Point | null;
   owner: number | null;
   offset: Point;
+  vx: number;
+  vy: number;
+  angle: number;
+  fixed: boolean;
+  lastMoveTime: number;
+  sinceMove: number;
 }
 interface SavedBall {
   x: number;
@@ -100,6 +107,12 @@ export class NestScene implements ToyScene {
               : null,
           owner: null,
           offset: { x: 0, y: 0 },
+          vx: 0,
+          vy: 0,
+          angle: 0,
+          fixed: false,
+          lastMoveTime: 0,
+          sinceMove: 1,
         };
       });
       this.initialized = true;
@@ -155,11 +168,16 @@ export class NestScene implements ToyScene {
     ball.offset = { x: ball.x - p.x, y: ball.y - p.y };
     ball.slot = null;
     ball.target = null;
+    ball.vx = ball.vy = 0;
+    ball.lastMoveTime = p.timeMs;
+    ball.sinceMove = 1;
   }
   pointerMove(p: ToyPointer): void {
     if (this.services.settings.ballControl === "tap-place") return;
     const ball = this.balls.find((candidate) => candidate.owner === p.id);
     if (!ball) return;
+    const oldX = ball.x,
+      oldY = ball.y;
     Object.assign(
       ball,
       clampBall(
@@ -168,13 +186,31 @@ export class NestScene implements ToyScene {
         this.view,
       ),
     );
+    const elapsed = (p.timeMs - ball.lastMoveTime) / 1000;
+    ball.angle =
+      (ball.angle + (ball.x - oldX) / this.layout.radius) % (Math.PI * 2);
+    if (Number.isFinite(elapsed) && elapsed >= 0.004 && elapsed <= 0.15) {
+      const vx = (ball.x - oldX) / elapsed,
+        vy = (ball.y - oldY) / elapsed;
+      const scale = Math.min(1, 700 / Math.max(1, Math.hypot(vx, vy)));
+      ball.vx = vx * scale;
+      ball.vy = vy * scale;
+      ball.sinceMove = 0;
+    } else {
+      ball.vx = ball.vy = 0;
+      ball.sinceMove = 1;
+    }
+    ball.lastMoveTime = p.timeMs;
   }
   pointerEnd(id: number, reason: "up" | "cancel" = "up"): void {
     const ball = this.balls.find((candidate) => candidate.owner === id);
     if (!ball) return;
     ball.owner = null;
     if (reason === "up") this.release(ball);
-    else this.separate(ball);
+    else {
+      ball.vx = ball.vy = 0;
+      this.separate(ball);
+    }
   }
   private release(ball: Ball): void {
     if (acceptsDrop(ball, this.layout.opening)) {
@@ -192,6 +228,7 @@ export class NestScene implements ToyScene {
           Math.hypot(b.point.x - ball.x, b.point.y - ball.y),
       );
       if (available[0]) {
+        ball.vx = ball.vy = 0;
         ball.slot = available[0].index;
         ball.target = { ...available[0].point };
         this.response = 0.26;
@@ -201,6 +238,12 @@ export class NestScene implements ToyScene {
     }
     ball.slot = null;
     ball.target = null;
+    if (
+      this.services.settings.motion !== "playful" ||
+      this.services.settings.ballControl === "tap-place" ||
+      ball.sinceMove > 0.12
+    )
+      ball.vx = ball.vy = 0;
     this.separate(ball);
   }
   private separate(ball: Ball): void {
@@ -223,15 +266,26 @@ export class NestScene implements ToyScene {
     const released = this.balls.filter((ball) => ball.owner !== null);
     this.balls.forEach((ball) => {
       ball.owner = null;
+      ball.vx = ball.vy = 0;
+      ball.sinceMove = 1;
     });
     released.forEach((ball) => this.separate(ball));
     this.selected = null;
   }
   update(dt: number): boolean {
-    const delta = Math.min(0.05, Math.max(0, dt));
+    const delta = Number.isFinite(dt) ? Math.min(0.05, Math.max(0, dt)) : 0;
     const blend = 1 - Math.exp(-delta * 20);
     let moving = false;
     for (const ball of this.balls) {
+      ball.sinceMove += delta;
+      ball.fixed = ball.owner !== null || ball.slot !== null;
+      if (this.services.settings.motion !== "playful") ball.vx = ball.vy = 0;
+      // Run only a short expiry clock after a drag sample. A stationary hold
+      // must not launch the ball using stale velocity when eventually released.
+      if (ball.owner !== null && (ball.vx !== 0 || ball.vy !== 0)) {
+        if (ball.sinceMove > 0.12) ball.vx = ball.vy = 0;
+        else moving = true;
+      }
       if (!ball.target || ball.owner !== null) continue;
       const distance = Math.hypot(
         ball.target.x - ball.x,
@@ -246,231 +300,127 @@ export class NestScene implements ToyScene {
         moving = true;
       }
     }
+    if (this.services.settings.motion === "playful")
+      moving =
+        rollStep(this.balls, this.view, this.layout.radius, delta) || moving;
     this.response = Math.max(0, this.response - delta);
     return moving || this.response > 0;
+  }
+  private paintBall(ctx: CanvasRenderingContext2D, ball: Ball): void {
+    const r = this.layout.radius;
+    ctx.save();
+    ctx.translate(ball.x, ball.y);
+    ctx.rotate(ball.angle);
+    const sprite = this.services.image?.(ball.id === 0 ? "ball" : "ballTwo");
+    if (sprite) ctx.drawImage(sprite, -r, -r, r * 2, r * 2);
+    else {
+      const fill = ctx.createRadialGradient(-r * 0.3, -r * 0.4, 1, 0, 0, r);
+      fill.addColorStop(0, ball.id === 0 ? "#fbe0b4" : "#dcd4ff");
+      fill.addColorStop(1, ball.id === 0 ? "#ec913f" : "#9482d4");
+      ctx.fillStyle = fill;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#ffffff80";
+      ctx.lineWidth = r * 0.14;
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 0.65, -0.9, 0.5);
+      ctx.stroke();
+    }
+    ctx.restore();
+    if (this.selected === ball.id) {
+      ctx.strokeStyle = "#46506c";
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      for (let i = 0; i < 4; i++) {
+        const angle = Math.PI / 4 + (i * Math.PI) / 2;
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, r + 9, angle - 0.11, angle + 0.11);
+        ctx.stroke();
+      }
+    }
   }
   render(ctx: CanvasRenderingContext2D): void {
     const { width, height } = this.view;
     const { radius: r, opening: bowl } = this.layout;
-    const bowlSprite = this.services.image?.("bowl");
-    const bowlWidth = bowl.rx * 2,
-      bowlHeight = bowlSprite
-        ? (bowlWidth * bowlSprite.naturalHeight) / bowlSprite.naturalWidth
-        : 0;
-    const bowlTop = bowl.y - bowlHeight * 0.205;
-    ctx.fillStyle = "#fbf7ef";
+    const sprite = this.services.image?.("bowl");
+    const w = bowl.rx * 2;
+    const h = sprite
+      ? (w * sprite.naturalHeight) / sprite.naturalWidth
+      : r * 1.5;
+    const left = bowl.x - bowl.rx,
+      top = bowl.y - h * 0.205;
+    const background = ctx.createLinearGradient(0, 0, 0, height);
+    background.addColorStop(0, "#fff5dc");
+    background.addColorStop(1, "#f8dbab");
+    ctx.fillStyle = background;
     ctx.fillRect(0, 0, width, height);
-    // Back and interior are behind all balls. The shallow front rim is drawn last.
-    ctx.fillStyle = "#ece5d8";
+    // Static woven-table curves give the scene warmth without a moving backdrop.
+    ctx.strokeStyle = "#d9a97226";
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 3; i++) {
+      const y = height * (0.79 + i * 0.07);
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.bezierCurveTo(width * 0.3, y - 14, width * 0.7, y + 14, width, y);
+      ctx.stroke();
+    }
+    ctx.fillStyle = "#9d61291c";
     ctx.beginPath();
-    ctx.ellipse(
-      bowl.x,
-      bowl.y + r * 0.95,
-      bowl.rx * 0.88,
-      r * 0.15,
-      0,
-      0,
-      Math.PI * 2,
-    );
+    ctx.ellipse(bowl.x, top + h * 0.92, w * 0.4, h * 0.07, 0, 0, Math.PI * 2);
     ctx.fill();
-    if (bowlSprite)
-      ctx.drawImage(
-        bowlSprite,
-        bowl.x - bowl.rx,
-        bowlTop,
-        bowlWidth,
-        bowlHeight,
-      );
+    if (sprite) ctx.drawImage(sprite, left, top, w, h);
     else {
+      ctx.fillStyle = "#cc8051";
       ctx.beginPath();
       ctx.ellipse(bowl.x, bowl.y, bowl.rx, bowl.ry, 0, 0, Math.PI * 2);
-      const inside = ctx.createLinearGradient(
-        0,
-        bowl.y - bowl.ry,
-        0,
-        bowl.y + bowl.ry,
-      );
-      inside.addColorStop(0, "#d7936e");
-      inside.addColorStop(1, "#f2c9a3");
-      ctx.fillStyle = inside;
       ctx.fill();
-      ctx.strokeStyle = "#aa765c";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.ellipse(
-        bowl.x,
-        bowl.y + r * 0.06,
-        bowl.rx * 0.84,
-        bowl.ry * 0.67,
-        0,
-        0,
-        Math.PI * 2,
-      );
-      ctx.strokeStyle = "#bb8261";
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
     }
-    for (const ball of this.balls) {
-      if (ball.slot === null) {
-        ctx.fillStyle = "#e7e3dc";
-        ctx.beginPath();
-        ctx.ellipse(
-          ball.x,
-          ball.y + r * 1.05,
-          r * 0.78,
-          r * 0.105,
-          0,
-          0,
-          Math.PI * 2,
-        );
-        ctx.fill();
-      }
-      if (this.selected === ball.id || ball.owner !== null) {
-        ctx.strokeStyle = "#528878";
-        ctx.lineWidth = this.selected === ball.id ? 4 : 2;
-        ctx.beginPath();
-        ctx.arc(ball.x, ball.y, r + 8, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-      const ballSprite = this.services.image?.(
-        ball.id === 0 ? "ball" : "ballTwo",
-      );
-      if (ballSprite)
-        ctx.drawImage(ballSprite, ball.x - r, ball.y - r, r * 2, r * 2);
-      else {
-        const shading = ctx.createRadialGradient(
-          ball.x - r * 0.4,
-          ball.y - r * 0.42,
-          r * 0.02,
-          ball.x + r * 0.15,
-          ball.y + r * 0.23,
-          r * 1.35,
-        );
-        if (ball.id === 0) {
-          shading.addColorStop(0, "#d8d2f3");
-          shading.addColorStop(0.45, "#b0a5d6");
-          shading.addColorStop(1, "#8179b1");
-        } else {
-          shading.addColorStop(0, "#c8edd6");
-          shading.addColorStop(0.45, "#89c9b0");
-          shading.addColorStop(1, "#459d8c");
-        }
-        ctx.beginPath();
-        ctx.arc(ball.x, ball.y, r, 0, Math.PI * 2);
-        ctx.fillStyle = shading;
-        ctx.fill();
-        ctx.strokeStyle = ball.id === 0 ? "#716a97" : "#3d8072";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.ellipse(
-          ball.x - r * 0.32,
-          ball.y - r * 0.4,
-          r * 0.22,
-          r * 0.1,
-          -0.55,
-          0,
-          Math.PI * 2,
-        );
-        ctx.fillStyle = "#fffaf05c";
-        ctx.fill();
-      }
-    }
-    if (bowlSprite) {
-      // Reuse the same registered painting for the foreground. The clip follows
-      // its shallow front lip, keeping a nested ball mostly visible.
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(bowl.x - bowl.rx, bowl.y);
-      ctx.bezierCurveTo(
-        bowl.x - bowl.rx * 0.72,
-        bowl.y + r * 0.59,
-        bowl.x + bowl.rx * 0.72,
-        bowl.y + r * 0.59,
-        bowl.x + bowl.rx,
-        bowl.y,
-      );
-      ctx.lineTo(bowl.x + bowl.rx, bowlTop + bowlHeight);
-      ctx.lineTo(bowl.x - bowl.rx, bowlTop + bowlHeight);
-      ctx.closePath();
+    for (const ball of this.balls)
+      if (ball.slot !== null) this.paintBall(ctx, ball);
+    // Registered to the 768x231 painting: the inner front lip starts at 20%
+    // of its height at the ends and reaches 40.25% at the centre. Only nested
+    // balls go behind this foreground; direct manipulation always stays visible.
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(left, top + h * 0.2);
+    ctx.bezierCurveTo(
+      left + w * 0.16,
+      top + h * 0.47,
+      left + w * 0.84,
+      top + h * 0.47,
+      left + w,
+      top + h * 0.2,
+    );
+    ctx.lineTo(left + w, top + h);
+    ctx.lineTo(left, top + h);
+    ctx.closePath();
+    if (sprite) {
       ctx.clip();
-      ctx.drawImage(
-        bowlSprite,
-        bowl.x - bowl.rx,
-        bowlTop,
-        bowlWidth,
-        bowlHeight,
-      );
-      ctx.restore();
+      ctx.drawImage(sprite, left, top, w, h);
     } else {
-      ctx.beginPath();
-      ctx.moveTo(bowl.x - bowl.rx, bowl.y);
-      ctx.bezierCurveTo(
-        bowl.x - bowl.rx * 0.91,
-        bowl.y + r * 0.95,
-        bowl.x - bowl.rx * 0.63,
-        bowl.y + r * 1.04,
-        bowl.x,
-        bowl.y + r * 1.07,
-      );
-      ctx.bezierCurveTo(
-        bowl.x + bowl.rx * 0.63,
-        bowl.y + r * 1.04,
-        bowl.x + bowl.rx * 0.91,
-        bowl.y + r * 0.95,
-        bowl.x + bowl.rx,
-        bowl.y,
-      );
-      ctx.bezierCurveTo(
-        bowl.x + bowl.rx * 0.69,
-        bowl.y + r * 0.58,
-        bowl.x - bowl.rx * 0.69,
-        bowl.y + r * 0.58,
-        bowl.x - bowl.rx,
-        bowl.y,
-      );
-      ctx.closePath();
-      const front = ctx.createLinearGradient(0, bowl.y, 0, bowl.y + r);
-      front.addColorStop(0, "#f8d2ab");
-      front.addColorStop(0.65, "#eeb98e");
-      front.addColorStop(1, "#d99b75");
-      ctx.fillStyle = front;
+      ctx.fillStyle = "#efa864";
       ctx.fill();
-      ctx.strokeStyle = "#aa765c";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(bowl.x - bowl.rx * 0.9, bowl.y + r * 0.14);
-      ctx.bezierCurveTo(
-        bowl.x - bowl.rx * 0.5,
-        bowl.y + r * 0.54,
-        bowl.x + bowl.rx * 0.5,
-        bowl.y + r * 0.54,
-        bowl.x + bowl.rx * 0.9,
-        bowl.y + r * 0.14,
-      );
-      ctx.strokeStyle = "#ffe7c8";
-      ctx.lineWidth = 3;
-      ctx.stroke();
     }
+    ctx.restore();
     if (this.response > 0) {
-      ctx.globalAlpha = (this.response / 0.26) * 0.6;
-      ctx.strokeStyle = "#8a8562";
-      ctx.lineWidth = 2;
+      const life = this.response / 0.26;
+      ctx.globalAlpha = life * 0.7;
+      ctx.strokeStyle = "#fff5c8";
+      ctx.lineWidth = 4;
       ctx.beginPath();
-      ctx.ellipse(
+      ctx.moveTo(left + w * 0.16, top + h * 0.36);
+      ctx.quadraticCurveTo(
         bowl.x,
-        bowl.y + r * 1.3,
-        r * 0.3,
-        r * 0.06,
-        0,
-        0,
-        Math.PI * 2,
+        top + h * 0.52,
+        left + w * 0.84,
+        top + h * 0.36,
       );
       ctx.stroke();
       ctx.globalAlpha = 1;
     }
+    for (const ball of this.balls)
+      if (ball.slot === null) this.paintBall(ctx, ball);
   }
   snapshot(): unknown {
     return {
@@ -494,6 +444,9 @@ export class NestScene implements ToyScene {
         slot: ball.slot,
         owner: ball.owner,
         target: ball.target ? { ...ball.target } : null,
+        vx: ball.vx,
+        vy: ball.vy,
+        angle: ball.angle,
       })),
       selected: this.selected,
       effects: this.response > 0 ? 1 : 0,

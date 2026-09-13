@@ -1,31 +1,53 @@
+import { paintPond } from "./presentation";
 import type {
   SceneServices,
   ToyPointer,
   ToyScene,
   View,
 } from "../../core/types";
-import { bubbleLayout, segmentCircle } from "./geometry";
+import { bubbleLayout, nextBubblePosition, segmentCircle } from "./geometry";
 type Bubble = {
   x: number;
   y: number;
   radius: number;
   state: "ready" | "poppedWaiting" | "waitingForClear";
   remaining: number;
+  forming: number;
 };
 export class BubbleScene implements ToyScene {
   readonly id = "bubbles" as const;
   private view: View = { width: 800, height: 600 };
   private bubbles: Bubble[] = [];
   private pointers = new Map<number, { x: number; y: number }>();
-  private effects: { x: number; y: number; radius: number; life: number }[] =
-    [];
+  private effects: {
+    x: number;
+    y: number;
+    radius: number;
+    life: number;
+    pop: boolean;
+    seed: number;
+  }[] = [];
   private limited = false;
-  private restored: { state: Bubble["state"]; remaining: number }[] = [];
+  private sequence = 0;
+  private restored: {
+    state: Bubble["state"];
+    remaining: number;
+    x?: number;
+    y?: number;
+  }[] = [];
   constructor(
     private services: SceneServices,
     snapshot?: unknown,
   ) {
     if (snapshot && typeof snapshot === "object") {
+      const sequence = (snapshot as { sequence?: unknown }).sequence;
+      if (
+        typeof sequence === "number" &&
+        Number.isSafeInteger(sequence) &&
+        sequence >= 0 &&
+        sequence < 1_000_000
+      )
+        this.sequence = sequence;
       const b = (snapshot as { bubbles?: unknown }).bubbles;
       if (Array.isArray(b) && b.length <= 6)
         this.restored = b.map((v) =>
@@ -36,6 +58,14 @@ export class BubbleScene implements ToyScene {
             ? {
                 state: v.state,
                 remaining: Math.max(0, Math.min(0.9, v.remaining)),
+                x:
+                  Number.isFinite(v.x) && v.x >= 0 && v.x <= 1
+                    ? v.x
+                    : undefined,
+                y:
+                  Number.isFinite(v.y) && v.y >= 0 && v.y <= 1
+                    ? v.y
+                    : undefined,
               }
             : { state: "ready", remaining: 0 },
         );
@@ -43,24 +73,63 @@ export class BubbleScene implements ToyScene {
   }
   resize(view: View) {
     this.cancelAll();
+    const previous = this.view;
     this.view = view;
     const { slots, limited } = bubbleLayout(
       view,
       this.services.settings.bubbleCount,
     );
     this.limited = limited;
-    const old = this.bubbles.length ? this.bubbles : this.restored;
+    const old = this.bubbles.length
+      ? this.bubbles.map((b) => ({
+          ...b,
+          x: b.x / previous.width,
+          y: b.y / previous.height,
+        }))
+      : this.restored;
     this.bubbles = slots.map((slot, i) => ({
       ...slot,
       state: old[i]?.state ?? "ready",
       remaining: old[i]?.remaining ?? 0,
+      forming: 0,
     }));
+    // Restore only a complete, valid arrangement; malformed/rotated overlaps use
+    // the readable baseline layout rather than leaving inaccessible targets.
+    const candidates = this.bubbles.map((b, i) => ({
+      ...b,
+      x: (old[i]?.x ?? b.x / view.width) * view.width,
+      y: (old[i]?.y ?? b.y / view.height) * view.height,
+    }));
+    if (
+      candidates.every(
+        (b, i) =>
+          b.x - b.radius >= 24 &&
+          b.x + b.radius <= view.width - 24 &&
+          b.y - b.radius >= 24 &&
+          b.y + b.radius <= view.height - 24 &&
+          candidates.every(
+            (other, j) =>
+              i === j ||
+              Math.hypot(b.x - other.x, b.y - other.y) >=
+                b.radius + other.radius + 16,
+          ),
+      )
+    )
+      this.bubbles = candidates;
     this.restored = [];
     this.effects = [];
   }
-  private effect(x: number, y: number, radius: number) {
+  private effect(x: number, y: number, radius: number, pop = false) {
     if (this.effects.length === 24) this.effects.shift();
-    this.effects.push({ x, y, radius, life: 0.28 });
+    this.effects.push({
+      x,
+      y,
+      radius,
+      life: 0.55,
+      pop,
+      seed: this.sequence++ % 12,
+    });
+    this.sequence %= 1_000_000;
   }
   private sweep(p: ToyPointer) {
     let hit = false;
@@ -71,7 +140,7 @@ export class BubbleScene implements ToyScene {
       ) {
         b.state = "poppedWaiting";
         b.remaining = 0.9;
-        this.effect(b.x, b.y, b.radius);
+        this.effect(b.x, b.y, b.radius, true);
         this.services.sound("bubbles");
         hit = true;
       }
@@ -95,10 +164,14 @@ export class BubbleScene implements ToyScene {
     this.pointers.clear();
   }
   update(dt: number) {
+    const delta = Number.isFinite(dt) ? Math.max(0, Math.min(0.05, dt)) : 0;
     let pending = false;
-    for (const b of this.bubbles) {
+    for (let index = 0; index < this.bubbles.length; index++) {
+      const b = this.bubbles[index];
+      b.forming = Math.max(0, b.forming - delta);
+      pending ||= b.forming > 0;
       if (b.state === "ready") continue;
-      b.remaining = Math.max(0, b.remaining - Math.min(0.05, dt));
+      b.remaining = Math.max(0, b.remaining - delta);
       if (b.remaining > 0) {
         pending = true;
         continue;
@@ -107,95 +180,44 @@ export class BubbleScene implements ToyScene {
         (p) => Math.hypot(p.x - b.x, p.y - b.y) <= b.radius + 16,
       );
       b.state = blocked ? "waitingForClear" : "ready";
+      if (!blocked) {
+        Object.assign(
+          b,
+          nextBubblePosition(
+            this.view,
+            this.bubbles,
+            index,
+            this.sequence++,
+            this.pointers.values(),
+          ),
+        );
+        this.sequence %= 1_000_000;
+        b.forming = 0.22;
+        pending = true;
+      }
     }
-    for (const e of this.effects) e.life -= dt;
+    for (const e of this.effects) e.life -= delta;
     this.effects = this.effects.filter((e) => e.life > 0);
     return pending || this.effects.length > 0;
   }
   render(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = "#eef7f3";
-    ctx.fillRect(0, 0, this.view.width, this.view.height);
-    const colours = [
-      ["#f9f3df", "#aadbd4"],
-      ["#f7eeff", "#bcb9df"],
-      ["#fff2e1", "#e8c8a9"],
-      ["#edfbf7", "#a5d2c3"],
-      ["#f5efff", "#cec1df"],
-      ["#fef4e8", "#e1c4ac"],
-    ];
-    const sprite = this.services.image?.("bubble");
-    for (let i = 0; i < this.bubbles.length; i++) {
-      const b = this.bubbles[i];
-      if (b.state !== "ready") continue;
-      const [light, dark] = colours[i];
-      const gradient = ctx.createRadialGradient(
-        b.x - b.radius * 0.3,
-        b.y - b.radius * 0.38,
-        b.radius * 0.08,
-        b.x,
-        b.y,
-        b.radius,
-      );
-      gradient.addColorStop(0, light);
-      gradient.addColorStop(0.8, light);
-      gradient.addColorStop(1, dark);
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-      ctx.fill();
-      if (sprite) {
-        ctx.drawImage(
-          sprite,
-          b.x - b.radius - 2,
-          b.y - b.radius - 2,
-          b.radius * 2 + 4,
-          b.radius * 2 + 4,
-        );
-        continue;
-      }
-      ctx.strokeStyle = "#609c98";
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(b.x, b.y, b.radius * 0.78, Math.PI * 1.13, Math.PI * 1.59);
-      ctx.strokeStyle = "#ffffff";
-      ctx.lineWidth = 6;
-      ctx.lineCap = "round";
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(
-        b.x + b.radius * 0.4,
-        b.y + b.radius * 0.44,
-        b.radius * 0.085,
-        0,
-        Math.PI * 2,
-      );
-      ctx.fillStyle = "#ffffffb8";
-      ctx.fill();
-    }
-    for (const e of this.effects) {
-      const age = 1 - e.life / 0.28;
-      ctx.globalAlpha = (1 - age) * 0.6;
-      ctx.strokeStyle = "#6caaa1";
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.arc(
-        e.x,
-        e.y,
-        e.radius *
-          (this.services.settings.motion === "playful" ? 1 + 0.18 * age : 1),
-        0,
-        Math.PI * 2,
-      );
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
+    paintPond(
+      ctx,
+      this.view,
+      this.bubbles,
+      this.effects,
+      this.services.settings.motion === "playful",
+      this.services.image?.("bubble"),
+    );
   }
   snapshot() {
     return {
+      sequence: this.sequence,
       bubbles: this.bubbles.map((b) => ({
         state: b.state,
         remaining: b.remaining,
+        x: b.x / this.view.width,
+        y: b.y / this.view.height,
       })),
     };
   }
