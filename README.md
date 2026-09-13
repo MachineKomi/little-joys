@@ -4,6 +4,8 @@ A small, quiet touchscreen toybox: stretch **Squishy Friend**, sweep through **B
 
 **Preview; physical iPad validation pending.** The engineering target is an eighth-generation iPad and similarly modest devices. Desktop browser tests do not qualify that hardware. See [delivery evidence](docs/DELIVERY.md), [requirements](docs/SPEC.md), and [review](docs/REVIEW.md).
 
+**[Open the playtest](https://little-joys-gules.vercel.app/).** The current three-toy v0.1.0 was checked online and after an offline reload on the actual HTTPS host. [Penguin Bounce](docs/PENGUIN-BOUNCE-SPEC.md), the approved fourth toy, is being implemented for v0.1.1. See the [owner direction](docs/OWNER-DIRECTION.md), [roadmap](docs/ROADMAP.md), and [backlog](docs/BACKLOG.md) for recoverable public planning.
+
 ## Run locally
 
 Use Node.js 22.12 or later (tested with Node 24.19) and npm.

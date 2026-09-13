@@ -12,7 +12,7 @@ The penguin is an original painted sprite. Board geometry remains procedural, wi
 
 | ID | Requirement |
 |---|---|
-| P01 | Add a fourth stable picture tile and startup/last-toy support without changing the three existing toys' identities or positions. |
+| P01 | Add a fourth stable picture tile and startup/last-toy support while preserving the three existing toys' identities and relative order. Use a predictable two-by-two layout where it fits and a reachable single column on narrow screens. |
 | P02 | A valid pointer-down on ordinary board space immediately adds a ball. A pointer-down on a visible mechanism immediately influences that mechanism instead. Broadly useful input must not require aim or an instruction sequence. |
 | P03 | Holding still must not auto-repeat spawns. Swiping may apply a bounded local impulse. Four independently tracked pointers and every existing cancellation/pause path remain supported. |
 | P04 | Two generously sized deflectors have visible state and broad hit regions, at least 72 CSS pixels where the layout permits. Turning them changes actual collision geometry. |

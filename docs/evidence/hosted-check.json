@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "url": "https://little-joys-gules.vercel.app/",
+  "buildId": "v0.1.0-78ca7eb3ac60",
+  "checkedAt": "2026-09-13T11:24:36.433Z",
+  "browser": "Playwright Chromium desktop",
+  "summary": {
+    "remoteBuildMatchesLocal": true,
+    "verifiedStaticFiles": 18,
+    "allThreeToysOnline": true,
+    "allThreeToysAfterOfflineReload": true,
+    "freshSessionSilent": true,
+    "runtimeImages": 5,
+    "parentControlsChecked": true,
+    "currentServiceWorkerCacheVerified": true,
+    "cachedMusicRangeStatus": 206,
+    "actualHttpsCspChecked": true,
+    "missingAssetStatus": 404,
+    "thirdPartyRuntimeRequests": 0,
+    "pageErrors": 0,
+    "runtimeRequestCount": 50,
+    "physicalIpadValidated": false
+  },
+  "sourceCommit": "8483f8cc8f44b0c38547a6e4a1b5c2c38930fbdf",
+  "buildReproduction": {
+    "originalLocalBuildId": "v0.1.0-228d3ff2889a",
+    "hostedBuildId": "v0.1.0-78ca7eb3ac60",
+    "cause": "Vercel serializes vercel.json to compact JSON plus newline before building. The unnormalized v0.1.0 hash included configuration whitespace.",
+    "verification": "Reproduced hosted build locally with only that temporary formatting change, restored source immediately, and matched the full remote precache and every listed byte/hash. JavaScript differs from the original checked artifact only in its build label. Semantic hash normalization is implemented for v0.1.1."
+  }
+}
