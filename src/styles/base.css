@@ -163,6 +163,11 @@ button svg {
   width: 25px;
   height: 25px;
 }
+.parent-button small {
+  display: block;
+  font-size: 9px;
+  line-height: 1.4;
+}
 .parent-button.is-holding {
   background: #e4e7db;
   outline: 3px solid #b0c2ad;

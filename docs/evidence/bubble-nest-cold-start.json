@@ -1,0 +1,54 @@
+{
+  "buildId": "v0.1.1-8f53112d4703",
+  "browser": "153.0.8010.12",
+  "actionableMs": 478.0471,
+  "spritesRenderedMs": 764.7592000000001,
+  "profile": "Fresh Windows desktop Chromium cache; 10Mbps down/up,50ms protocol latency; service workers blocked to isolate first-interaction files; local production CSP server with uncompressed responses. Not physical iPad.",
+  "requests": [
+    {
+      "path": "/",
+      "transferSize": 1408,
+      "encodedBodySize": 1108
+    },
+    {
+      "path": "/assets/index-BKTjcBZe.js",
+      "transferSize": 300942,
+      "encodedBodySize": 300642
+    },
+    {
+      "path": "/assets/index-CiELsIZK.css",
+      "transferSize": 12644,
+      "encodedBodySize": 12344
+    },
+    {
+      "path": "/assets/friend.webp",
+      "transferSize": 57638,
+      "encodedBodySize": 57338
+    },
+    {
+      "path": "/assets/bowl.webp",
+      "transferSize": 26556,
+      "encodedBodySize": 26256
+    },
+    {
+      "path": "/assets/ball.webp",
+      "transferSize": 36250,
+      "encodedBodySize": 35950
+    },
+    {
+      "path": "/assets/ball-two.webp",
+      "transferSize": 38330,
+      "encodedBodySize": 38030
+    },
+    {
+      "path": "/assets/bubble.webp",
+      "transferSize": 46196,
+      "encodedBodySize": 45896
+    },
+    {
+      "path": "/assets/penguin.webp",
+      "transferSize": 28214,
+      "encodedBodySize": 27914
+    }
+  ]
+}

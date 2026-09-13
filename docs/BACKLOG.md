@@ -1,8 +1,6 @@
 # Little Joys backlog
 
-Updated 13 September 2026. The owner requested continued progress; the current selected sprint is the stronger Squishy Friend interaction in [EXPRESSIVE-SQUISH-SPEC.md](EXPRESSIVE-SQUISH-SPEC.md). Future items remain separate from that bounded release. [OWNER-DIRECTION.md](OWNER-DIRECTION.md) supplies the design boundaries and [ROADMAP.md](ROADMAP.md) supplies release status.
-
-**Latest assignment supersedes the selected sprint above:** Codex owns LJ-14–LJ-16 (Bubble Pond / Roll & Nest) and a visible build label. The incoming Fable session owns Squishy Friend / Penguin Bounce. The v0.1.2 Squishy candidate was not released; performance work and final review remain incomplete. See [AGENT-HANDOFF.md](AGENT-HANDOFF.md) for isolated branches and the exact checkpoint.
+Updated 13 September 2026. Both toy lanes are merged on `release/v0.1.2` for the next playtest release. Codex refined Bubble Pond and Roll & Nest and added the visible build label and parent hold hint (LJ-14–LJ-16, LJ-19); see [scoped delivery](BUBBLE-NEST-DELIVERY.md) and [BN01–BN07](BUBBLE-NEST-REFINEMENT.md). The Fable lane reworked Squishy Friend and Penguin Bounce (LJ-20, LJ-22); see [AGENT-HANDOFF.md](AGENT-HANDOFF.md). [DELIVERY.md](DELIVERY.md) records the combined checks and hosting status. Human feel and physical-device checks remain open. Future items record owner interests without committing them to a release. [OWNER-DIRECTION.md](OWNER-DIRECTION.md) supplies the design boundaries and [ROADMAP.md](ROADMAP.md) supplies release status.
 
 | ID | Item | Status / next useful step | Completion boundary |
 |---|---|---|---|
@@ -29,7 +27,22 @@ Updated 13 September 2026. The owner requested continued progress; the current s
 | LJ-21 | Brand and parent-control clarity | Recorded design refinement; outside current toy ownership split. | Replace the weak header mark/tagline treatment; make the parent symbol and two-second hold affordance understandable. Retain the useful Toybox selector. |
 | LJ-22 | Further Squishy motion / multiplicity | Implemented on `codex/expressive-squish` (not deployed): regional material (curl, cheeks, eyes, feet), Playful whole-body sling with edge squash, lean and jelly sway, mid-flight catch, and pokes; Gentle unchanged. Multiple/addable friends not built. Contract in [EXPRESSIVE-SQUISH-SPEC.md](EXPRESSIVE-SQUISH-SPEC.md); checks in DELIVERY.md. | Explore expressive independent regions, directional recoil/swing/edge bounce, and possibly multiple/addable friends. Keep control forgiving and define resource/stop boundaries before expansion. |
 
+## Second-look proposals: planning only
+
+The latest [owner feedback](feedback/BUBBLE-NEST-SECOND-LOOK.md) says the two toys improved but still need richer outcomes. The [design response](NEXT-PLAY-DESIGN.md) distinguishes original suggestions, recommended experiments and deferred options. These local IDs avoid colliding with the other agent's LJ entries; reconcile the ledgers during integration. None is a new implementation commitment in this turn.
+
+| ID | Proposed item | Next decision |
+|---|---|---|
+| BNX-01 | Convincing soft bubble-pop audio and adult-enable discovery | Verify actual playback separately from replacing the generic tone; retain silent default and shared bounds. |
+| BNX-02 | More beautiful shell breakup, colored/interior variants, safe mixed sizes and a warmer setting | Preserve current appealing glass; prove readable visual variety within the same asset/target budgets. |
+| BNX-03 | Rainbow interactions and optional finite Playful drift | Test a local shared ripple without a speed gate. Numeric counters and timed combos remain recorded alternatives, not chosen requirements. |
+| BNX-04 | Bounce & Catch ball/bowl reimagining | After combined playtest, prototype hop/catch/tip-out with a movable broad bowl; explicitly amend slot/physics rules before implementation. |
+| BNX-05 | Combined build and private voluntary-play observations | Keep current lanes through integration, deploy once, then observe choice/repetition/comfort without a prescribed session or telemetry. |
+| BNX-06 | Portfolio and ownership decision | Cross-review before swapping owners; decide refine, retain, reversible archive, or a distinct new activity. Animal Sound Garden is the leading proposed new-toy alternative, not a committed fifth toy. |
+
 ## How an idea becomes work
+
+**WF-01 — Tailored creative workflow (proposal documented).** The owner requested more experimentation/debate and consideration of Rebirth's BMAD Party Mode, retaining two Builder turns and one Critic report with some flexibility. [Toy Studio](TOY-STUDIO-WORKFLOW.md) and its [packet template](templates/TOY-SPRINT-PACKET.md) capture the adaptation, explicit exception/history rules, privacy, model/ownership boundaries and human feedback loop. No framework installation or new sprint is active; current combined integration remains first.
 
 Choose one item explicitly, state the visible behavior and its limits, update the implementation contract when needed, and add only the tests or measurements needed to verify that change. Distinguish completed code from checks still pending. Original art and sound must have recorded provenance before shipping.
 

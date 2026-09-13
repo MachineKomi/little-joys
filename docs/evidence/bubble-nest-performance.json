@@ -1,0 +1,233 @@
+{
+  "buildId": "v0.1.1-8f53112d4703",
+  "environment": "Windows desktop Chromium, synthetic contacts, 810x1080 CSS, DPR2; not physical iPad",
+  "instrumentation": "Canvas drawImage wrapper observes last rendered ball centres for re-grab; positions stay in page memory and are not exported. Small instrumentation cost is included.",
+  "seconds": 10,
+  "cases": [
+    {
+      "toy": "bubbles",
+      "motion": "gentle",
+      "workload": "Six bubbles, four broad sweeps with all contacts lifted each900ms",
+      "activeRafMs": {
+        "samples": 601,
+        "p50": 16.699999999999818,
+        "p95": 16.700000000000728,
+        "max": 16.80000000000109,
+        "over50ms": 0
+      },
+      "idleCanvasStable": true,
+      "runtime": {
+        "buildId": "v0.1.1-8f53112d4703",
+        "toy": "bubbles",
+        "paused": true,
+        "effectiveMotion": "gentle",
+        "residentImages": 6,
+        "pointers": 0,
+        "canvasPixels": 1771470,
+        "backingScale": 1.5,
+        "effectiveBubbleCount": 6,
+        "bubbleLayoutLimited": false,
+        "effects": 0,
+        "audioEnabled": false,
+        "audioState": "not-created",
+        "voices": 0,
+        "musicEnabled": false,
+        "musicPlaying": false,
+        "musicState": "not-created",
+        "musicElements": 0,
+        "diagnosticsEnabled": true,
+        "timings": {
+          "frameIntervalsMs": {
+            "samples": 393,
+            "p50": 16.699999999999818,
+            "p95": 16.799999999999272,
+            "max": 16.80000000000109,
+            "over50ms": 0
+          },
+          "updateDrawMs": {
+            "samples": 509,
+            "p50": 0.09999999403953552,
+            "p95": 0.20000001788139343,
+            "max": 0.30000001192092896,
+            "over50ms": 0
+          },
+          "inputToRenderMs": {
+            "samples": 470,
+            "p50": 16.599999994039536,
+            "p95": 17.80000001192093,
+            "max": 18.599999994039536,
+            "over50ms": 0
+          }
+        }
+      }
+    },
+    {
+      "toy": "bubbles",
+      "motion": "playful",
+      "workload": "Six bubbles, four broad sweeps with all contacts lifted each900ms",
+      "activeRafMs": {
+        "samples": 601,
+        "p50": 16.699999999999818,
+        "p95": 16.799999999999272,
+        "max": 16.80000000000109,
+        "over50ms": 0
+      },
+      "idleCanvasStable": true,
+      "runtime": {
+        "buildId": "v0.1.1-8f53112d4703",
+        "toy": "bubbles",
+        "paused": true,
+        "effectiveMotion": "playful",
+        "residentImages": 6,
+        "pointers": 0,
+        "canvasPixels": 1771470,
+        "backingScale": 1.5,
+        "effectiveBubbleCount": 6,
+        "bubbleLayoutLimited": false,
+        "effects": 0,
+        "audioEnabled": false,
+        "audioState": "not-created",
+        "voices": 0,
+        "musicEnabled": false,
+        "musicPlaying": false,
+        "musicState": "not-created",
+        "musicElements": 0,
+        "diagnosticsEnabled": true,
+        "timings": {
+          "frameIntervalsMs": {
+            "samples": 395,
+            "p50": 16.699999999999818,
+            "p95": 16.799999999999955,
+            "max": 16.80000000000109,
+            "over50ms": 0
+          },
+          "updateDrawMs": {
+            "samples": 510,
+            "p50": 0.09999999403953552,
+            "p95": 0.20000001788139343,
+            "max": 0.30000001192092896,
+            "over50ms": 0
+          },
+          "inputToRenderMs": {
+            "samples": 470,
+            "p50": 16.69999998807907,
+            "p95": 18,
+            "max": 18.900000005960464,
+            "over50ms": 0
+          }
+        }
+      }
+    },
+    {
+      "toy": "nest",
+      "motion": "gentle",
+      "workload": "Two balls repeatedly dragged for220ms, released for680ms and re-grabbed from rendered positions",
+      "activeRafMs": {
+        "samples": 601,
+        "p50": 16.699999999999818,
+        "p95": 16.700000000000728,
+        "max": 16.80000000000109,
+        "over50ms": 0
+      },
+      "idleCanvasStable": true,
+      "runtime": {
+        "buildId": "v0.1.1-8f53112d4703",
+        "toy": "nest",
+        "paused": true,
+        "effectiveMotion": "gentle",
+        "residentImages": 6,
+        "pointers": 0,
+        "canvasPixels": 1771470,
+        "backingScale": 1.5,
+        "effects": 0,
+        "audioEnabled": false,
+        "audioState": "not-created",
+        "voices": 0,
+        "musicEnabled": false,
+        "musicPlaying": false,
+        "musicState": "not-created",
+        "musicElements": 0,
+        "diagnosticsEnabled": true,
+        "timings": {
+          "frameIntervalsMs": {
+            "samples": 0,
+            "p50": 0,
+            "p95": 0,
+            "max": 0,
+            "over50ms": 0
+          },
+          "updateDrawMs": {
+            "samples": 166,
+            "p50": 0.19999998807907104,
+            "p95": 0.30000001192092896,
+            "max": 0.4000000059604645,
+            "over50ms": 0
+          },
+          "inputToRenderMs": {
+            "samples": 153,
+            "p50": 16.69999998807907,
+            "p95": 17.700000017881393,
+            "max": 18.19999998807907,
+            "over50ms": 0
+          }
+        }
+      }
+    },
+    {
+      "toy": "nest",
+      "motion": "playful",
+      "workload": "Two balls repeatedly dragged for220ms, released for680ms and re-grabbed from rendered positions",
+      "activeRafMs": {
+        "samples": 601,
+        "p50": 16.699999999999818,
+        "p95": 16.700000000000728,
+        "max": 16.80000000000109,
+        "over50ms": 0
+      },
+      "idleCanvasStable": true,
+      "runtime": {
+        "buildId": "v0.1.1-8f53112d4703",
+        "toy": "nest",
+        "paused": true,
+        "effectiveMotion": "playful",
+        "residentImages": 6,
+        "pointers": 0,
+        "canvasPixels": 1771470,
+        "backingScale": 1.5,
+        "effects": 0,
+        "audioEnabled": false,
+        "audioState": "not-created",
+        "voices": 0,
+        "musicEnabled": false,
+        "musicPlaying": false,
+        "musicState": "not-created",
+        "musicElements": 0,
+        "diagnosticsEnabled": true,
+        "timings": {
+          "frameIntervalsMs": {
+            "samples": 675,
+            "p50": 16.699999999999818,
+            "p95": 16.700000000000728,
+            "max": 16.80000000000109,
+            "over50ms": 0
+          },
+          "updateDrawMs": {
+            "samples": 679,
+            "p50": 0.19999998807907104,
+            "p95": 0.29999998211860657,
+            "max": 0.5999999940395355,
+            "over50ms": 0
+          },
+          "inputToRenderMs": {
+            "samples": 151,
+            "p50": 16.599999994039536,
+            "p95": 17.69999998807907,
+            "max": 18.5,
+            "over50ms": 0
+          }
+        }
+      }
+    }
+  ],
+  "browser": "153.0.8010.12"
+}
