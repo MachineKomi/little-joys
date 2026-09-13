@@ -289,6 +289,16 @@ export class Runtime {
         this.scene.id === "bounce" ? debug.activeBalls : undefined,
       bounceSettledBalls:
         this.scene.id === "bounce" ? debug.settledBalls : undefined,
+      bounceFlowActive:
+        this.scene.id === "bounce" ? debug.flowActive : undefined,
+      bounceInputSpawns:
+        this.scene.id === "bounce" ? debug.inputSpawns : undefined,
+      bounceFlowSpawns:
+        this.scene.id === "bounce" ? debug.flowSpawns : undefined,
+      bounceDeflectorAngles:
+        this.scene.id === "bounce" ? debug.deflectorAngles : undefined,
+      bounceSpinnerSpin:
+        this.scene.id === "bounce" ? debug.spinnerSpin : undefined,
       effects: debug.effects,
       ...this.audio.status(),
       ...this.music.status(),

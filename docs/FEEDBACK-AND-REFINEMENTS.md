@@ -23,4 +23,6 @@ Ownership is explicitly split: Codex works on Bubble Pond / Roll & Nest plus the
 
 This records the requested direction and concrete reproduction work. It does not retroactively claim that v0.1.1 fixes these items or that an implementation technique has been validated. The next refinement patch should select and specify bounded changes from LJ-13 through LJ-17, retaining the original input, privacy, audio, pause and resource requirements. Prefer original layered art where useful; do not copy an existing game's characters or implementation.
 
+The Squishy Friend and Penguin Bounce lane now has an **undeployed** candidate on `codex/expressive-squish`. It targets the stronger regional squish and the whole-body recoil and edge bounce. It also targets the richer Penguin Bounce board with a continuous, bounded ball supply (LJ-20, LJ-22). Its checks and review are in [DELIVERY.md](DELIVERY.md) and [REVIEW.md](REVIEW.md). The owner has not seen it and it has not run on the iPad, so these reported shortcomings are not closed.
+
 Before closing an item, record the changed visible behavior, reproduced defect or comparison, relevant checks, and the actual build. Keep reports of private reactions separate from public engineering evidence. See [BACKLOG.md](BACKLOG.md), [ROADMAP.md](ROADMAP.md) and [DELIVERY.md](DELIVERY.md).

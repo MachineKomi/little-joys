@@ -8,8 +8,9 @@
   "preparedMaterialBytes": 2359296,
   "preparationReadbackBytes": 2359296,
   "decodedWithPreparedMaterialBytes": 11341376,
-  "decodedWithPreparationPeak": 13700672,
-  "note": "All shipped rasters counted conservatively, plus one 768-square Squishy material surface and one temporary readback array during preparation. The scene releases its material surface on disposal; browser garbage collection and graphics copies are not measured. These estimates are not Safari total RAM. Audio streams without a complete decoded AudioBuffer.",
+  "preparedBallTintBytes": 104544,
+  "decodedWithPreparationPeak": 13805216,
+  "note": "All shipped rasters counted conservatively, plus one 768-square Squishy material surface, one temporary readback array during preparation, and Penguin Bounce's six tinted ball surfaces (at most 66px square). Each scene releases its prepared surfaces on disposal, so this sum over two scenes is itself conservative; browser garbage collection and graphics copies are not measured. These estimates are not Safari total RAM. Audio streams without a complete decoded AudioBuffer.",
   "audio": [
     {
       "id": "music",

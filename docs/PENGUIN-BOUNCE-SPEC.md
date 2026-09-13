@@ -43,6 +43,28 @@ P07 was clarified during implementation after a dense stack extended just above 
 | T43 | Hosted exact-build assets, offline relaunch and safe waiting update include the fourth toy and its generated art. |
 | T44 | Capture and inspect actual board screenshots plus dense-ball timing/resource measurements; physical eighth-generation iPad checks remain explicitly pending until performed. |
 
+## Amendment: richer board and passive flow (LJ-20), 13 September 2026
+
+Status: implemented on `codex/expressive-squish` for the next candidate; **not deployed**. The live v0.1.1 board keeps the original contract above until a reviewed release. See [DELIVERY.md](DELIVERY.md) for actual checks.
+
+The latest owner review found the v0.1.1 board sparse, pale and passive: balls usually fell almost straight down, the penguin was a corner observer, and the screen went still when touches stopped. The owner explicitly asked for a continuous, bounded supply of balls with interesting physics and local lights even without tapping, with touch still influencing the flow. This amendment deliberately **replaces the input-only, eventual-sleep, no-passive-spawn direction of P07 and T39**, and extends P04, P06 and P08. Every other requirement, cap and budget above stays in force.
+
+| ID | Amended requirement |
+|---|---|
+| P04 | Besides the two turnable deflectors, the board has three round pinball bumpers, one four-arm pinwheel, two funnel rails and a dense staggered peg field in six bright colours. A bumper returns a striking ball at a generous fixed speed, and a tap pulses nearby balls outward. Ball contact and taps spin the pinwheel with bounded spin that fades. Every mechanism keeps a broad touch target of at least 72 CSS pixels. A deterministic layout pass keeps a full ball passage (one diameter plus 8 CSS pixels) between every pair of mechanisms, using the full sweep of anything that turns. The same passage applies between each mechanism and each rail and wall, and between every peg and its neighbours, walls, rails and mechanisms. Mechanism sizes follow the available field so compact phone and landscape boards stay open. |
+| P06 | Balls come in six colours, tinted from one painted ball sprite. At capacity a new ball, tapped or dispensed, first replaces the oldest ball resting in the trough. Otherwise it replaces the oldest settled ball, and failing that the oldest ball. The replaced ball leaves a brief soft ring where it was. |
+| P07 | **Passive flow.** The penguin sits on a snow shelf above the board and drops one ball from a chute every 1.0 seconds in Playful, or every 1.8 seconds in Gentle and under system reduced motion. The first drop comes 1.6 seconds after entry. Flow runs for an attended window of 120 seconds after entry or the last accepted touch, and any accepted touch renews the window. Flow and the window advance only through stepped simulation time. Pause, settings, the selector, blur and a hidden page therefore stop the flow immediately, and a resumed frame cannot release a catch-up burst: at most one capped update of 8 fixed steps. When the window ends, flow stops and the mechanisms stop adding energy: bumpers behave like pegs and the pinwheel winds down within about a second. Balls then settle on actual support and the scheduler sleeps. Rest still follows real support; nothing is teleported or forced asleep by a timer. |
+| P08 | Gentle keeps soft static halos at contacts and bumper glows that only fade. Playful adds coloured blooms, short rays and bumper lights. The penguin dips once, briefly, each time it drops a ball or is tapped; Gentle uses a smaller single dip. All light effects are local, share the 24-entry effect pool, and never strobe or change the whole screen. |
+| P13 (new) | Tapping the penguin immediately drops one ball from its chute. The penguin's shelf is outside the physics bounds and never covers a ball. |
+
+Acceptance amendments:
+
+- **T39** now verifies four things. Unattended dispensing runs on a fixed pace. Paused or hidden play has no flow, simulation or animation frames, and returning produces no catch-up burst. The dense board sleeps after the attended window ends; a browser test steps every frame with a fake clock, and unit tests cover 42 layout, motion and input-cadence combinations. Mechanisms add no energy once unattended.
+- **T36 and T38** cover bumper, pinwheel and penguin taps as well as deflectors.
+- **T44** adds mechanism-clearance and peg-passage checks at six reference layouts.
+
+Nothing here adds a score, target, required success, lives, gambling presentation or progression.
+
 ## Deferred content
 
 Letters/numbers as optional playful images, cute dinosaurs/farm animals, owner-authorized animal calls, original musical phrases followed by instrumental space, and small collision-triggered character vignettes belong in the backlog. They do not gate this first physics patch. Any later musical participation remains optional and cannot stop or score play. Trains are exploratory rather than a committed theme.

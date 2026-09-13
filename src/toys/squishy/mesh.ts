@@ -33,9 +33,33 @@ export function signedArea(
 export interface MeshBounds {
   x: number;
   y: number;
+  /** Optional one-sided limits in rest-mesh units; default to -x, x, -y and y. */
+  left?: number;
+  right?: number;
+  top?: number;
+  bottom?: number;
 }
 const unbounded = { x: 4, y: 4 };
 const STEPS = 16;
+/** Soft one-sided limit on a displacement from its base position: identity for
+ * most of the available room, then an exponential ease into the limit, so
+ * strongly pulled vertices never stack into a flat, clipped edge. */
+export function ease(displacement: number, low: number, high: number) {
+  if (displacement > 0) {
+    if (high <= 0) return 0;
+    const margin = Math.min(0.15, high / 2),
+      knee = high - margin;
+    return displacement <= knee
+      ? displacement
+      : knee + margin * (1 - Math.exp(-(displacement - knee) / margin));
+  }
+  if (low >= 0) return 0;
+  const margin = Math.min(0.15, -low / 2),
+    knee = low + margin;
+  return displacement >= knee
+    ? displacement
+    : knee - margin * (1 - Math.exp((displacement - knee) / margin));
+}
 
 /** Compose small local warps along each finger's path. Large pulls extend material
  * progressively rather than being attenuated by one rest-space Gaussian. */
@@ -53,6 +77,10 @@ export function targetMesh(
     );
   out.set(base);
   if (!contacts.length) return;
+  const loX = bounds.left ?? -bounds.x,
+    hiX = bounds.right ?? bounds.x,
+    loY = bounds.top ?? -bounds.y,
+    hiY = bounds.bottom ?? bounds.y;
   for (let step = 0; step < STEPS; step++) {
     const progress = step / STEPS;
     for (let i = 0; i < VERTICES; i++) {
@@ -64,20 +92,22 @@ export function targetMesh(
       for (const g of contacts) {
         const ox = x - (g.x + g.dx * progress),
           oy = y - (g.y + g.dy * progress);
-        const w = Math.exp(-(ox * ox + oy * oy) / 0.52);
+        const spread =
+          g.spread !== undefined && Number.isFinite(g.spread) && g.spread > 0.05
+            ? Math.min(1.5, g.spread)
+            : 0.52;
+        const w = Math.exp(-(ox * ox + oy * oy) / spread);
         const pressure = g.pressure ?? 1;
         dx += (g.dx - ox * 0.11 * pressure) * w;
         dy += (g.dy - oy * 0.11 * pressure) * w;
         weight += w;
       }
-      scratch[i * 2] = Math.max(
-        -bounds.x,
-        Math.min(bounds.x, x + dx / (Math.max(1, weight) * STEPS)),
-      );
-      scratch[i * 2 + 1] = Math.max(
-        -bounds.y,
-        Math.min(bounds.y, y + dy / (Math.max(1, weight) * STEPS)),
-      );
+      const bx = base[i * 2],
+        by = base[i * 2 + 1];
+      scratch[i * 2] =
+        bx + ease(x + dx / (Math.max(1, weight) * STEPS) - bx, loX - bx, hiX - bx);
+      scratch[i * 2 + 1] =
+        by + ease(y + dy / (Math.max(1, weight) * STEPS) - by, loY - by, hiY - by);
     }
     // Guard this small step against its previous valid state. Never halve the
     // entire accumulated deformation because one compressed triangle is tight.
@@ -94,15 +124,20 @@ export function targetMesh(
 /** Clamp an interpolated/recovered frame toward rest without introducing folds. */
 export function constrainMesh(points: Float64Array, bounds: MeshBounds) {
   let amount = 1;
+  const loX = bounds.left ?? -bounds.x,
+    hiX = bounds.right ?? bounds.x,
+    loY = bounds.top ?? -bounds.y,
+    hiY = bounds.bottom ?? bounds.y;
   for (let i = 0; i < points.length; i++) {
     const d = points[i] - restMesh[i],
-      limit = i % 2 ? bounds.y : bounds.x;
+      low = i % 2 ? loY : loX,
+      high = i % 2 ? hiY : hiX;
     if (!Number.isFinite(points[i])) {
       points.set(restMesh);
       return;
     }
-    if (d > 0) amount = Math.min(amount, (limit - restMesh[i]) / d);
-    if (d < 0) amount = Math.min(amount, (-limit - restMesh[i]) / d);
+    if (d > 0) amount = Math.min(amount, (high - restMesh[i]) / d);
+    if (d < 0) amount = Math.min(amount, (low - restMesh[i]) / d);
   }
   amount = Math.max(0, Math.min(1, amount));
   if (amount < 1)

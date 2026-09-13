@@ -6,8 +6,48 @@ export interface Grab {
   dx: number;
   dy: number;
   pressure?: number;
+  /** Squared Gaussian width of this contact's local influence (rest-mesh units). */
+  spread?: number;
+  /** Longest pull this contact may make, in rest radii. */
+  reach?: number;
 }
 export const MAX_PULL = 1.1;
+export type Region = "curl" | "eye" | "cheek" | "foot" | "body";
+export interface RegionProfile {
+  region: Region;
+  spread: number;
+  reach: number;
+}
+/** Painted feature centres measured on the shipped 768px sprite, in rest-mesh units. */
+export const FEATURES = {
+  eyes: [
+    [-0.366, -0.105],
+    [0.373, -0.106],
+  ],
+  cheeks: [
+    [-0.55, 0.155],
+    [0.557, 0.143],
+  ],
+  curl: [0.137, -1.024],
+  mouth: [-0.005, 0.061],
+} as const;
+/** Different parts of the friend answer a pull differently: the curl draws out
+ * like a long soft tail, cheeks squish wide, an eye stretches tightly, the feet
+ * stay stubby, and the rest of the body is the original broad squish. */
+export function regionAt(x: number, y: number): RegionProfile {
+  if (!Number.isFinite(x) || !Number.isFinite(y))
+    return { region: "body", spread: 0.52, reach: MAX_PULL };
+  if (y < -0.7 && Math.abs(x - 0.14) < 0.42)
+    return { region: "curl", spread: 0.22, reach: 1.5 };
+  for (const [ex, ey] of FEATURES.eyes)
+    if (Math.hypot(x - ex, y - ey) < 0.2)
+      return { region: "eye", spread: 0.3, reach: 1.15 };
+  for (const [cx, cy] of FEATURES.cheeks)
+    if (Math.hypot(x - cx, y - cy) < 0.22)
+      return { region: "cheek", spread: 0.72, reach: 1.25 };
+  if (y > 0.72) return { region: "foot", spread: 0.3, reach: 0.85 };
+  return { region: "body", spread: 0.52, reach: MAX_PULL };
+}
 export const RETURN_SECONDS = { gentle: 0.36, playful: 0.78 } as const;
 /** Finite analytical return: Gentle never crosses rest; Playful crosses once. */
 export function returnAmount(elapsed: number, motion: "gentle" | "playful") {

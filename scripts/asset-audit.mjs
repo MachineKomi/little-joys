@@ -144,8 +144,14 @@ export async function auditAssets(root = resolve("."), output = "dist") {
   );
   const preparedMaterialBytes = 768 * 768 * 4;
   const preparationReadbackBytes = preparedMaterialBytes;
+  // Penguin Bounce prepares six tinted ball surfaces of at most 66px square
+  // (22px ball radius at the 1.5 DPR cap) and releases them on disposal.
+  const preparedBallTintBytes = 6 * 66 * 66 * 4;
   const decodedWithPreparationPeak =
-    decodedBytes + preparedMaterialBytes + preparationReadbackBytes;
+    decodedBytes +
+    preparedMaterialBytes +
+    preparationReadbackBytes +
+    preparedBallTintBytes;
   if (decodedWithPreparationPeak > 24 * 1024 * 1024)
     throw new Error(
       `Decoded raster plus preparation peak exceeds 24 MiB: ${decodedWithPreparationPeak}`,
@@ -194,8 +200,9 @@ export async function auditAssets(root = resolve("."), output = "dist") {
     preparedMaterialBytes,
     preparationReadbackBytes,
     decodedWithPreparedMaterialBytes: decodedBytes + preparedMaterialBytes,
+    preparedBallTintBytes,
     decodedWithPreparationPeak,
-    note: "All shipped rasters counted conservatively, plus one 768-square Squishy material surface and one temporary readback array during preparation. The scene releases its material surface on disposal; browser garbage collection and graphics copies are not measured. These estimates are not Safari total RAM. Audio streams without a complete decoded AudioBuffer.",
+    note: "All shipped rasters counted conservatively, plus one 768-square Squishy material surface, one temporary readback array during preparation, and Penguin Bounce's six tinted ball surfaces (at most 66px square). Each scene releases its prepared surfaces on disposal, so this sum over two scenes is itself conservative; browser garbage collection and graphics copies are not measured. These estimates are not Safari total RAM. Audio streams without a complete decoded AudioBuffer.",
     audio,
     assets: results,
   };

@@ -237,8 +237,76 @@ test("T47/SQ05: reduced motion overrides stored Playful, while the stronger touc
     .getByRole("button", { name: "Open parent settings", exact: true })
     .press("Enter");
   await page.getByText("Technical status", { exact: true }).click();
-  expect(
-    JSON.parse(await page.locator(".runtime-status").innerText())
-      .preparedRasterBytes,
-  ).toBe(0);
+  // Squishy's 2.25 MiB material surface is released on the switch. Penguin
+  // Bounce holds only its own six tinted ball surfaces (at most 66px square).
+  const bounceBytes = JSON.parse(
+    await page.locator(".runtime-status").innerText(),
+  ).preparedRasterBytes;
+  expect(bounceBytes).not.toBe(768 * 768 * 4);
+  expect(bounceBytes).toBeLessThanOrEqual(6 * 66 * 66 * 4);
+});
+
+/** Bounds of the painted teal friend in the canvas pixels (cream background excluded). */
+async function paintedBox(page: Page) {
+  const url = await pixels(page);
+  const { data, info } = await sharp(Buffer.from(url.split(",")[1], "base64"))
+    .removeAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  let minX = info.width,
+    maxX = -1,
+    minY = info.height,
+    maxY = -1;
+  for (let y = 0; y < info.height; y++)
+    for (let x = 0; x < info.width; x++) {
+      const i = (y * info.width + x) * 3;
+      if (data[i + 1] - data[i] > 40 && data[i + 2] > 90) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  return { minX, maxX, minY, maxY, width: info.width, height: info.height };
+}
+
+test("T47/SQ02/SQ04 (amended): a Playful sling travels and returns while every rendered frame keeps the painted friend inside the inset (fake clock)", async ({
+  page,
+}) => {
+  test.setTimeout(90_000);
+  await page.clock.install();
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      "little-joys-settings-v1",
+      JSON.stringify({ motion: "playful", lastToy: "squishy" }),
+    ),
+  );
+  await page.goto("/");
+  await expect(page.locator("canvas")).toHaveAttribute("data-art", "6");
+  await page.clock.runFor(500);
+  const rest = await paintedBox(page);
+  const centre = (box: { minX: number; maxX: number }) => (box.minX + box.maxX) / 2;
+  await contact(page, "pointerdown", 1, 0.6, 0);
+  for (let step = 1; step <= 6; step++)
+    await contact(page, "pointermove", 1, 0.6 + (1.1 * step) / 6, 0);
+  await page.clock.runFor(50);
+  await contact(page, "pointerup", 1, 1.7, 0);
+  let leftmost = Infinity,
+    rightmost = -Infinity;
+  for (let frame = 0; frame < 75; frame++) {
+    await page.clock.runFor(17);
+    const box = await paintedBox(page);
+    // Every rendered frame keeps the painted friend 24px inside the canvas (1px antialiasing).
+    expect(box.minX, `frame ${frame}`).toBeGreaterThanOrEqual(23);
+    expect(box.maxX, `frame ${frame}`).toBeLessThanOrEqual(box.width - 24);
+    expect(box.minY, `frame ${frame}`).toBeGreaterThanOrEqual(23);
+    expect(box.maxY, `frame ${frame}`).toBeLessThanOrEqual(box.height - 24);
+    leftmost = Math.min(leftmost, centre(box));
+    rightmost = Math.max(rightmost, centre(box));
+  }
+  // The friend is slung left (opposite the pull), then swings back past home.
+  expect(centre(rest) - leftmost).toBeGreaterThan(60);
+  expect(rightmost - centre(rest)).toBeGreaterThan(20);
+  await page.clock.runFor(4000);
+  expect(await paintedBox(page)).toEqual(rest);
 });

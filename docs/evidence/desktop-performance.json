@@ -1,11 +1,11 @@
 {
-  "build": "v0.1.2-c63c46ea7ceb",
+  "build": "v0.1.2-329dc2c8d902",
   "browser": "153.0.8010.12",
   "environment": "Windows desktop Chromium; synthetic pointer workload, not iPad",
   "traceSecondsPerToy": 10,
   "coldStart": {
-    "actionableMs": 520,
-    "spritesRenderedMs": 830,
+    "actionableMs": 488,
+    "spritesRenderedMs": 765,
     "profile": "10 Mbps download/upload; 50ms protocol latency; fresh browser cache; service worker blocked to isolate first-interaction files; local production server with real CSP and uncompressed responses",
     "requests": [
       {
@@ -14,9 +14,9 @@
         "encodedBodySize": 1108
       },
       {
-        "path": "/assets/index-sbCQjzKZ.js",
-        "transferSize": 300618,
-        "encodedBodySize": 300318
+        "path": "/assets/index-Cg3DoA-U.js",
+        "transferSize": 320625,
+        "encodedBodySize": 320325
       },
       {
         "path": "/assets/index-B06gi7hw.css",
@@ -39,14 +39,14 @@
         "encodedBodySize": 35950
       },
       {
-        "path": "/assets/ball-two.webp",
-        "transferSize": 38330,
-        "encodedBodySize": 38030
-      },
-      {
         "path": "/assets/penguin.webp",
         "transferSize": 28214,
         "encodedBodySize": 27914
+      },
+      {
+        "path": "/assets/ball-two.webp",
+        "transferSize": 38330,
+        "encodedBodySize": 38030
       },
       {
         "path": "/assets/bubble.webp",
@@ -60,16 +60,17 @@
     {
       "toy": "squishy",
       "motion": "gentle",
+      "variant": null,
       "workload": "Four synthetic contacts, doubled drag amplitude (0.24 width / 0.20 height), final release sampled in both motion modes",
       "syntheticActiveRafMs": {
-        "samples": 328,
-        "p50": 33.30000000000018,
-        "p95": 49.90000000000009,
-        "max": 50.10000000000002,
-        "over50ms": 3
+        "samples": 601,
+        "p50": 16.699999999999818,
+        "p95": 16.799999999999272,
+        "max": 16.80000000000109,
+        "over50ms": 0
       },
       "runtime": {
-        "buildId": "v0.1.2-c63c46ea7ceb",
+        "buildId": "v0.1.2-329dc2c8d902",
         "toy": "squishy",
         "paused": true,
         "effectiveMotion": "gentle",
@@ -89,24 +90,24 @@
         "diagnosticsEnabled": true,
         "timings": {
           "frameIntervalsMs": {
-            "samples": 347,
-            "p50": 33.30000000000018,
-            "p95": 49.90000000000009,
-            "max": 50.10000000000002,
-            "over50ms": 3
+            "samples": 628,
+            "p50": 16.699999999999818,
+            "p95": 16.799999999999272,
+            "max": 16.80000000000109,
+            "over50ms": 0
           },
           "updateDrawMs": {
-            "samples": 350,
-            "p50": 1.300000011920929,
-            "p95": 2.800000011920929,
-            "max": 14.599999994039536,
+            "samples": 630,
+            "p50": 0.800000011920929,
+            "p95": 1.199999988079071,
+            "max": 12.400000005960464,
             "over50ms": 0
           },
           "inputToRenderMs": {
-            "samples": 330,
-            "p50": 29.900000005960464,
-            "p95": 38.70000001788139,
-            "max": 48.400000005960464,
+            "samples": 603,
+            "p50": 16.599999994039536,
+            "p95": 17.69999998807907,
+            "max": 20.5,
             "over50ms": 0
           }
         }
@@ -115,16 +116,17 @@
     {
       "toy": "squishy",
       "motion": "playful",
+      "variant": null,
       "workload": "Four synthetic contacts, doubled drag amplitude (0.24 width / 0.20 height), final release sampled in both motion modes",
       "syntheticActiveRafMs": {
-        "samples": 332,
-        "p50": 33.30000000000018,
-        "p95": 33.400000000000546,
-        "max": 50,
+        "samples": 601,
+        "p50": 16.699999999999818,
+        "p95": 16.700000000000728,
+        "max": 16.80000000000109,
         "over50ms": 0
       },
       "runtime": {
-        "buildId": "v0.1.2-c63c46ea7ceb",
+        "buildId": "v0.1.2-329dc2c8d902",
         "toy": "squishy",
         "paused": true,
         "effectiveMotion": "playful",
@@ -144,24 +146,80 @@
         "diagnosticsEnabled": true,
         "timings": {
           "frameIntervalsMs": {
-            "samples": 360,
-            "p50": 33.30000000000007,
-            "p95": 33.400000000000546,
-            "max": 66.70000000000073,
-            "over50ms": 1
+            "samples": 631,
+            "p50": 16.699999999999818,
+            "p95": 16.700000000000728,
+            "max": 16.80000000000109,
+            "over50ms": 0
           },
           "updateDrawMs": {
-            "samples": 363,
-            "p50": 1.4000000059604645,
-            "p95": 3.9000000059604645,
-            "max": 16.80000001192093,
+            "samples": 634,
+            "p50": 0.7999999821186066,
+            "p95": 1.199999988079071,
+            "max": 10.800000011920929,
             "over50ms": 0
           },
           "inputToRenderMs": {
-            "samples": 334,
-            "p50": 29.80000001192093,
-            "p95": 36.099999994039536,
-            "max": 39.80000001192093,
+            "samples": 603,
+            "p50": 16.599999994039536,
+            "p95": 17.799999982118607,
+            "max": 20.099999994039536,
+            "over50ms": 0
+          }
+        }
+      }
+    },
+    {
+      "toy": "squishy",
+      "motion": "playful",
+      "variant": "sling",
+      "workload": "Playful sling cycles: one synthetic contact stretches the side for 0.5s then releases, every 1.2s; each re-grab can catch the travelling friend",
+      "syntheticActiveRafMs": {
+        "samples": 601,
+        "p50": 16.699999999999818,
+        "p95": 16.799999999999272,
+        "max": 16.800000000000182,
+        "over50ms": 0
+      },
+      "runtime": {
+        "buildId": "v0.1.2-329dc2c8d902",
+        "toy": "squishy",
+        "paused": true,
+        "effectiveMotion": "playful",
+        "residentImages": 6,
+        "preparedRasterBytes": 2359296,
+        "pointers": 0,
+        "canvasPixels": 1771470,
+        "backingScale": 1.5,
+        "effects": 0,
+        "audioEnabled": false,
+        "audioState": "not-created",
+        "voices": 0,
+        "musicEnabled": false,
+        "musicPlaying": false,
+        "musicState": "not-created",
+        "musicElements": 0,
+        "diagnosticsEnabled": true,
+        "timings": {
+          "frameIntervalsMs": {
+            "samples": 630,
+            "p50": 16.699999999999818,
+            "p95": 16.799999999999272,
+            "max": 50,
+            "over50ms": 0
+          },
+          "updateDrawMs": {
+            "samples": 633,
+            "p50": 0.5,
+            "p95": 0.9000000059604645,
+            "max": 10.300000011920929,
+            "over50ms": 0
+          },
+          "inputToRenderMs": {
+            "samples": 267,
+            "p50": 16.599999994039536,
+            "p95": 17.80000001192093,
+            "max": 18.69999998807907,
             "over50ms": 0
           }
         }
@@ -170,16 +228,17 @@
     {
       "toy": "bubbles",
       "motion": "gentle",
+      "variant": null,
       "workload": "Maximum configured objects and four synthetic contacts",
       "syntheticActiveRafMs": {
         "samples": 601,
         "p50": 16.699999999999818,
         "p95": 16.700000000000728,
-        "max": 16.800000000000182,
+        "max": 16.80000000000109,
         "over50ms": 0
       },
       "runtime": {
-        "buildId": "v0.1.2-c63c46ea7ceb",
+        "buildId": "v0.1.2-329dc2c8d902",
         "toy": "bubbles",
         "paused": true,
         "effectiveMotion": "gentle",
@@ -201,24 +260,24 @@
         "diagnosticsEnabled": true,
         "timings": {
           "frameIntervalsMs": {
-            "samples": 432,
+            "samples": 431,
             "p50": 16.699999999999818,
             "p95": 16.700000000000728,
-            "max": 16.800000000000182,
+            "max": 16.80000000000109,
             "over50ms": 0
           },
           "updateDrawMs": {
             "samples": 605,
-            "p50": 0.19999998807907104,
-            "p95": 0.4000000059604645,
-            "max": 2,
+            "p50": 0.09999999403953552,
+            "p95": 0.20000001788139343,
+            "max": 0.30000001192092896,
             "over50ms": 0
           },
           "inputToRenderMs": {
             "samples": 603,
-            "p50": 16.30000001192093,
-            "p95": 22.200000017881393,
-            "max": 29.5,
+            "p50": 16.5,
+            "p95": 17.600000023841858,
+            "max": 18.80000001192093,
             "over50ms": 0
           }
         }
@@ -227,16 +286,17 @@
     {
       "toy": "nest",
       "motion": "gentle",
+      "variant": null,
       "workload": "Maximum configured objects and four synthetic contacts",
       "syntheticActiveRafMs": {
         "samples": 601,
         "p50": 16.699999999999818,
-        "p95": 16.799999999999727,
+        "p95": 16.700000000000728,
         "max": 16.80000000000109,
         "over50ms": 0
       },
       "runtime": {
-        "buildId": "v0.1.2-c63c46ea7ceb",
+        "buildId": "v0.1.2-329dc2c8d902",
         "toy": "nest",
         "paused": true,
         "effectiveMotion": "gentle",
@@ -264,16 +324,16 @@
           },
           "updateDrawMs": {
             "samples": 605,
-            "p50": 0.10000002384185791,
-            "p95": 0.3999999761581421,
-            "max": 4,
+            "p50": 0.09999999403953552,
+            "p95": 0.20000001788139343,
+            "max": 0.5999999940395355,
             "over50ms": 0
           },
           "inputToRenderMs": {
             "samples": 603,
-            "p50": 16.30000001192093,
-            "p95": 22,
-            "max": 28.30000001192093,
+            "p50": 16.5,
+            "p95": 17.599999994039536,
+            "max": 18.30000001192093,
             "over50ms": 0
           }
         }
@@ -282,29 +342,38 @@
     {
       "toy": "bounce",
       "motion": "gentle",
-      "workload": "24-ball cap, four synthetic contacts, four recycled spawns every 600ms",
+      "variant": null,
+      "workload": "24-ball cap with passive penguin flow active, four synthetic contacts, four recycled spawns every 600ms just below the shelf",
       "syntheticActiveRafMs": {
-        "samples": 598,
+        "samples": 601,
         "p50": 16.699999999999818,
-        "p95": 16.799999999999272,
-        "max": 33.30000000000018,
+        "p95": 16.799999999999955,
+        "max": 16.80000000000109,
         "over50ms": 0
       },
       "runtime": {
-        "buildId": "v0.1.2-c63c46ea7ceb",
+        "buildId": "v0.1.2-329dc2c8d902",
         "toy": "bounce",
         "paused": true,
         "effectiveMotion": "gentle",
         "residentImages": 6,
-        "preparedRasterBytes": 0,
+        "preparedRasterBytes": 104544,
         "pointers": 0,
         "canvasPixels": 1771470,
         "backingScale": 1.5,
         "bounceBalls": 24,
         "bounceBallLimit": 24,
-        "bounceActiveBalls": 23,
-        "bounceSettledBalls": 1,
-        "effects": 0,
+        "bounceActiveBalls": 24,
+        "bounceSettledBalls": 0,
+        "bounceFlowActive": true,
+        "bounceInputSpawns": 92,
+        "bounceFlowSpawns": 5,
+        "bounceDeflectorAngles": [
+          2,
+          1
+        ],
+        "bounceSpinnerSpin": 3.1316284904355465,
+        "effects": 3,
         "audioEnabled": false,
         "audioState": "not-created",
         "voices": 0,
@@ -315,24 +384,24 @@
         "diagnosticsEnabled": true,
         "timings": {
           "frameIntervalsMs": {
-            "samples": 634,
+            "samples": 633,
             "p50": 16.699999999999818,
-            "p95": 16.799999999999272,
-            "max": 100.10000000000036,
+            "p95": 16.80000000000001,
+            "max": 66.69999999999891,
             "over50ms": 1
           },
           "updateDrawMs": {
-            "samples": 637,
-            "p50": 0.5,
+            "samples": 634,
+            "p50": 0.5999999940395355,
             "p95": 1,
-            "max": 4.299999982118607,
+            "max": 3.4000000059604645,
             "over50ms": 0
           },
           "inputToRenderMs": {
-            "samples": 600,
-            "p50": 16.299999982118607,
-            "p95": 20.80000001192093,
-            "max": 32.5,
+            "samples": 603,
+            "p50": 16.599999994039536,
+            "p95": 17.599999994039536,
+            "max": 18.400000005960464,
             "over50ms": 0
           }
         }
@@ -341,29 +410,38 @@
     {
       "toy": "bounce",
       "motion": "playful",
-      "workload": "24-ball cap, four synthetic contacts, four recycled spawns every 600ms",
+      "variant": null,
+      "workload": "24-ball cap with passive penguin flow active, four synthetic contacts, four recycled spawns every 600ms just below the shelf",
       "syntheticActiveRafMs": {
-        "samples": 581,
+        "samples": 601,
         "p50": 16.699999999999818,
-        "p95": 16.800000000000182,
-        "max": 33.400000000001455,
+        "p95": 16.700000000000728,
+        "max": 16.80000000000109,
         "over50ms": 0
       },
       "runtime": {
-        "buildId": "v0.1.2-c63c46ea7ceb",
+        "buildId": "v0.1.2-329dc2c8d902",
         "toy": "bounce",
         "paused": true,
         "effectiveMotion": "playful",
         "residentImages": 6,
-        "preparedRasterBytes": 0,
+        "preparedRasterBytes": 104544,
         "pointers": 0,
         "canvasPixels": 1771470,
         "backingScale": 1.5,
         "bounceBalls": 24,
         "bounceBallLimit": 24,
-        "bounceActiveBalls": 22,
-        "bounceSettledBalls": 2,
-        "effects": 19,
+        "bounceActiveBalls": 24,
+        "bounceSettledBalls": 0,
+        "bounceFlowActive": true,
+        "bounceInputSpawns": 92,
+        "bounceFlowSpawns": 9,
+        "bounceDeflectorAngles": [
+          2,
+          1
+        ],
+        "bounceSpinnerSpin": 5.570340561576965,
+        "effects": 22,
         "audioEnabled": false,
         "audioState": "not-created",
         "voices": 0,
@@ -374,24 +452,24 @@
         "diagnosticsEnabled": true,
         "timings": {
           "frameIntervalsMs": {
-            "samples": 622,
+            "samples": 635,
             "p50": 16.699999999999818,
-            "p95": 16.800000000000182,
-            "max": 133.3000000000011,
-            "over50ms": 1
+            "p95": 16.700000000000728,
+            "max": 83.29999999999927,
+            "over50ms": 2
           },
           "updateDrawMs": {
-            "samples": 625,
-            "p50": 0.5999999940395355,
-            "p95": 1.2000000178813934,
-            "max": 5.199999988079071,
+            "samples": 636,
+            "p50": 0.7999999821186066,
+            "p95": 1.199999988079071,
+            "max": 2.9000000059604645,
             "over50ms": 0
           },
           "inputToRenderMs": {
-            "samples": 583,
+            "samples": 603,
             "p50": 16.599999994039536,
-            "p95": 21.69999998807907,
-            "max": 49.400000005960464,
+            "p95": 17.599999994039536,
+            "max": 18.100000023841858,
             "over50ms": 0
           }
         }

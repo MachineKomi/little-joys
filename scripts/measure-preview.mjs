@@ -59,9 +59,10 @@ report.coldStart = {
   note: "Background offline precache (including optional music) measured separately by budget audit. No physical-device startup inference.",
 };
 await cold.close();
-for (const { toy, motion } of [
+for (const { toy, motion, variant } of [
   { toy: "squishy", motion: "gentle" },
   { toy: "squishy", motion: "playful" },
+  { toy: "squishy", motion: "playful", variant: "sling" },
   { toy: "bubbles", motion: "gentle" },
   { toy: "nest", motion: "gentle" },
   { toy: "bounce", motion: "gentle" },
@@ -95,7 +96,7 @@ for (const { toy, motion } of [
     () => document.querySelector("canvas")?.getAttribute("data-art") === "6",
   );
   const frameSummary = await p.evaluate(
-    async ({ toy, seconds }) => {
+    async ({ toy, seconds, variant }) => {
       const canvas = document.querySelector("canvas"),
         r = canvas.getBoundingClientRect(),
         w = r.width,
@@ -142,12 +143,15 @@ for (const { toy, motion } of [
             "pointerdown",
             0,
             0.12 + (i % 8) * 0.105,
-            0.07 + Math.floor(i / 8) * 0.022,
+            // Open board space just below the penguin's shelf.
+            0.2 + Math.floor(i / 8) * 0.02,
           );
-          event("pointerup", 0, 0.12 + (i % 8) * 0.105, 0.07);
+          event("pointerup", 0, 0.12 + (i % 8) * 0.105, 0.2);
         }
       }
-      starts.forEach(([x, y], i) => event("pointerdown", i, x, y));
+      if (variant !== "sling")
+        starts.forEach(([x, y], i) => event("pointerdown", i, x, y));
+      let held = false;
       const intervals = [];
       let previous = 0,
         begin = 0,
@@ -157,6 +161,21 @@ for (const { toy, motion } of [
           begin ||= t;
           if (previous) intervals.push(t - previous);
           previous = t;
+          if (variant === "sling") {
+            // One contact stretches the side for 0.5s, then releases. Each 1.2s
+            // cycle's re-grab can catch the still-travelling friend.
+            const phase = (t - begin) % 1200;
+            if (phase < 500) {
+              if (!held) {
+                event("pointerdown", 0, 0.62, 0.5);
+                held = true;
+              }
+              event("pointermove", 0, 0.62 + (phase / 500) * 0.3, 0.5 + Math.sin((t - begin) / 400) * 0.05);
+            } else if (held) {
+              event("pointerup", 0, 0.92, 0.5);
+              held = false;
+            }
+          } else
           starts.forEach(([x, y], i) =>
             event(
               "pointermove",
@@ -172,7 +191,7 @@ for (const { toy, motion } of [
           if (toy === "bounce" && t - lastSpawn >= 600) {
             starts.forEach(([x, y], i) => {
               event("pointerup", i, x, y);
-              event("pointerdown", i, 0.18 + i * 0.2, 0.08);
+              event("pointerdown", i, 0.18 + i * 0.2, 0.2);
             });
             lastSpawn = t;
           }
@@ -191,11 +210,11 @@ for (const { toy, motion } of [
         over50ms: intervals.filter((v) => v > 50).length,
       };
     },
-    { toy, seconds },
+    { toy, seconds, variant },
   );
   await p.waitForTimeout(350);
   await p.screenshot({
-    path: `${directory}/${toy === "bounce" || toy === "squishy" ? `${toy}-${motion}` : toy}-portrait.png`,
+    path: `${directory}/${variant ? `${toy}-${variant}` : toy === "bounce" || toy === "squishy" ? `${toy}-${motion}` : toy}-portrait.png`,
   });
   await p
     .getByRole("button", { name: "Open parent settings", exact: true })
@@ -209,9 +228,12 @@ for (const { toy, motion } of [
   report.toys.push({
     toy,
     motion,
+    variant: variant ?? null,
     workload:
-      toy === "bounce"
-        ? "24-ball cap, four synthetic contacts, four recycled spawns every 600ms"
+      variant === "sling"
+        ? "Playful sling cycles: one synthetic contact stretches the side for 0.5s then releases, every 1.2s; each re-grab can catch the travelling friend"
+        : toy === "bounce"
+        ? "24-ball cap with passive penguin flow active, four synthetic contacts, four recycled spawns every 600ms just below the shelf"
         : toy === "squishy"
           ? "Four synthetic contacts, doubled drag amplitude (0.24 width / 0.20 height), final release sampled in both motion modes"
           : "Maximum configured objects and four synthetic contacts",

@@ -25,6 +25,15 @@ GRID10 and GRID8 were measured as diagnostic alternatives. GRID8 had median **16
 
 Useful local artifacts: `.local/squish-review-{1,2}/`, `.local/v012-perf-c63c/`, `.local/squish-grid{10,8}-perf.json`, `.local/squish-visual/`, and `.local/v012-update-failure/`. One unchanged Windows WebKit update test previously lost its second page before navigation; three diagnostic samples and a subsequent full run passed, but the underlying page-creation cause remains unexplained. No assertion was waived.
 
+## Fable lane progress (Squishy Friend and Penguin Bounce)
+
+Work continues on `codex/expressive-squish` in the main checkout. Nothing from this lane is deployed; the live build is still v0.1.1. [DELIVERY.md](DELIVERY.md) holds the actual check results for the candidate once complete.
+
+- **Penguin Bounce (LJ-20):** the penguin now stands on a snow shelf at the top of the board and drops balls from a chute. The board adds three bumpers, a pinwheel, two funnel rails, six-colour balls and a denser peg field, with the layout keeping a full ball passage everywhere. Passive flow runs for a 120-second attended window after entry or the last touch, then the board settles and sleeps. The contract change is recorded in [PENGUIN-BOUNCE-SPEC.md](PENGUIN-BOUNCE-SPEC.md).
+- **Squishy Friend (LJ-22):** pulls now depend on the region touched: the curl stretches like a tail, cheeks squish wide, eyes stretch tightly and feet stay stubby. In Playful, a pull slings the whole friend across the board. It squashes against edges, leans and sways, then returns home within 3.6 seconds, and a touch catches it mid-flight. Gentle and reduced motion keep the quiet local return. The contract change is recorded in [EXPRESSIVE-SQUISH-SPEC.md](EXPRESSIVE-SQUISH-SPEC.md).
+- **Shared file touched:** `src/core/runtime.ts` only gains five Bounce-only technical status fields: flow active, input spawns, flow spawns, deflector angles and pinwheel spin. No settings, audio, asset-manifest or parent-panel change was made in this lane.
+- **Integration notes:** the Penguin Bounce picture tile (`public/assets/toy-bounce.png`) still shows the old board. It should be recaptured on the integrated branch with `scripts/capture-assets.mjs`, which also rewrites the shared asset manifest. The Squishy tile and icons are unchanged, because the rest pose is identical. Browser checks in this lane use port 4273 with a separate config, so they never reuse another lane's production server on 4173.
+
 ## Latest owner direction
 
 The current toy interactions remain too shallow. Retain the cute original friend/penguin and the usable Toybox selector; improve the actual response rather than treating attractive sprites as completion. Squishy requests now include stronger independently expressive regions, larger directional recoil/swing and edge bounce, with multiple friends/addition as a possible later experiment. These go beyond the bounded rebound in the unfinished candidate.

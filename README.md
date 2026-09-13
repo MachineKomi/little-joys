@@ -27,15 +27,20 @@ The production harness serves [http://127.0.0.1:4173](http://127.0.0.1:4173) wit
 ## Play and parent controls
 
 - The last selected toy opens immediately; the first visit opens Squishy Friend.
-- Drag different parts of the friend, swipe across bubbles, or pick up and release balls near the bowl. Two balls can be removed independently.
-- In **Penguin Bounce**, tap open board space to add a ball, tap either broad wooden deflector to turn it, and swipe near balls to nudge them. The board settles after play; another tap always works, including when its ball pool is full.
+- Drag different parts of the friend, swipe across bubbles, or pick up and release balls near the bowl. The curl, cheeks, eyes and feet each stretch differently. In Playful, letting go of a pull slings the friend, and touching it catches it wherever it is. Two balls can be removed independently.
+- In **Penguin Bounce**, the penguin drops balls on its own for two minutes after the last touch. Tap open board space to add a ball, or tap the penguin for another from its chute. Tap a broad wooden deflector to turn it, the pinwheel to spin it or a bumper to pulse it, and swipe near balls to nudge them. When the two minutes pass, the board settles and sleeps; another tap always works, including when its ball pool is full.
 - **Pause** freezes play. **Mute** only turns sound off. Both music and effects start silent on every fresh visit until an adult enables them.
 - **Toybox** has four stable picture tiles. Hold the small parent control for two seconds to open settings; keyboard and assistive-technology activation are also supported.
 - Parent settings offer three/six bubbles, one/two nesting balls, drag/tap-to-place, eight/16/24 bouncing balls, Gentle/Playful motion, startup toy, separate sound/music controls, and local technical status. System reduced motion always uses Gentle.
 
 The DOM controls are labelled and keyboard reachable. Canvas toy manipulation is a direct-touch/pointer experience; full nonvisual toy interaction is not claimed.
 
-The v0.1.2 refinement adds much larger local squishes and a short Playful rebound, preserving the original character. A controlled rendered side-pull comparison measured 53px → 121px visible displacement. Bubble variety/response, ball/bowl halo/shadow/occlusion fixes, bounded roll/settle response and a warmer shell remain open. See the [prioritized refinement record](docs/FEEDBACK-AND-REFINEMENTS.md); technical comparison does not establish enjoyment.
+The working branch `codex/expressive-squish` carries an **undeployed** candidate for two toys:
+
+- **Squishy Friend:** much larger local squishes that depend on where the friend is touched. The curl pulls out like a tail, the cheeks squish wide, the eyes stretch and the feet stay stubby. In Playful, letting go slings the whole friend across the board. It squashes against the edges, sways like jelly and comes home within a few seconds, and a touch catches it mid-flight.
+- **Penguin Bounce:** a denser, brighter board. The penguin stands on a snow shelf and keeps dropping balls for two minutes after the last touch. The board adds bumpers, a pinwheel, funnel rails and six ball colours.
+
+Gentle and system reduced motion keep both toys quiet. Bubble Pond and Roll & Nest refinements are in a separate lane. See [delivery evidence](docs/DELIVERY.md) and the [prioritized refinement record](docs/FEEDBACK-AND-REFINEMENTS.md); technical checks do not establish enjoyment.
 
 ## Test
 
@@ -73,7 +78,7 @@ If an existing window still has three toys, open Parents and select **Check for 
 
 ## Architecture and assets
 
-React owns the semantic shell; an imperative Canvas2D runtime owns input and animation. Four tracked pointers, six bubbles, two nesting balls, 24 bouncing balls, 24 short effects, two SFX voices, one streaming music element, six shared sprite images, one visible canvas, and one active animation scheduler are bounded explicitly. DPR is capped at 1.5 and visible backing storage at two million pixels. Squishy Friend uses a 12×12 locally deformed texture mesh, positive-area guards, material-aware pickup and finite release curves. It prepares one 768×768 material surface on scene entry to prevent seams and releases it on disposal; that surface and its temporary readback are included in the raster budget. Settled frames use the original sprite in one draw and stop scheduling animation.
+React owns the semantic shell; an imperative Canvas2D runtime owns input and animation. Four tracked pointers, six bubbles, two nesting balls, 24 bouncing balls, 24 short effects, two SFX voices, one streaming music element, six shared sprite images, one visible canvas, and one active animation scheduler are bounded explicitly. DPR is capped at 1.5 and visible backing storage at two million pixels. Squishy Friend uses an 8×8 locally deformed texture mesh, positive-area guards, material-aware pickup, region-dependent influence and finite release curves. Its Playful whole-body travel, lean, sway and squash are one affine transform, so the mesh draws only while the painted surface is locally deformed. It prepares one 768×768 material surface on scene entry to prevent seams and releases it on disposal; that surface and its temporary readback are included in the raster budget. Penguin Bounce prepares six small tinted ball surfaces (at most 66px square) from one painted ball sprite and releases them on disposal. Settled frames use the original sprite in one draw and stop scheduling animation.
 
 Selected generated originals and sanitized prompts live under `art`, with [image provenance](art/PROVENANCE.md), [sprite prompts](art/SPRITE-PROMPTS.md), and [audio provenance](art/AUDIO-PROVENANCE.md). Only audited derivatives ship under `public`; no generation runs at build time. To reproduce exports, run `node scripts/export-sprites.mjs`, then `node scripts/capture-assets.mjs` with the dev server on port 5173. The latter captures the actual implemented toy scenes for selector tiles/icons and refreshes the asset inventory.
 

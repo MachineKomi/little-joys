@@ -1,24 +1,26 @@
 {
   "date": "2026-09-13",
-  "buildId": "v0.1.2-c63c46ea7ceb",
-  "command": "npm run check",
+  "buildId": "v0.1.2-329dc2c8d902",
+  "lane": "Fable: Squishy Friend and Penguin Bounce on codex/expressive-squish; not deployed",
+  "command": "npm run check:types; npm run test; npm run build; npm run check:assets; npm run check:budgets; npx playwright test with the repository tests/e2e and settings served on port 4273",
   "exitCode": 0,
   "unit": {
-    "files": 12,
-    "passed": 153,
+    "files": 13,
+    "passed": 167,
     "failed": 0
   },
   "browser": {
-    "total": 96,
-    "passed": 89,
+    "total": 98,
+    "passed": 91,
     "failed": 0,
     "skipped": 7,
+    "durationMinutes": 6.1,
     "chromium": {
-      "passed": 48,
+      "passed": 49,
       "failed": 0
     },
     "windowsWebKit": {
-      "passed": 41,
+      "passed": 42,
       "failed": 0,
       "skipped": 7,
       "skipReason": "No native AudioContext in this Windows WebKit build; audio-capability-specific tests unavailable, not passed."
@@ -28,16 +30,13 @@
   "productionBuild": "passed",
   "assetAudit": "passed",
   "budgetAudit": "passed",
-  "npmAudit": {
-    "vulnerabilities": 0
-  },
+  "npmCi": "not re-run: dependencies and lockfile unchanged since the last clean install; required before a release",
+  "npmAudit": "not re-run in this round",
   "physicalIPad": "not tested",
-  "deployment": "See DELIVERY.md and hosted-check.json for separately verified hosted status.",
+  "deployment": "not deployed; the live build remains v0.1.1-50d0640d1f04",
   "notes": [
-    "All four toys covered, including expressive squish, dense 24-ball physics, cancellation and offline operation.",
-    "Fresh native Windows WebKit process per test; no retries within this run. Multi-window and 100-switch scenarios preserve one process throughout each test.",
-    "Offline verification denies the actual same-origin server. Chromium also uses its offline override. Windows WebKit override itself failed separately; documented in PWA-TEST-EVIDENCE.md.",
-    "The first c63c full run had 88 browser passes and one WebKit page-creation failure before second-window navigation. Three unchanged diagnostic T29 samples and this subsequent complete run passed. The unexplained failure and earlier repairs are retained in REVIEW.md; final totals do not relabel those runs.",
-    "Raw logs and Playwright artifacts remain local and excluded from Git."
+    "The browser run used a separate Playwright config on port 4273 with the repository tests and settings, because another lane's production server was already listening on 4173 and the default config reuses an existing server.",
+    "An earlier combined Squishy-only browser run in this round failed one Windows WebKit four-contact reclaim case and reported one error outside any test; its details were lost to log truncation. Isolated reruns and this complete run passed. The cause is not established.",
+    "Fresh native Windows WebKit process per test; no retries. Raw logs and Playwright artifacts remain local and excluded from Git."
   ]
 }

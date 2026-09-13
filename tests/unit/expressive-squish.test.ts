@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { defaults } from "../../src/core/settings";
-import { SquishyScene } from "../../src/toys/squishy/scene";
+import { SquishyScene, silhouetteBounds } from "../../src/toys/squishy/scene";
+import { RESPONSE_LIMIT_SECONDS, type Matrix } from "../../src/toys/squishy/body";
 import {
   MAX_PULL,
   returnAmount,
@@ -223,7 +224,7 @@ describe("v0.1.2 expressive squish requirements", () => {
     expect(scene.update(1 / 60)).toBe(false);
   });
 
-  it("T47/SQ04: Playful crosses rest exactly once, has a small bounded body response, and sleeps", () => {
+  it("T47/SQ04 (amended): a Playful pull slings the whole friend the other way and bounces; the mesh crosses rest once; the silhouette stays inside the inset; everything ends in time", () => {
     const { scene, point, mesh } = fixture("playful");
     scene.pointerDown(point(1, 0.6, 0));
     scene.pointerMove(point(1, 1.7, 0));
@@ -232,11 +233,13 @@ describe("v0.1.2 expressive squish requirements", () => {
     scene.pointerEnd(1);
     let crossings = 0,
       sign = 1,
-      maxBody = 0,
-      minRatio = 0;
+      minRatio = 0,
+      nearestX = 405,
+      seconds = 0;
     const norm = delta(start);
-    for (let frame = 0; frame < 130; frame++) {
-      scene.update(1 / 120);
+    while (scene.update(1 / 120)) {
+      seconds += 1 / 120;
+      expect(seconds).toBeLessThan(RESPONSE_LIMIT_SECONDS);
       const m = mesh();
       expect(validMesh(m)).toBe(true);
       const ratio =
@@ -249,18 +252,24 @@ describe("v0.1.2 expressive squish requirements", () => {
         sign = Math.sign(ratio);
       }
       minRatio = Math.min(minRatio, ratio);
-      maxBody = Math.max(
-        maxBody,
-        Math.hypot(scene.debug().x - 405, scene.debug().y - 486),
-      );
-      expect(inBounds(m, (405 - 24) / 234.9, (486 - 24) / 234.9)).toBe(true);
+      const state = scene.debug();
+      nearestX = Math.min(nearestX, state.x);
+      // The traced painted outline stays inside the 24px inset through
+      // travel, lean, sway and squash.
+      const box = silhouetteBounds(m, state.matrix as Matrix, 234.9);
+      expect(box.minX).toBeGreaterThanOrEqual(24 - 2);
+      expect(box.maxX).toBeLessThanOrEqual(810 - 24 + 2);
+      expect(box.minY).toBeGreaterThanOrEqual(24 - 2);
+      expect(box.maxY).toBeLessThanOrEqual(972 - 24 + 2);
     }
     expect(crossings).toBe(1);
     expect(minRatio).toBeLessThan(-0.03);
     expect(minRatio).toBeGreaterThan(-0.2);
-    expect(maxBody).toBeGreaterThan(3);
-    expect(maxBody).toBeLessThan(24);
+    expect(405 - nearestX).toBeGreaterThan(80);
+    expect(scene.debug().bodyBounces).toBeGreaterThanOrEqual(1);
+    expect(seconds).toBeGreaterThan(1);
     expect([...mesh()]).toEqual([...restMesh]);
+    expect(scene.debug()).toMatchObject({ x: 405, y: 486, bodyMode: "rest" });
     expect(scene.update(1 / 60)).toBe(false);
   });
 
@@ -292,7 +301,10 @@ describe("v0.1.2 expressive squish requirements", () => {
       scene.pointerEnd(2);
       scene.update(1 / 60);
     }
-    for (let n = 0; n < 80; n++) scene.update(1 / 60);
+    // The last release may sling the whole friend; every response still ends in time.
+    let frames = 0;
+    while (scene.update(1 / 60) && frames < 60 * (RESPONSE_LIMIT_SECONDS + 1)) frames++;
+    expect(frames).toBeLessThan(60 * RESPONSE_LIMIT_SECONDS);
     expect(scene.debug().grabs).toBe(0);
     expect(scene.update(1 / 60)).toBe(false);
     expect(delta(mesh())).toBe(0);

@@ -129,3 +129,29 @@ Four review samples across phone, tablet, landscape and both engines recorded fo
 The first complete c63c regression attempt passed 153 units and 88 browser cases, skipped seven unavailable audio cases, and failed one Windows WebKit T29 case at `context.newPage()`. Its trace shows the newly created second page closing before application navigation; the original Penguin Bounce page remained available for the failure snapshot. No update had been attempted. Three subsequent diagnostic executions of the unchanged complete T29 test passed with browser-process logging and no assertion changes or retries. The original log/trace is preserved locally. The underlying page-creation failure is not diagnosed or claimed fixed, and those focused passes do not replace a complete final run. This remains a Windows browser-harness limitation, not evidence of a repaired application update defect.
 
 The subsequent unchanged complete c63c run exited zero: **153 unit passes in 12 files, 89 browser passes (48 Chromium / 41 WebKit), seven explicit native-AudioContext skips, zero failures**, with type/build/asset/budget checks passing. T29's full multi-window update assertions and each engine's 100 scene switches passed in that run. No automatic retry or assertion waiver was configured. A current dependency audit reported zero vulnerabilities. Exact-artifact measurements and hosted verification are separate evidence below in DELIVERY.md.
+
+## Fable lane: richer Penguin Bounce and whole-body Squishy response (not deployed)
+
+This round covers LJ-20 and LJ-22 on `codex/expressive-squish`. The contracts are amended in PENGUIN-BOUNCE-SPEC.md and EXPRESSIVE-SQUISH-SPEC.md. Every defect below was found by a test, a layout sweep or a rendered capture during implementation. Each was repaired before the combined checks recorded in DELIVERY.md.
+
+**Penguin Bounce.**
+
+- **Creeping trough pile.** The unchanged 42-combination settling regression found a full trough pile creeping sideways at about 22 CSS px/s, just under the 24 px/s rest threshold. The funnel rails ended inside the trough's fill height, so the pile wedged against them. The rail tips now end at least 3.2 ball radii above the trough. A felt-floor rule stops slow sideways drift on the floor, and supported balls in the trough lose sideways drift.
+- **Overlapping mechanisms.** A layout probe found the pinwheel's arms overlapping the lower bumper on 1080×702 and passing within a ball width of it on 360×532. Mechanism sizes now follow the available field. A bounded deterministic relaxation keeps a full ball passage between every pair of mechanisms, using the full sweep of anything that turns, as well as rails and walls. A new unit test checks six layouts.
+- **Wedged ball kept the pinwheel spinning.** On the phone board, a ball wedged between the pinwheel and a bumper kept re-energising the wheel, so the board never slept. Once the attended window ends, bumpers now act like pegs and the pinwheel winds down, so every board settles.
+- **Too few pegs on compact boards.** The fixed five/six-column peg grid left only 3 to 4 pegs on landscape and phone boards. Spacing now follows ball size, with a greedy fill that keeps full passages.
+- **Rejected roll-off rule.** A rule rolling a ball off the exact top of another ball knocked down the documented supported vertical stack, so it was removed.
+- **Sparse flow.** Captured boards after seven seconds showed too few balls in flight. Flow is now every 1.0 s in Playful and 1.8 s in Gentle.
+- **Tests for the amended contract.** Browser tests cover passive flow, pause and hidden stops without catch-up, and mechanism, pinwheel, bumper and penguin taps. A fake browser clock steps every frame through the attended window to confirm the dense Playful board sleeps.
+
+**Squishy Friend.**
+
+- **Flat clipped edge.** Symmetric local mesh bounds, combined with a hard clamp, stacked the vertices of a strong side pull into a flat edge at the canvas border. Rendered captures showed it. Bounds are now one-sided per side and exclude the texture's transparent margin, and the last 0.15 radii of room eases exponentially.
+- **Friend stopped short of the wall.** Estimating the body's room from bounding-box corners kept the painted friend about 41 px short of the wall while it leaned. Pixel bounding boxes of fake-clock frames measured this. Room now comes from a 24-point outline traced from the shipped sprite's alpha, which follows the deformed mesh and the pose. The measured friend now reaches the 24 px inset, at 23 px with antialiasing.
+- **Sway into the wall.** At a wall, the jelly sway leaned the top about 4 px past the inset within one frame. The amended scene test caught it. Limits are now re-evaluated from the pose on every fixed step, with a clamp after the pose updates.
+- **Abrupt launch, faint squash.** The first launch crossed the room in about 0.1 s. Pixel measurements showed pokes and wall squash changing the silhouette by only about 5%. Launch gain was lowered and the poke and wall squash strengthened.
+- **Rendered-pixel browser test.** A new browser test drives a Playful sling with a fake clock and measures the painted teal pixels in 75 rendered frames. It asserts every frame stays inside the 24 px inset, that the friend travels opposite the pull and back past home, and that it returns to the exact rest frame.
+
+**Unexplained browser failure.** A combined Squishy browser run failed one Windows WebKit four-contact reclaim case and reported one error outside any test. Its details were lost because that run's log was truncated. Isolated reruns of the same case passed in both engines. The cause is not established, and it is recorded here rather than counted as a pass.
+
+**Not claimed.** An independent review of this round, physical iPad behaviour and player enjoyment remain outside this record.

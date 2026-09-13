@@ -11,8 +11,10 @@ import {
   RETURN_SECONDS,
   returnAmount,
   radiusAt,
+  regionAt,
   restRadius,
   type Grab,
+  type Region,
 } from "./deformation";
 import {
   constrainMesh,
@@ -23,12 +25,63 @@ import {
   surfacePoint,
   targetMesh,
   validMesh,
+  type MeshBounds,
 } from "./mesh";
 import { prepareTexture } from "./texture";
+import {
+  apply,
+  BodyMotion,
+  bodyMatrix,
+  invert,
+  type BodyLimits,
+  type BodyPose,
+  type Matrix,
+} from "./body";
+
+/** A finger on the friend: its material point plus where the finger is now, in view pixels. */
+interface Contact extends Grab {
+  region: Region;
+  fingerX: number;
+  fingerY: number;
+  startX: number;
+  startY: number;
+}
+/** The painted outline of the shipped 768px sprite, traced from its alpha at 24
+ * angles around the centre (rest radii). It follows the mesh and the pose. */
+export const OUTLINE = [
+  [0.856, 0], [0.96, 0.259], [0.966, 0.558], [0.81, 0.81], [0.591, 1.021], [0.259, 0.96],
+  [0, 0.975], [-0.256, 0.957], [-0.588, 1.021], [-0.814, 0.814], [-0.972, 0.561], [-0.966, 0.259],
+  [-0.859, 0], [-0.771, -0.207], [-0.682, -0.393], [-0.555, -0.555], [-0.393, -0.679], [-0.207, -0.771],
+  [0, -0.981], [0.262, -0.981], [0.387, -0.67], [0.548, -0.548], [0.673, -0.39], [0.762, -0.204],
+] as const;
+/** Painted silhouette bounds through a deformed mesh and a body matrix, in the
+ * matrix's output pixels. */
+export function silhouetteBounds(mesh: Float64Array, matrix: Matrix, radius: number) {
+  let minX = Infinity,
+    maxX = -Infinity,
+    minY = Infinity,
+    maxY = -Infinity;
+  for (const [x, y] of OUTLINE) {
+    const surface = surfacePoint(mesh, x, y) ?? { x, y };
+    const p = apply(matrix, surface.x * radius, surface.y * radius);
+    minX = Math.min(minX, p.x);
+    maxX = Math.max(maxX, p.x);
+    minY = Math.min(minY, p.y);
+    maxY = Math.max(maxY, p.y);
+  }
+  return { minX, maxX, minY, maxY };
+}
+/** Pixels kept between the traced outline and the inset, covering the curve between samples. */
+const OUTLINE_MARGIN = 3;
+/** A release with less finger travel and stretch than these (rest radii) is a poke. */
+const POKE_TRAVEL = 0.12,
+  POKE_STRETCH = 0.2;
+const sameMatrix = (a: Matrix, b: Matrix) => a.every((value, i) => value === b[i]);
+
 export class SquishyScene implements ToyScene {
   readonly id = "squishy" as const;
   private view: View = { width: 800, height: 600 };
-  private grabs = new Map<number, Grab>();
+  private grabs = new Map<number, Contact>();
   private radii = Float64Array.from({ length: ANCHORS }, (_, i) =>
     restRadius((i * 2 * Math.PI) / ANCHORS),
   );
@@ -46,13 +99,16 @@ export class SquishyScene implements ToyScene {
   >();
   private returnElapsed: number | null = null;
   private returnMotion: "gentle" | "playful" = "gentle";
-  private recoil = { x: 0, y: 0 };
-  private offset = { x: 0, y: 0 };
-  private returnOffset = { x: 0, y: 0 };
+  /** Whole-body Playful response: travel, edge squash, lean and sway. */
+  private body = new BodyMotion();
+  private matrix: Matrix = [1, 0, 0, 1, 400, 300];
+  private inverse: Matrix = [1, 0, 0, 1, -400, -300];
   private dirty = false;
   private materialTexture?: HTMLCanvasElement;
   private textureAttempted = false;
   private meshMoving = false;
+  /** The traced outline on the current deformed surface, refreshed once per frame. */
+  private outline: { x: number; y: number }[] = OUTLINE.map(([x, y]) => ({ x, y }));
   constructor(
     private services: SceneServices,
     snapshot?: unknown,
@@ -108,46 +164,94 @@ export class SquishyScene implements ToyScene {
     this.cancelAll();
     this.view = view;
     this.radius = Math.min(view.width, view.height) * 0.29;
+    // A new layout starts the body at home; no animation across the change.
+    this.body.reset();
+    this.updateMatrix();
     constrainMesh(this.mesh, this.bounds());
     constrainMesh(this.returnStart, this.bounds());
     constrainMesh(this.baseMesh, this.bounds());
-    this.clampOffset();
+  }
+  private updateMatrix() {
+    this.matrix = bodyMatrix(
+      this.body,
+      this.view.width / 2,
+      this.view.height / 2,
+      this.radius,
+    );
+    this.inverse = invert(this.matrix);
   }
   private center() {
     return {
-      x: this.view.width / 2 + this.offset.x,
-      y: this.view.height / 2 + this.offset.y,
+      x: this.view.width / 2 + this.body.x,
+      y: this.view.height / 2 + this.body.y,
     };
   }
-  private bounds() {
+  /** One-sided local mesh limits for wherever the body is: the whole texture
+   * square stays inside the 24px inset, except that the rest mesh is always
+   * allowed, so a body resting against a wall keeps its transparent margin. */
+  private bounds(): MeshBounds {
+    const r = this.radius,
+      halfWidth = this.view.width / 2 - 24,
+      halfHeight = this.view.height / 2 - 24;
     return {
-      x: Math.max(EXTENT, (this.view.width / 2 - 24) / this.radius),
-      y: Math.max(EXTENT, (this.view.height / 2 - 24) / this.radius),
+      x: EXTENT,
+      y: EXTENT,
+      left: Math.min(-EXTENT, (-halfWidth - this.body.x) / r),
+      right: Math.max(EXTENT, (halfWidth - this.body.x) / r),
+      top: Math.min(-EXTENT, (-halfHeight - this.body.y) / r),
+      bottom: Math.max(EXTENT, (halfHeight - this.body.y) / r),
     };
   }
-  private clampOffset() {
-    const bounds = this.bounds();
+  /** Room for the body centre so the painted silhouette, with its current
+   * deformation, lean, sway and squash, stays inside the 24px inset. */
+  private measureOutline() {
+    this.outline = OUTLINE.map(([x, y]) => surfacePoint(this.mesh, x, y) ?? { x, y });
+  }
+  /** Room for the body centre so the painted silhouette, with its current
+   * deformation, lean, sway and squash, stays inside the 24px inset. */
+  private bodyLimits(body: BodyPose): BodyLimits {
+    const r = this.radius,
+      pose = bodyMatrix({ ...body, x: 0, y: 0 }, 0, 0, r);
     let minX = Infinity,
       maxX = -Infinity,
       minY = Infinity,
       maxY = -Infinity;
-    for (let i = 0; i < this.mesh.length; i += 2) {
-      minX = Math.min(minX, this.mesh[i]);
-      maxX = Math.max(maxX, this.mesh[i]);
-      minY = Math.min(minY, this.mesh[i + 1]);
-      maxY = Math.max(maxY, this.mesh[i + 1]);
+    for (const surface of this.outline) {
+      const p = apply(pose, surface.x * r, surface.y * r);
+      minX = Math.min(minX, p.x);
+      maxX = Math.max(maxX, p.x);
+      minY = Math.min(minY, p.y);
+      maxY = Math.max(maxY, p.y);
     }
-    this.offset.x = Math.max(
-      (-bounds.x - minX) * this.radius,
-      Math.min((bounds.x - maxX) * this.radius, this.offset.x),
-    );
-    this.offset.y = Math.max(
-      (-bounds.y - minY) * this.radius,
-      Math.min((bounds.y - maxY) * this.radius, this.offset.y),
-    );
+    const halfWidth = this.view.width / 2 - 24 - OUTLINE_MARGIN,
+      halfHeight = this.view.height / 2 - 24 - OUTLINE_MARGIN;
+    return {
+      left: -halfWidth - minX,
+      right: halfWidth - maxX,
+      top: -halfHeight - minY,
+      bottom: halfHeight - maxY,
+    };
   }
   private refreshMesh() {
-    const influences = [...this.grabs.values()];
+    const r = this.radius,
+      influences: Grab[] = [];
+    for (const g of this.grabs.values()) {
+      // Each finger is mapped through the current body pose, so a caught,
+      // leaning or squashed friend is pulled exactly where it is touched.
+      const local = apply(this.inverse, g.fingerX, g.fingerY);
+      let dx = local.x / r - g.x,
+        dy = local.y / r - g.y;
+      const length = Math.hypot(dx, dy),
+        reach = g.reach ?? MAX_PULL;
+      if (!Number.isFinite(length)) continue;
+      if (length > reach) {
+        dx *= reach / length;
+        dy *= reach / length;
+      }
+      g.dx = dx;
+      g.dy = dy;
+      influences.push(g);
+    }
     for (const state of this.returning.values()) {
       const amount = returnAmount(state.elapsed, state.motion);
       influences.push({
@@ -163,8 +267,8 @@ export class SquishyScene implements ToyScene {
         ...g,
         x: anchor.x,
         y: anchor.y,
-        dx: g.x + g.dx - this.offset.x / this.radius - anchor.x,
-        dy: g.y + g.dy - this.offset.y / this.radius - anchor.y,
+        dx: g.x + g.dx - anchor.x,
+        dy: g.y + g.dy - anchor.y,
       };
     });
     targetMesh(
@@ -176,36 +280,41 @@ export class SquishyScene implements ToyScene {
     );
     this.mesh.set(this.meshTarget);
     this.dirty = false;
-    this.clampOffset();
   }
-  private beginReturn(grab: Grab | undefined, reason: "up" | "cancel") {
+  private beginReturn(grab: Contact | undefined, reason: "up" | "cancel") {
     this.returnStart.set(this.mesh);
     this.baseMesh.set(this.mesh);
-    this.returnElapsed =
-      this.mesh.some((v, i) => Math.abs(v - restMesh[i]) > 1e-7) ||
-      this.offset.x ||
-      this.offset.y
-        ? 0
-        : null;
+    this.returnElapsed = this.mesh.some(
+      (v, i) => Math.abs(v - restMesh[i]) > 1e-7,
+    )
+      ? 0
+      : null;
     this.returnMotion =
       reason === "up" ? this.services.settings.motion : "gentle";
-    this.returnOffset = { ...this.offset };
-    const playful = grab && reason === "up" && this.returnMotion === "playful";
-    this.recoil = playful
-      ? {
-          x: Math.max(-18, Math.min(18, -grab.dx * 18)),
-          y:
-            -Math.min(36, this.radius * 0.16) *
-            Math.min(1, 0.35 + Math.hypot(grab.dx, grab.dy)),
-        }
-      : { x: 0, y: 0 };
     this.returning.clear();
     this.dirty = false;
+    // Gentle, system reduced motion and every cancellation finish quietly.
+    if (reason !== "up" || this.services.settings.motion !== "playful") {
+      this.body.settle();
+      return;
+    }
+    if (!grab) {
+      this.body.release();
+      return;
+    }
+    const r = this.radius,
+      travel =
+        Math.hypot(grab.fingerX - grab.startX, grab.fingerY - grab.startY) / r,
+      stretch = Math.hypot(grab.dx, grab.dy);
+    // A poke squashes along its own axis; a pull slings the friend the other way.
+    if (travel < POKE_TRAVEL && stretch < POKE_STRETCH)
+      this.body.poke(grab.x, grab.y);
+    else this.body.launch(grab.dx * r, grab.dy * r);
   }
   pointerDown(p: ToyPointer): void {
-    const c = this.center(),
-      x = (p.x - c.x) / this.radius,
-      y = (p.y - c.y) / this.radius;
+    const local = apply(this.inverse, p.x, p.y),
+      x = local.x / this.radius,
+      y = local.y / this.radius;
     const material = materialPoint(this.mesh, x, y);
     const a = (Math.atan2(y, x) + Math.PI * 2) % (Math.PI * 2),
       i = Math.round((a / (Math.PI * 2)) * ANCHORS) % ANCHORS;
@@ -215,6 +324,8 @@ export class SquishyScene implements ToyScene {
       ? 1.45
       : this.radii[i] + 0.035;
     if (
+      Number.isFinite(x) &&
+      Number.isFinite(y) &&
       (Boolean(material) || Math.hypot(x, y) <= hitRadius) &&
       this.grabs.size < 4 &&
       ![...this.grabs.values()].some(
@@ -228,12 +339,23 @@ export class SquishyScene implements ToyScene {
         this.returning.delete(this.returning.keys().next().value!);
       // Keep the existing return as a decaying base. A new local influence is
       // composed over it, so an opposite-side touch cannot discard that pose.
+      const profile = regionAt(anchor.x, anchor.y);
       this.grabs.set(p.id, {
         id: p.id,
-        ...anchor,
-        dx: x + this.offset.x / this.radius - anchor.x,
-        dy: y + this.offset.y / this.radius - anchor.y,
+        x: anchor.x,
+        y: anchor.y,
+        dx: x - anchor.x,
+        dy: y - anchor.y,
+        spread: profile.spread,
+        reach: profile.reach,
+        region: profile.region,
+        fingerX: p.x,
+        fingerY: p.y,
+        startX: p.x,
+        startY: p.y,
       });
+      // Touching the friend catches it wherever it is.
+      this.body.hold();
       this.dirty = true;
       this.services.sound("squishy");
     }
@@ -242,18 +364,9 @@ export class SquishyScene implements ToyScene {
   }
   pointerMove(p: ToyPointer): void {
     const g = this.grabs.get(p.id);
-    if (!g) return;
-    const c = { x: this.view.width / 2, y: this.view.height / 2 };
-    let dx = (p.x - c.x) / this.radius - g.x,
-      dy = (p.y - c.y) / this.radius - g.y;
-    const l = Math.hypot(dx, dy);
-    if (!Number.isFinite(l)) return;
-    if (l > MAX_PULL) {
-      dx *= MAX_PULL / l;
-      dy *= MAX_PULL / l;
-    }
-    g.dx = dx;
-    g.dy = dy;
+    if (!g || !Number.isFinite(p.x) || !Number.isFinite(p.y)) return;
+    g.fingerX = p.x;
+    g.fingerY = p.y;
     this.dirty = true;
   }
   pointerEnd(id: number, reason: "up" | "cancel" = "up"): void {
@@ -287,17 +400,9 @@ export class SquishyScene implements ToyScene {
         this.baseMesh[i] =
           restMesh[i] + (this.returnStart[i] - restMesh[i]) * amount;
       constrainMesh(this.baseMesh, this.bounds());
-      const t = Math.min(
-        1,
-        this.returnElapsed / RETURN_SECONDS[this.returnMotion],
-      );
-      const bounce = Math.sin(Math.PI * t) * (1 - t);
-      this.offset.x = this.returnOffset.x * (1 - t) + this.recoil.x * bounce;
-      this.offset.y = this.returnOffset.y * (1 - t) + this.recoil.y * bounce;
-      if (t === 1) {
+      if (this.returnElapsed >= RETURN_SECONDS[this.returnMotion])
         this.returnElapsed = null;
-        this.offset = { x: 0, y: 0 };
-      } else moving = true;
+      else moving = true;
       this.dirty = true;
     }
     for (const [id, state] of this.returning) {
@@ -305,6 +410,15 @@ export class SquishyScene implements ToyScene {
       if (state.elapsed >= RETURN_SECONDS[state.motion])
         this.returning.delete(id);
       this.dirty = true;
+    }
+    if (this.body.mode !== "rest") {
+      const before = this.matrix;
+      this.measureOutline();
+      const continuing = this.body.step(dt, (pose) => this.bodyLimits(pose));
+      this.updateMatrix();
+      // Held fingers follow the relaxing pose; re-map them this frame.
+      if (this.grabs.size && !sameMatrix(before, this.matrix)) this.dirty = true;
+      if (continuing) moving = true;
     }
     if (this.dirty) this.refreshMesh();
     moving ||= this.returning.size > 0;
@@ -345,33 +459,39 @@ export class SquishyScene implements ToyScene {
   }
   render(ctx: CanvasRenderingContext2D): void {
     const { width: w, height: h } = this.view,
-      c = this.center(),
-      r = this.radius;
+      r = this.radius,
+      m = this.matrix;
     ctx.fillStyle = "#fbf7ef";
     ctx.fillRect(0, 0, w, h);
+    // The floor shadow stays on the ground under the body and shrinks as it rises.
+    const lift = Math.max(0, -this.body.y),
+      shadow = Math.max(0.55, 1 - lift / (r * 2.4));
     ctx.fillStyle = "#eee9df";
     ctx.beginPath();
-    ctx.ellipse(c.x, c.y + r * 1.08, r * 0.77, r * 0.075, 0, 0, Math.PI * 2);
+    ctx.ellipse(
+      w / 2 + this.body.x,
+      h / 2 + r * 1.08 + Math.max(0, this.body.y),
+      r * 0.77 * shadow,
+      r * 0.075 * shadow,
+      0,
+      0,
+      Math.PI * 2,
+    );
     ctx.fill();
     const sprite = this.services.image?.("friend");
+    ctx.save();
+    ctx.transform(m[0], m[1], m[2], m[3], m[4], m[5]);
     if (sprite) {
       if (!this.textureAttempted) {
         this.textureAttempted = true;
         this.materialTexture = prepareTexture(sprite);
       }
+      // Whole-body travel, lean, sway and squash are this one transform; the
+      // triangle mesh is drawn only while the painted surface is deformed.
       if (this.meshMoving)
-        drawMesh(ctx, this.materialTexture ?? sprite, this.mesh, r, c.x, c.y);
-      else
-        ctx.drawImage(
-          sprite,
-          c.x - r * 1.17,
-          c.y - r * 1.17,
-          r * 2.34,
-          r * 2.34,
-        );
+        drawMesh(ctx, this.materialTexture ?? sprite, this.mesh, r, 0, 0);
+      else ctx.drawImage(sprite, -r * 1.17, -r * 1.17, r * 2.34, r * 2.34);
     } else {
-      ctx.save();
-      ctx.translate(c.x, c.y);
       ctx.scale(r, r);
       const points = Array.from(this.radii, (rr, i) => {
         const a = (i * 2 * Math.PI) / ANCHORS;
@@ -430,14 +550,14 @@ export class SquishyScene implements ToyScene {
       ctx.lineWidth = 0.02;
       ctx.lineCap = "round";
       ctx.stroke();
-      ctx.restore();
     }
-    for (const m of this.marks) {
-      ctx.globalAlpha = (m.life / 0.25) * 0.38;
+    ctx.restore();
+    for (const mk of this.marks) {
+      ctx.globalAlpha = (mk.life / 0.25) * 0.38;
       ctx.strokeStyle = "#7aa99d";
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.arc(m.x, m.y, 13, 0, Math.PI * 2);
+      ctx.arc(mk.x, mk.y, 13, 0, Math.PI * 2);
       ctx.stroke();
     }
     ctx.globalAlpha = 1;
@@ -463,11 +583,21 @@ export class SquishyScene implements ToyScene {
       preparedRasterBytes: this.materialTexture
         ? this.materialTexture.width * this.materialTexture.height * 4
         : 0,
+      bodyMode: this.body.mode,
+      bodyBounces: this.body.bounces,
+      bodyPose: {
+        tilt: this.body.tilt,
+        sway: this.body.sway,
+        squash: this.body.squash,
+      },
+      matrix: [...this.matrix],
+      regions: [...this.grabs.values()].map((g) => g.region),
       ...this.center(),
     };
   }
   dispose(): void {
     this.cancelAll();
+    this.body.reset();
     this.marks = [];
     this.face.clear();
     if (this.materialTexture)
