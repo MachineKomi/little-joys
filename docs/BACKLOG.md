@@ -40,7 +40,7 @@ The latest [owner feedback](feedback/BUBBLE-NEST-SECOND-LOOK.md) says the two to
 
 ## How an idea becomes work
 
-**WF-01 — Tailored creative workflow (proposal documented).** The owner requested more experimentation/debate and consideration of Rebirth's BMAD Party Mode, retaining two Builder turns and one Critic report with some flexibility. [Toy Studio](TOY-STUDIO-WORKFLOW.md) and its [packet template](templates/TOY-SPRINT-PACKET.md) capture the adaptation, explicit exception/history rules, privacy, model/ownership boundaries and human feedback loop. No framework installation or new sprint is active; current combined integration remains first.
+**WF-01 — Tailored creative workflow (setup authorized and implemented in the isolated lane).** The owner adopted [Toy Studio](TOY-STUDIO-WORKFLOW.md), retaining two Builder turns and one Critic report with explicit bounded exceptions. [AI_WORKFLOW.md](AI_WORKFLOW.md) documents pinned BMAD setup, the configured roster, Codex/Claude entry points and checks. Current release integration stays with its existing owner; merge tooling at a convenient checkpoint, then install locally in that checkout. No new runtime sprint has started.
 
 Choose one item explicitly, state the visible behavior and its limits, update the implementation contract when needed, and add only the tests or measurements needed to verify that change. Distinguish completed code from checks still pending. Original art and sound must have recorded provenance before shipping.
 

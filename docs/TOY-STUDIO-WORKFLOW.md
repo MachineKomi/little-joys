@@ -1,6 +1,6 @@
 # Little Joys Toy Studio: a tailored BMAD-inspired workflow
 
-**Design proposal, 13 September 2026.** Captures the owner's request for more experimentation, creative debate and a tailored Rebirth workflow. The recommended implementation cycle is **Builder 1 → one independent Critic → Builder 2 → human play feedback**. This document prepares the next workflow; it does not install BMAD, activate agents, start a sprint or supersede the current planning-only pause. Current lanes should finish and integrate as described in [NEXT-PLAY-DESIGN.md](NEXT-PLAY-DESIGN.md).
+**Adopted for future selected work, 13 September 2026.** The owner authorized setup after the proposal. The implementation cycle is **Builder 1 → one independent Critic → Builder 2 → human play feedback**. See [setup and operating instructions](AI_WORKFLOW.md). Setup does not start a sprint or interrupt the current integration/deployment; current lanes should finish and integrate as described in [NEXT-PLAY-DESIGN.md](NEXT-PLAY-DESIGN.md).
 
 ## Why change the process
 
@@ -22,7 +22,7 @@ Retain small relevant casts, substantive disagreement, a bounded experiment, one
 
 ## A small design team, selected for the actual question
 
-These are proposed responsibilities inspired by the reference roster, not claims that named agents have run or a BMAD roster has been installed. Usually select three to six relevant voices. One person/agent may cover compatible lenses if resources are limited; label that honestly.
+These responsibilities are implemented as the tailored BMAD roster described in [AI_WORKFLOW.md](AI_WORKFLOW.md). Configuration verification is not a claim that a Party session has run. Usually select three to six relevant voices. One person/agent may cover compatible lenses if resources are limited; label that honestly.
 
 | Lens | Contribution to a decision |
 |---|---|
@@ -88,6 +88,6 @@ Close a playtest delivery with a small set of concrete prompts in the message it
 
 ## Adoption boundary and next use
 
-This pass delivers a documentation-level adaptation and template. No `_bmad`, `.agents`, `AGENTS.md`, package dependency or automation is installed or changed. If real BMAD activation is later desired, verify supported installation/resolution and actual agent capability inside Little Joys, with private Party memory disabled and sanitized durable records. Do not copy Rebirth's generated framework or history wholesale, or claim this Markdown proposal is a running BMAD installation.
+The subsequent owner-authorized setup installs pinned upstream BMAD locally, tracked team overrides, Codex/Claude entry points and resolver checks; see [AI_WORKFLOW.md](AI_WORKFLOW.md). The setup is isolated from the live integration checkout and must be integrated deliberately. No runtime dependency, automation or new sprint is introduced. Actual independent-agent availability is verified when a session runs; installed configuration alone does not prove a Party session occurred.
 
 The next step remains the combined four-toy playtest. After that, a suitable first Studio question is: **“Which single change makes Bubble Pond worth repeating: richer material response, interacting ripples, or gentle movement?”** Compare that with the recorded [Bounce & Catch](NEXT-PLAY-DESIGN.md) proposal before selecting the next packet. No new toy or sprint is started by this document.

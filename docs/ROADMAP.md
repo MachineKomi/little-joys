@@ -17,7 +17,7 @@ Keep the architecture small: React for the semantic shell, imperative Canvas2D f
 
 ## Release and backup cadence
 
-Workflow proposal: [Toy Studio](TOY-STUDIO-WORKFLOW.md) adds a small, relevant creative team for unresolved play ideas and a bounded two-Builder/one-Critic cycle. Keep the current combined release sequence below; apply the proposed packet to a later selected experiment, rather than restarting completed lanes or retroactively changing review history.
+Adopted workflow: [Toy Studio](TOY-STUDIO-WORKFLOW.md) adds a small creative team and a bounded two-Builder/one-Critic cycle. [Setup](AI_WORKFLOW.md) is implemented in the isolated lane for deliberate integration. Keep the current combined release sequence below; apply the packet to a later selected experiment, rather than restarting completed lanes or retroactively changing review history.
 
 Latest owner instruction is a **design-only pause on further feature work** while the current lanes finish and integrate. [NEXT-PLAY-DESIGN.md](NEXT-PLAY-DESIGN.md) proposes this sequence: one combined versioned playtest build; private voluntary-play observations; cross-review of the opposite toys; then a bounded bubble expansion or Bounce & Catch prototype. A new animal sound toy and reversible toy retirement remain portfolio options after observation. Do not delay the current combined release to implement the entire new brainstorm, or automatically swap ownership/start a fifth toy.
 

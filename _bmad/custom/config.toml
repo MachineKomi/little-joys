@@ -1,0 +1,7 @@
+# Neutral shared identity and private staging for unreviewed generated output.
+[core]
+project_name = "little-joys"
+user_name = "Human"
+communication_language = "English"
+document_output_language = "English"
+output_folder = ".local/toy-studio-output"
