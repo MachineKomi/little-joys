@@ -1,6 +1,6 @@
 # Little Joys backlog
 
-Active Codex lane: LJ-14–LJ-16 and visible build identification are being implemented on `codex/bubble-nest`; see [BN01–BN07](BUBBLE-NEST-REFINEMENT.md). This checkpoint is not a deployment or completion claim. Claude owns the concurrent Squishy Friend / Penguin Bounce lane.
+Codex lane: LJ-14–LJ-16, visible build identification and the parent hold hint are implemented and checked on `codex/bubble-nest`; see [scoped delivery and remaining boundaries](BUBBLE-NEST-DELIVERY.md) and [BN01–BN07](BUBBLE-NEST-REFINEMENT.md). Integration/deployment and human feel remain open. Claude owns the concurrent Squishy Friend / Penguin Bounce lane. Historical row statuses below describe the deployed baseline; the scoped delivery records this newer candidate.
 
 Updated 13 September 2026. Only the current Penguin Bounce patch is approved for implementation here. Future items record owner interests without committing them to a release. [OWNER-DIRECTION.md](OWNER-DIRECTION.md) supplies the design boundaries and [ROADMAP.md](ROADMAP.md) supplies release status.
 

@@ -17,7 +17,7 @@ Keep the architecture small: React for the semantic shell, imperative Canvas2D f
 
 ## Release and backup cadence
 
-The current Codex implementation lane addresses bubbles, nesting and build identification under [BN01–BN07](BUBBLE-NEST-REFINEMENT.md). Claude's friend/bounce work remains separate until reviewed integration. The branch is based on v0.1.1; its digest identifies local candidates, and the stable version is advanced during deliberate integration rather than making competing lanes claim the same release.
+The Codex lane has implemented and checked bubbles, nesting, build identification and the parent hold hint under [BN01–BN07](BUBBLE-NEST-REFINEMENT.md); [scoped delivery](BUBBLE-NEST-DELIVERY.md) records final tests and measurements. Claude's friend/bounce work remains separate until reviewed integration. The branch is based on v0.1.1; its digest identifies local candidates, and the stable version is advanced during deliberate integration rather than making competing lanes claim the same release.
 
 Commit documentation and recoverable checkpoints independently of deployment. Publish a material playtest build only when its code/assets are ready and its stable version increases by at least a patch. The `main` deployment gate compares both conditions against the last successful deployment, so documentation-only backups skip the app build. A version change alone is insufficient. Follow [DEPLOYMENT.md](../DEPLOYMENT.md) for baseline recovery, manual first release, rollback, and verification of the real URL.
 
