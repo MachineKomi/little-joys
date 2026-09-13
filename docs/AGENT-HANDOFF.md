@@ -2,6 +2,8 @@
 
 The owner explicitly reassigned the toys after the latest phone review. This file is the recoverable handoff, not a claim of a completed release.
 
+Incoming session: start with [FABLE-KICKOFF.md](FABLE-KICKOFF.md) and the [consolidated toy feedback](FABLE-TOY-FEEDBACK.md). Those organize existing public feedback and the latest explicit steering; private raw context remains excluded.
+
 | Lane | Working location / branch | Ownership |
 |---|---|---|
 | Incoming Fable/Claude session | Main local checkout; `codex/expressive-squish` | Squishy Friend and Penguin Bounce, their geometry/renderers and scoped tests/specs. |
