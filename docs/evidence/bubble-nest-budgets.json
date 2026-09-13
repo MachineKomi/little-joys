@@ -1,0 +1,151 @@
+{
+  "passed": true,
+  "buildId": "v0.1.1-8f53112d4703",
+  "cacheVersion": "0f602f87ce56d00b3896eda3",
+  "appJavaScriptGzip": 93936,
+  "completeOfflinePayloadBytes": 4495256,
+  "activeAndWaitingPayloadBytes": 8990512,
+  "replacementInstallStagingPayloadBytes": 13485768,
+  "firstInteractionGzipUpperBound": 816711,
+  "allStaticGzipUpperBound": 4268345,
+  "notes": [
+    "First-interaction bound counts every static file except optional /assets/music.mp3, which uses preload=none and loads only through background precaching or an adult enable gesture. Full static and offline totals still include music. Actual startup network trace is reported separately.",
+    "Gzip calculations use level 9; hosting compression depends on negotiation.",
+    "Normal active + waiting payload count is two. A replacement install temporarily stages a third to preserve the last successful waiting update on failure. Abandoned versions are collected at each install; old controlled versions survive until natural activation.",
+    "Canvas pixels, object limits, timing, and physical iPad memory are separate runtime/device checks."
+  ],
+  "files": [
+    {
+      "url": "/assets/asset-manifest.json",
+      "bytes": 6943,
+      "gzip": 1570,
+      "sha256": "09582459d900ea69161aab8dfe2ec5af0a40d18acff608b2e1778e04fd80eb04"
+    },
+    {
+      "url": "/assets/ball-two.webp",
+      "bytes": 38030,
+      "gzip": 38063,
+      "sha256": "c893ab4b23e7729436c907d0a8dcffdac4f15eadaecd1323fd1c9f33fa7bb075"
+    },
+    {
+      "url": "/assets/ball.webp",
+      "bytes": 35950,
+      "gzip": 35983,
+      "sha256": "6754a40ec159130c0033bfb5e51c43ea09bfb59095c598b215a5ae55e5b01f1e"
+    },
+    {
+      "url": "/assets/bowl.webp",
+      "bytes": 26256,
+      "gzip": 26284,
+      "sha256": "22f7c1bef77ef8fec86afdfdd0e626f16360f9389334815feefe72ffdb9e6f4a"
+    },
+    {
+      "url": "/assets/bubble.webp",
+      "bytes": 45896,
+      "gzip": 45929,
+      "sha256": "4b9bd55c4613763fac26d3780c1f679960772326050d84be28f994ebd5d2f9b4"
+    },
+    {
+      "url": "/assets/friend.webp",
+      "bytes": 57338,
+      "gzip": 57222,
+      "sha256": "2bcb5be61ae4afe42052bfafe1b7fdcf143cab6477020c0e3cb2733b4399e811"
+    },
+    {
+      "url": "/assets/index-BKTjcBZe.js",
+      "bytes": 300642,
+      "gzip": 93936,
+      "sha256": "a8c5554c3c8b42af0f8ef769ee615a9d26e35eb476e8e4bbee8d8152a2e2cced"
+    },
+    {
+      "url": "/assets/index-CiELsIZK.css",
+      "bytes": 12344,
+      "gzip": 3603,
+      "sha256": "e6f3a2fa79490dd301afe84bd5a56660a365d5a2bac6292cfdc895dd17d38b2e"
+    },
+    {
+      "url": "/assets/music.mp3",
+      "bytes": 3458184,
+      "gzip": 3451634,
+      "sha256": "599ed6e8ebc1002854c6fe4241f0d60d0d9a552e316a175f89dcf690e8090365"
+    },
+    {
+      "url": "/assets/penguin.webp",
+      "bytes": 27914,
+      "gzip": 27942,
+      "sha256": "972d2c1c28d968ef2644762f543ed53fdf851eb349c5b8b10d1d47cc7ead6e72"
+    },
+    {
+      "url": "/assets/toy-bounce.png",
+      "bytes": 41455,
+      "gzip": 41262,
+      "sha256": "107bb6c5e96ed049e4b702dd34daf31dd61b66b36c88aba4a473419c513d43b9"
+    },
+    {
+      "url": "/assets/toy-bubbles.png",
+      "bytes": 29377,
+      "gzip": 27594,
+      "sha256": "3401c1a0989d42faaeea1b566d1947760012054eff02538078818688796a54dc"
+    },
+    {
+      "url": "/assets/toy-nest.png",
+      "bytes": 67919,
+      "gzip": 67395,
+      "sha256": "664be543668546b7d337c0b353e6648e555f7ca1c9e0f4e14f54af2b7b78ad9e"
+    },
+    {
+      "url": "/assets/toy-squishy.png",
+      "bytes": 57076,
+      "gzip": 56052,
+      "sha256": "e41042256d74f0de0d2f5a69f0e09669afb9a1eb1124a3b2e03bb23d294197e1"
+    },
+    {
+      "url": "/build-label.json",
+      "bytes": 33,
+      "gzip": 53,
+      "sha256": "4475ed7cbd385a0c71a4d5ca0d59470a1f2349bb77eefe54f396eb02cc3d0c36"
+    },
+    {
+      "url": "/icons/apple-touch-icon.png",
+      "bytes": 37192,
+      "gzip": 37225,
+      "sha256": "42095ed52837fafe30016173bef9efeddb99de50fbfdfc8207190037b9dc00c5"
+    },
+    {
+      "url": "/icons/icon-192.png",
+      "bytes": 41570,
+      "gzip": 41567,
+      "sha256": "fbda190575a5d1403471ab67bcf8128405ee7c56abafed1b69485c94915b891c"
+    },
+    {
+      "url": "/icons/icon-512.png",
+      "bytes": 209551,
+      "gzip": 209017,
+      "sha256": "fb776715c83a82a6a7e17333f35aabdff1b171c1bc560e66bf3c20023dd374c6"
+    },
+    {
+      "url": "/index.html",
+      "bytes": 1108,
+      "gzip": 505,
+      "sha256": "6e919f45f5052f7fd933ba3543d8e91f440d301daa5964be8bd044e4165cec2b"
+    },
+    {
+      "url": "/manifest.webmanifest",
+      "bytes": 478,
+      "gzip": 261,
+      "sha256": "81f0384f19a1945c314cad276310ee3d8e78d395d9f8e1559a6f10cf1b32bd45"
+    },
+    {
+      "url": "/precache-manifest.json",
+      "bytes": 3333,
+      "gzip": 1270,
+      "sha256": "83d1f50cd9fdb8233cf947214c980884ce17835c42b64b1b9899d74eba1772bc"
+    },
+    {
+      "url": "/sw.js",
+      "bytes": 10629,
+      "gzip": 4186,
+      "sha256": "76c22bd0ccdc1d26595adf6d4edb0e53f107b37e75aab76ed85e860ed6864c35"
+    }
+  ]
+}

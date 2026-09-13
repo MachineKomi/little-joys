@@ -100,7 +100,9 @@ export function Toolbar({
         }}
       >
         <Icon name="settings" />
-        <span>Parents</span>
+        <span>
+          Parents<small aria-hidden="true">Hold 2s</small>
+        </span>
       </button>
       <span className="sr-only" id="parent-access-hint">
         Hold for two seconds, or activate with a keyboard or assistive

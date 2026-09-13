@@ -26,7 +26,10 @@ function nestFixture(
   settings: Partial<SettingsV1> = {},
   view: View = { width: 810, height: 970 },
 ) {
-  const scene = new NestScene({ settings: { ...defaults, ...settings }, sound: () => {} });
+  const scene = new NestScene({
+    settings: { ...defaults, ...settings },
+    sound: () => {},
+  });
   scene.resize(view);
   return scene;
 }
@@ -49,6 +52,20 @@ function separation(a: { x: number; y: number }, b: { x: number; y: number }) {
 }
 
 describe("Roll & Nest refinement", () => {
+  it("fast coalesced samples retain capped release momentum", () => {
+    const scene = nestFixture({ motion: "playful" });
+    const start = scene.debug().balls[0];
+    scene.pointerDown(pointer(1, start.x, start.y, 0));
+    for (let i = 1; i <= 8; i++)
+      scene.pointerMove(pointer(1, start.x + i * 5, start.y, i * 2));
+    scene.pointerEnd(1, "up");
+    const released = scene.debug().balls[0];
+    expect(released.vx).toBeGreaterThan(0);
+    // Multiplying by the cap ratio may round one ULP above 700 in IEEE754.
+    expect(released.vx).toBeLessThanOrEqual(700 + Number.EPSILON * 700);
+    for (let i = 0; i < 9; i++) scene.update(1 / 60);
+    expect(scene.debug().balls[0].x).toBeGreaterThan(released.x + 20);
+  });
   it("Playful recent release outside bowl keeps moving, rotates, and sleeps within bounds", () => {
     const scene = nestFixture({ motion: "playful", ballCount: 1 });
     const { balls, opening, radius } = scene.debug();
@@ -57,7 +74,7 @@ describe("Roll & Nest refinement", () => {
     scene.pointerDown(pointer(1, start.x, start.y, 0));
     scene.pointerMove(
       pointer(1, opening.x + opening.rx + 40, opening.y + 18, 50),
-      );
+    );
     scene.pointerEnd(1, "up");
 
     let moving = scene.update(1 / 60);
@@ -68,7 +85,10 @@ describe("Roll & Nest refinement", () => {
     expect(state.vy).not.toBe(0);
     expect(moving).toBe(true);
 
-    const moved = { x: Math.abs(state.x - start.x) > 0.01, angle: Math.abs(state.angle - start.angle) > 0.01 };
+    const moved = {
+      x: Math.abs(state.x - start.x) > 0.01,
+      angle: Math.abs(state.angle - start.angle) > 0.01,
+    };
     let slept = !moving;
     let frames = 1;
     let previous = state;
@@ -77,8 +97,7 @@ describe("Roll & Nest refinement", () => {
       state = scene.debug().balls[0];
       if (Math.hypot(state.x - previous.x, state.y - previous.y) > 0.01)
         moved.x = true;
-      if (Math.abs(state.angle - previous.angle) > 1e-6)
-        moved.angle = true;
+      if (Math.abs(state.angle - previous.angle) > 1e-6) moved.angle = true;
       expect(state.x).toBeGreaterThanOrEqual(radius + 24 - 1e-6);
       expect(state.x).toBeLessThanOrEqual(810 - radius - 24 + 1e-6);
       expect(state.y).toBeGreaterThanOrEqual(radius + 24 - 1e-6);
@@ -128,7 +147,9 @@ describe("Roll & Nest refinement", () => {
     const before = { ...released };
     for (let i = 0; i < 12; i++) scene.update(1 / 60);
     const final = scene.debug().balls[0];
-    expect(Math.hypot(final.x - before.x, final.y - before.y)).toBeLessThan(1e-2);
+    expect(Math.hypot(final.x - before.x, final.y - before.y)).toBeLessThan(
+      1e-2,
+    );
   });
 
   it("cancelAll and resize clear ball velocity so no stale rolling remains", () => {
@@ -150,7 +171,9 @@ describe("Roll & Nest refinement", () => {
 
     const afterCancel = scene.debug().balls;
     scene.pointerDown(pointer(2, afterCancel[1].x, afterCancel[1].y, 10));
-    scene.pointerMove(pointer(2, afterCancel[1].x + 320, afterCancel[1].y - 120, 120));
+    scene.pointerMove(
+      pointer(2, afterCancel[1].x + 320, afterCancel[1].y - 120, 120),
+    );
     scene.update(1 / 60);
     expect(Math.abs(scene.debug().balls[1].vx)).toBeGreaterThan(0);
 
@@ -168,7 +191,9 @@ describe("Roll & Nest refinement", () => {
     const ball = balls[0];
 
     scene.pointerDown(pointer(1, ball.x, ball.y, 0));
-    scene.pointerMove(pointer(1, opening.x + opening.rx + 40, opening.y + 180, 120));
+    scene.pointerMove(
+      pointer(1, opening.x + opening.rx + 40, opening.y + 180, 120),
+    );
     scene.pointerEnd(1, "up");
 
     const released = scene.debug().balls[0];
@@ -216,13 +241,21 @@ describe("Bubble Pond refinement", () => {
       { x: 850, y: 240, radius: 34 },
       { x: 560, y: 560, radius: 34 },
     ];
-    const pointers = [{ x: 208, y: 204 }, { x: 560, y: 220 }, { x: 40, y: 90 }];
+    const pointers = [
+      { x: 208, y: 204 },
+      { x: 560, y: 220 },
+      { x: 40, y: 90 },
+    ];
     const first = nextBubblePosition(view, bubbles, 0, 17, pointers);
     const second = nextBubblePosition(view, bubbles, 0, 18, pointers);
     const stable = nextBubblePosition(view, bubbles, 0, 17, pointers);
 
-    expect(Math.hypot(first.x - bubbles[0].x, first.y - bubbles[0].y)).toBeGreaterThan(0);
-    expect(Math.hypot(second.x - bubbles[0].x, second.y - bubbles[0].y)).toBeGreaterThan(0);
+    expect(
+      Math.hypot(first.x - bubbles[0].x, first.y - bubbles[0].y),
+    ).toBeGreaterThan(0);
+    expect(
+      Math.hypot(second.x - bubbles[0].x, second.y - bubbles[0].y),
+    ).toBeGreaterThan(0);
     expect(first).not.toEqual(second);
     expect(stable).toEqual(first);
 
@@ -235,8 +268,12 @@ describe("Bubble Pond refinement", () => {
       );
     }
     for (const p of pointers) {
-      expect(separation(first, p)).toBeGreaterThan(bubbles[0].radius + 16 - 1e-6);
-      expect(separation(second, p)).toBeGreaterThan(bubbles[0].radius + 16 - 1e-6);
+      expect(separation(first, p)).toBeGreaterThan(
+        bubbles[0].radius + 16 - 1e-6,
+      );
+      expect(separation(second, p)).toBeGreaterThan(
+        bubbles[0].radius + 16 - 1e-6,
+      );
     }
   });
 
@@ -245,20 +282,24 @@ describe("Bubble Pond refinement", () => {
     const scene = bubbleFixture({}, undefined, view);
     const original = scene.debug().bubbles[0];
 
-    scene.pointerDown(pointer(1, original.x - original.radius - 28, original.y, 0));
-    scene.pointerMove(pointer(1, original.x + original.radius + 28, original.y, 20));
+    scene.pointerDown(pointer(1, original.x, original.y, 0));
+    expect(scene.debug().bubbles[0].state).toBe("poppedWaiting");
     scene.pointerEnd(1);
 
     for (let i = 0; i < 80; i++) {
       scene.update(0.05);
     }
     expect(scene.debug().bubbles[0].state).toBe("ready");
+    const returned = scene.debug().bubbles[0];
+    expect(separation(returned, original)).toBeGreaterThan(20);
 
     const restored = bubbleFixture({}, scene.snapshot());
     const restoredState = restored.debug();
     expect(restoredState.bubbles).toHaveLength(3);
     expect(restoredState.contacts).toBe(0);
     expect(restoredState.bubbles[0].state).toBe("ready");
+    expect(restoredState.bubbles[0].x).toBeCloseTo(returned.x);
+    expect(restoredState.bubbles[0].y).toBeCloseTo(returned.y);
 
     for (const bubble of restoredState.bubbles) {
       expect(bubble.x - bubble.radius).toBeGreaterThanOrEqual(24);

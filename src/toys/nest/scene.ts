@@ -189,7 +189,7 @@ export class NestScene implements ToyScene {
     const elapsed = (p.timeMs - ball.lastMoveTime) / 1000;
     ball.angle =
       (ball.angle + (ball.x - oldX) / this.layout.radius) % (Math.PI * 2);
-    if (Number.isFinite(elapsed) && elapsed >= 0.004 && elapsed <= 0.15) {
+    if (Number.isFinite(elapsed) && elapsed > 0 && elapsed <= 0.15) {
       const vx = (ball.x - oldX) / elapsed,
         vy = (ball.y - oldY) / elapsed;
       const scale = Math.min(1, 700 / Math.max(1, Math.hypot(vx, vy)));

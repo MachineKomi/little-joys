@@ -16,6 +16,8 @@ Owner assignment, 13 September 2026: Codex owns these two toys and the visible b
 
 BN02 explicitly replaces the old fixed-position bubble-return implementation suggestion. BN04 permits finite release momentum in Playful while keeping N03's generous release-only bowl acceptance and the existing quiet Gentle path. Existing privacy, silent defaults, bounded optional audio, input ownership and deployment requirements remain normative. No budget ceiling is relaxed.
 
+BN06 also includes a visible `Hold 2s` sublabel beneath Parents. The owner reported that control appeared nonfunctional; its existing hold gesture and keyboard/assistive alternative remain unchanged. This small discoverability repair makes the existing motion/audio options easier to find; broader logo/header art work remains separate.
+
 ## Architecture and work split
 
 Primary agent owns design, bubble scene/placement, nesting scene/occlusion integration, visual review and final release evidence. Requested Spark delegation, when account/tool access permits, handles small isolated tasks such as build-label markup, pure bounded physics helpers and tests under explicit file ownership. Every result is reviewed; a model selection or tool attempt is not proof of access or separate billing.
