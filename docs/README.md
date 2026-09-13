@@ -10,7 +10,7 @@ The current work is split between toy lanes: see [AGENT-HANDOFF.md](AGENT-HANDOF
 
 ## Start here
 
-Proposed creative workflow: [Little Joys Toy Studio](TOY-STUDIO-WORKFLOW.md) adapts Rebirth's design debate and **Builder 1 → one independent Critic → Builder 2** cycle; the [sprint packet template](templates/TOY-SPRINT-PACKET.md) makes handoffs recoverable. Documentation only: no BMAD installation or new sprint has started.
+Adopted creative workflow: [Little Joys Toy Studio](TOY-STUDIO-WORKFLOW.md) uses **Builder 1 → one independent Critic → Builder 2**; the [sprint packet template](templates/TOY-SPRINT-PACKET.md) makes handoffs recoverable. [Setup and operating instructions](AI_WORKFLOW.md) cover the verified BMAD roster and Codex/Claude entry points. Setup is isolated pending integration; no new sprint has started.
 
 Current Bubble Pond / Roll & Nest lane: [refinement contract and ownership](BUBBLE-NEST-REFINEMENT.md), including the visible build label, and [scoped delivery / integration instructions](BUBBLE-NEST-DELIVERY.md). Track source, automated evidence and deployment separately.
 

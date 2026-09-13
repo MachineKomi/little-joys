@@ -10,3 +10,13 @@ docs/*transcript*
 docs/Little-Joys-Complete-Build-Pack.md
 private/
 *.log
+
+# Reinstallable BMAD tooling; only project-owned overrides/skills are backed up.
+/_bmad/*
+!/_bmad/custom/
+/_bmad/custom/*.user.toml
+/.agents/skills/bmad-*/
+/.claude/skills/bmad-*/
+/.tools/
+__pycache__/
+*.pyc
