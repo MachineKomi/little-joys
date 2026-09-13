@@ -329,6 +329,7 @@ test("T31/T33/T34: complete toy switching stays same-origin with neutral product
   for (const [name, id] of [
     ["Bubble Pond", "bubbles"],
     ["Roll & Nest", "nest"],
+    ["Penguin Bounce", "bounce"],
     ["Squishy Friend", "squishy"],
   ]) {
     await choose(page, name);
@@ -370,7 +371,7 @@ test("T33: delayed sprite completion cannot replace the selected toy", async ({
     await page.goto(baseURL!, { waitUntil: "domcontentloaded" });
     await expect(page.locator("canvas")).toHaveAttribute("data-toy", "squishy");
     await expect.poll(() => requested).toBe(true);
-    for (const name of ["Bubble Pond", "Squishy Friend", "Roll & Nest"])
+    for (const name of ["Bubble Pond", "Penguin Bounce", "Squishy Friend", "Roll & Nest"])
       await choose(page, name);
     await expect(page.locator("canvas")).toHaveAttribute("data-toy", "nest");
     unblock();

@@ -54,7 +54,13 @@ for (const view of [
       contentType: "image/png",
     });
     await page.getByRole("button", { name: "Toybox", exact: true }).click();
-    await expect(page.locator(".toy-tile")).toHaveCount(3);
+    await expect(page.locator(".toy-tile")).toHaveCount(4);
+    await expect(page.locator(".toy-tile")).toHaveText([
+      "Squishy Friend",
+      "Bubble Pond",
+      "Roll & Nest",
+      "Penguin Bounce",
+    ]);
     const tiles = await page.locator(".toy-tile").evaluateAll((elements) =>
       elements.map((el) => {
         const r = el.getBoundingClientRect();
@@ -133,8 +139,8 @@ test("T26: parent keyboard alternative has visible focus and every form control 
         const field = element as HTMLInputElement;
         return Boolean(
           field.labels?.length ||
-            element.getAttribute("aria-label") ||
-            element.getAttribute("aria-labelledby"),
+          element.getAttribute("aria-label") ||
+          element.getAttribute("aria-labelledby"),
         );
       }),
     );

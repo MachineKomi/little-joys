@@ -7,6 +7,7 @@ import { Diagnostics } from "./diagnostics";
 import { SquishyScene } from "../toys/squishy/scene";
 import { BubbleScene } from "../toys/bubbles/scene";
 import { NestScene } from "../toys/nest/scene";
+import { BounceScene } from "../toys/bounce/scene";
 import { AssetStore, type ArtKey } from "./assets";
 export class Runtime {
   private scene: ToyScene;
@@ -64,6 +65,8 @@ export class Runtime {
     if (toy === "bubbles")
       return new BubbleScene(services, this.snapshots.get(toy));
     if (toy === "nest") return new NestScene(services, this.snapshots.get(toy));
+    if (toy === "bounce")
+      return new BounceScene(services, this.snapshots.get(toy));
     return new SquishyScene(services, this.snapshots.get("squishy"));
   }
   private point(e: PointerEvent): ToyPointer {
@@ -279,6 +282,12 @@ export class Runtime {
       backingScale: backingScale(this.view, window.devicePixelRatio),
       effectiveBubbleCount: debug.effectiveBubbleCount,
       bubbleLayoutLimited: debug.bubbleLayoutLimited,
+      bounceBalls: this.scene.id === "bounce" ? debug.balls : undefined,
+      bounceBallLimit: this.scene.id === "bounce" ? debug.cap : undefined,
+      bounceActiveBalls:
+        this.scene.id === "bounce" ? debug.activeBalls : undefined,
+      bounceSettledBalls:
+        this.scene.id === "bounce" ? debug.settledBalls : undefined,
       effects: debug.effects,
       ...this.audio.status(),
       ...this.music.status(),

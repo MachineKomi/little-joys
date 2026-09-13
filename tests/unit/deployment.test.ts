@@ -114,7 +114,7 @@ describe("shared material-input fingerprint", () => {
     for (const path of ["src/main.ts", "public/assets/friend.webp", "tsconfig.json", "vercel.json", "scripts/build-sw.mjs", "scripts/deployment-inputs.mjs"]) {
       const entries = fixture();
       const before = materialFingerprint(entries);
-      entries.set(path, Buffer.from("material change"));
+      entries.set(path, Buffer.from(path === "vercel.json" ? '{"buildCommand":"material change"}' : "material change"));
       expect(materialFingerprint(entries)).not.toBe(before);
     }
   });
@@ -123,6 +123,19 @@ describe("shared material-input fingerprint", () => {
     const before = materialFingerprint(entries);
     entries.set("src/main.ts", Buffer.from(entries.get("src/main.ts")!.toString().replace(/\n/g, "\r\n")));
     expect(materialFingerprint(new Map([...entries].reverse()))).toBe(before);
+  });
+  it("matches Vercel compact configuration serialization while retaining semantic changes", () => {
+    const entries = fixture();
+    const config = { framework: null, buildCommand: "npm run build", headers: [{ source: "/(.*)", headers: [{ key: "X-Content-Type-Options", value: "nosniff" }] }] };
+    entries.set("vercel.json", Buffer.from(JSON.stringify(config, null, 2) + "\n"));
+    const before = materialFingerprint(entries);
+    entries.set("vercel.json", Buffer.from(JSON.stringify(config) + "\n"));
+    expect(materialFingerprint(entries)).toBe(before);
+    entries.set("vercel.json", Buffer.from(JSON.stringify({ headers: config.headers, buildCommand: config.buildCommand, framework: config.framework })));
+    expect(materialFingerprint(entries)).toBe(before);
+    config.headers[0].headers[0].value = "different";
+    entries.set("vercel.json", Buffer.from(JSON.stringify(config)));
+    expect(materialFingerprint(entries)).not.toBe(before);
   });
   it("prefixes deterministic build identity with the actual app version", () => {
     const root = directory();
@@ -139,6 +152,12 @@ describe("shared material-input fingerprint", () => {
 });
 
 describe("real Git history and fail-closed Vercel launcher", () => {
+  it("retains the Git metadata required before Vercel runs the gate", () => {
+    const ignored = readFileSync(resolve(".vercelignore"), "utf8").split(/\r?\n/).map(line => line.trim()).filter(line => line && !line.startsWith("#"));
+    expect(ignored).not.toContain(".git");
+    expect(ignored).not.toContain(".git/");
+    expect(JSON.parse(readFileSync(resolve("vercel.json"), "utf8")).outputDirectory).toBe("dist");
+  });
   it("fetches only the missing successful SHA from shallow history and skips an unavailable origin", () => {
     const source = directory();
     const git = (cwd: string, ...args: string[]) => execFileSync("git", args, { cwd, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] }).trim();

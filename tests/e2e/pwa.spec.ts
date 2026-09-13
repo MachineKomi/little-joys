@@ -98,6 +98,9 @@ test("T28, T31: verified production cache runs every toy and settings offline un
       .getByRole("combobox", { name: "Motion", exact: true })
       .selectOption("playful");
     await page
+      .getByRole("combobox", { name: "Bouncing balls", exact: true })
+      .selectOption("24");
+    await page
       .getByRole("button", { name: "Back to the toy", exact: true })
       .click();
     // Preserve the first offline navigation: the initial page is still uncontrolled.
@@ -115,7 +118,10 @@ test("T28, T31: verified production cache runs every toy and settings offline un
     const offlineNavigation = await page.reload();
     expect(offlineNavigation?.fromServiceWorker()).toBe(true);
     await expect(page.getByTestId("play-canvas")).toBeVisible();
-    await expect(page.getByTestId("play-canvas")).toHaveAttribute("data-art", "5");
+    await expect(page.getByTestId("play-canvas")).toHaveAttribute(
+      "data-art",
+      "6",
+    );
     const offlineMedia = await page.evaluate(async () => {
       const response = await fetch("/assets/music.mp3", {
         headers: { Range: "bytes=0-31" },
@@ -129,7 +135,12 @@ test("T28, T31: verified production cache runs every toy and settings offline un
     expect(offlineMedia.status).toBe(206);
     expect(offlineMedia.bytes).toBe(32);
     expect(offlineMedia.contentRange).toMatch(/^bytes 0-31\/\d+$/);
-    for (const toy of ["Squishy Friend", "Bubble Pond", "Roll & Nest"]) {
+    for (const toy of [
+      "Squishy Friend",
+      "Bubble Pond",
+      "Roll & Nest",
+      "Penguin Bounce",
+    ]) {
       await page.getByRole("button", { name: "Toybox", exact: true }).click();
       await page.getByRole("button", { name: toy, exact: true }).click();
       await expect(
@@ -146,6 +157,9 @@ test("T28, T31: verified production cache runs every toy and settings offline un
     await expect(
       page.getByRole("combobox", { name: "Motion", exact: true }),
     ).toHaveValue("playful");
+    await expect(
+      page.getByRole("combobox", { name: "Bouncing balls", exact: true }),
+    ).toHaveValue("24");
     expect(errors).toEqual([]);
     expect(
       await page.evaluate(
@@ -342,6 +356,10 @@ test("T29: failed update preserves old version; successful update waits for ever
       .poll(async () => (await workerStatus(first))?.ready)
       .toBe(true);
     await first.reload();
+    await first.getByRole("button", { name: "Toybox", exact: true }).click();
+    await first
+      .getByRole("button", { name: "Penguin Bounce", exact: true })
+      .click();
     const second = await context.newPage();
     await second.goto(url);
     serving = "b";
@@ -371,6 +389,10 @@ test("T29: failed update preserves old version; successful update waits for ever
       "a",
     );
     await first.getByTestId("play-canvas").click();
+    await expect(first.getByTestId("play-canvas")).toHaveAttribute(
+      "data-toy",
+      "bounce",
+    );
     serving = "c";
     failInstall = false;
     await first.evaluate(async () => {
@@ -435,6 +457,14 @@ test("T29: failed update preserves old version; successful update waits for ever
       reopened.locator('meta[name="fixture-version"]'),
     ).toHaveAttribute("content", "d");
     await expect(reopened.getByTestId("play-canvas")).toBeVisible();
+    await expect(reopened.getByTestId("play-canvas")).toHaveAttribute(
+      "data-art",
+      "6",
+    );
+    await expect(reopened.getByTestId("play-canvas")).toHaveAttribute(
+      "data-toy",
+      "bounce",
+    );
     await reopened.close();
   } finally {
     if (server)

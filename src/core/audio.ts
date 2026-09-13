@@ -44,7 +44,12 @@ export class AudioService {
     const voice = { oscillator, gain };
     this.voices.add(voice);
     oscillator.type = "sine";
-    oscillator.frequency.value = { squishy: 240, bubbles: 440, nest: 320 }[toy];
+    oscillator.frequency.value = {
+      squishy: 240,
+      bubbles: 440,
+      nest: 320,
+      bounce: 360,
+    }[toy];
     gain.gain.setValueAtTime(0, c.currentTime);
     gain.gain.linearRampToValueAtTime(
       Math.min(0.3, Math.max(0, this.gain)),

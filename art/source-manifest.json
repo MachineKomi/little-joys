@@ -78,6 +78,22 @@
       "sourceHeight": 1254,
       "sourceHasAlpha": true,
       "sourceSha256": "3ad54e52bf189d2dd9fb48d1891a6b54a39f7d8ec038d97fed8ad3b99816c28c"
+    },
+    {
+      "source": "penguin-source-v1.png",
+      "output": "penguin",
+      "width": 512,
+      "height": 512,
+      "webp": {
+        "quality": 84,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "sourceBytes": 1075204,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "sourceHasAlpha": true,
+      "sourceSha256": "63e3713dc103341face267e004779bd6a9e4cd3c372b35c5285a21bb62ac7b14"
     }
   ]
 }

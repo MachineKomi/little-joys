@@ -308,9 +308,12 @@ button svg {
 .toybox-dialog .dialog-body {
   padding: 24px;
 }
+.toybox-dialog {
+  width: min(680px, calc(100vw - 40px));
+}
 .toy-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
 .toy-tile {
@@ -413,6 +416,34 @@ button svg {
 .preview-nest {
   position: relative;
   background: #f5eee2;
+}
+.preview-bounce {
+  position: relative;
+  gap: 14%;
+  background: #ecf1e7;
+}
+.preview-bounce i {
+  width: 19%;
+  aspect-ratio: 1;
+  border: 2px solid #9289ab;
+  border-radius: 50%;
+  background: #c4bada;
+  align-self: flex-start;
+  margin-top: 18%;
+}
+.preview-bounce i + i {
+  margin-top: 32%;
+  background: #a9cbbd;
+  border-color: #6b9c8c;
+}
+.preview-bounce b {
+  position: absolute;
+  bottom: 14%;
+  width: 73%;
+  height: 10%;
+  border-radius: 12px;
+  background: #e2b88a;
+  transform: rotate(-12deg);
 }
 .preview-nest i {
   position: absolute;
@@ -787,6 +818,12 @@ button svg {
   }
 }
 @media (max-height: 500px) and (min-width: 591px) {
+  .toy-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .toy-tile > span {
+    font-size: 13px;
+  }
   .toolbar {
     padding-top: 9px;
     padding-bottom: 9px;

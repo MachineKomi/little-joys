@@ -38,3 +38,22 @@ Exact sanitized prompt:
 > Use case: stylized-concept. Asset type: finished transparent game character sprite for Little Joys. Use the attached original Little Joys concept as character identity reference. Repaint the single teal squishy creature as a premium hand-painted storybook game sprite: affectionate wide-set dark oval eyes with creamy highlights, apricot soft cheeks, small content curved smile, adorable plump pear/jelly silhouette with a tiny integrated curl on the crown. Broad light and colour masses, beautiful authored material shading, soft squashy translucent-gumdrop feel, rich mint-to-teal volume, clean locally coloured dark contours. Make eyes a little larger and particularly endearing. Keep all face features comfortably inset so the whole texture can be locally warped by fingers. No separate limbs, no toes sticking out, no props or clothing, no ground shadow, no scenery, no text, no framing. Strong readable silhouette and lovely polished rendering; avoid vector-flat shapes, generic airbrush or shiny plastic toy photography, tiny speckle texture, excessive glints. True transparent RGBA background around the isolated character, not a checkerboard or white background. Front-facing, square canvas, whole silhouette visible with 12% transparent padding all sides. Maintain neutral content expression. No likeness to any existing franchise character.
 
 Visual review: the result retains small toe lobes despite the prompt; they are accepted for this preview and included in the forgiving pickup envelope. Local texture warping was inspected in the actual game. Alpha is real, not a painted background. Production exports are independently budgeted and hashed in the asset manifest.
+
+## Penguin Bounce mascot — 13 September 2026
+
+- Stable ID: `penguin`.
+- Source: `art/reference/penguin-source-v1.png`, 1254 × 1254 RGBA PNG, 1,075,204 bytes, SHA-256 `63e3713dc103341face267e004779bd6a9e4cd3c372b35c5285a21bb62ac7b14`.
+- Runtime derivative: `public/assets/penguin.webp`, 512 × 512 RGBA WebP, 27,914 bytes, SHA-256 `972d2c1c28d968ef2644762f543ed53fdf851eb349c5b8b10d1d47cc7ead6e72`. Its RGBA allocation estimate is 1,048,576 bytes; this is not a browser-memory measurement.
+- Generation: one built-in OpenAI `image_gen__imagegen` new-image call with no image references. The exact neutral product prompt is preserved in `art/SPRITE-PROMPTS.md`. No account information, personal context, external character reference, or third-party asset was supplied.
+- Model reporting: the tool request/response exposes no selectable backend model identifier. The source C2PA metadata separately labels its software agent `gpt-image`, version `2.0`; this is recorded as embedded provenance, not an inferred API model alias or a claim of access to any other model version.
+- Selection: owner-approved original artwork for the fourth toy. The mascot is scenery or a visual badge; interactive geometry remains procedural.
+
+### Export and metadata inspection
+
+Export recipe: load the source PNG with Sharp; apply no crop; resize to 512 × 512 with `fit: "contain"` and transparent background `{ r: 0, g: 0, b: 0, alpha: 0 }`; encode WebP with `{ quality: 84, alphaQuality: 100, effort: 6 }`. Keep the default metadata-stripping behavior. The recipe is also in `art/source-manifest.json`. This export is deterministic image processing and makes no generation or network request.
+
+PNG chunk inspection found image data plus a C2PA manifest. Readable manifest fields contain provider attribution, content credentials, asset identifiers, certificate data, and timestamps. No account-name, contact, credential, or local-path field was found. The source has no EXIF, XMP, IPTC, or ICC payload. Its original C2PA attribution is preserved in the art source. The derivative contains genuine alpha and no EXIF, XMP, IPTC, or ICC payload; source provenance stays outside the runtime asset.
+
+### Visual review
+
+The original and 512-pixel derivative were inspected. The penguin has a complete rounded deep-teal plush silhouette, cream face and belly, coral beak and feet, two small wings, readable dark eyes, and comfortable transparent padding. Its soft material shading is consistent with the existing painted toy art. No words, watermark, extra character, scenery, or ground shadow is visible. Most interior alpha values are 252 or 253 as generated; the export retains them. Final rendering on the procedural board is reviewed during integration. No observed player preference or enjoyment is claimed by this selection.

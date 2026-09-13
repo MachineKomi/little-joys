@@ -33,3 +33,18 @@ Use case: stylized-concept. Asset type: one original transparent soap-bubble spr
 Rejected edit prompt (used initial bubble draft as edit input):
 
 Edit this bubble sprite only. Preserve its centered circular outer silhouette, calm mint teal/lilac/apricot colour family, broad upper-left cream curved reflection and transparent backdrop. Correct it to read unmistakably as a delicate soap bubble: reduce the thick coloured border to a narrow, clean iridescent rim about 6 percent of the bubble diameter. Remove the doughnut/torus look. The circular interior must have a very faint, uniformly smooth transparent film with no cut-out-looking jagged hole or opaque fill. Keep a soft visible crescent near the outer edge only. Make the outer edge a smooth clean circle with crisp antialiasing. Remove every scattered fleck, jagged halo, sparkle, noise or stray mark outside and inside the circle. No added subjects, shadows, text, face or backdrop. Genuine transparent alpha background, transparent softly tinted interior, no white rectangle, no painted checkerboard. Premium storybook illustration suitable for a clear touch target.
+
+## Penguin Bounce mascot — `art/reference/penguin-source-v1.png`
+
+Generated on 2026-09-13 with the built-in OpenAI `image_gen__imagegen` tool, in one new-image call without reference images. Exact neutral product prompt:
+
+Use case: stylized-concept
+Asset type: original isolated mascot sprite for Little Joys, a small touchscreen software toy.
+Primary request: one welcoming, very rounded penguin, shown full body in a gentle front three-quarter pose, suitable as a small scenery or bumper badge on a procedural bouncing board.
+Subject: a compact pear-shaped navy-teal penguin with a soft cream face and belly, two tiny coral-orange feet, a tiny rounded coral beak, kind dark eyes with restrained highlights, and two small wings. Keep the silhouette simple and the face clearly readable at a small display size.
+Style/medium: polished hand-painted toy illustration with softly modeled volume, subtle plush texture, rounded glossy highlights and gentle material shading; warm, tactile, beautiful, calm. A coherent palette of deep desaturated teal, cream, mint highlights and small coral accents.
+Composition/framing: a single centered character, all wings and feet visible, comfortable transparent padding on all sides, square image; no cropping. A stable grounded pose, subtle asymmetry, neutral friendly expression.
+Scene/backdrop: genuinely transparent background with a clean alpha channel. No floor, scenery, cast shadow, panel, badge outline or background color.
+Constraints: original character design, no reference to existing characters or franchises. No letters, words, numbers, logo, watermark, props, costumes, hats, confetti or extra characters. Preserve an uncluttered edge silhouette and real background transparency.
+
+The owner approved this original sprite for integration. The full transparent padding is retained for this mascot; no crop is applied. Generation details, metadata inspection, hashes, and the exact 512-pixel export recipe are recorded in `art/PROVENANCE.md` and `art/source-manifest.json`.

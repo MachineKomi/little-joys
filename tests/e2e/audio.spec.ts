@@ -86,7 +86,11 @@ async function stopped(page: Page) {
 
 test('T01/T21: fresh and explicitly muted return visits never create sound services through play', async ({ page }) => {
   await launch(page);
-  await page.getByTestId('play-canvas').click();
+  for (const toy of ['Squishy Friend', 'Bubble Pond', 'Roll & Nest', 'Penguin Bounce']) {
+    await page.getByRole('button', { name: 'Toybox', exact: true }).click();
+    await page.getByRole('button', { name: toy, exact: true }).click();
+    await page.getByTestId('play-canvas').click();
+  }
   expect(await snapshot(page)).toMatchObject({ elements: 0, contexts: 0, sources: 0, starts: [] });
   await parents(page);
   await expect(page.getByRole('switch', { name: 'Toy sounds', exact: true })).toHaveAttribute('aria-checked', 'false');
@@ -114,8 +118,12 @@ test('T22: optional music streams through one bounded gain without enabling SFX 
   await expect(page.getByRole('switch', { name: 'Toy sounds', exact: true })).toHaveAttribute('aria-checked', 'false');
 });
 
-test('T22/T23: SFX share the context, respect voice/rate/gain caps, and do not queue across pause', async ({ page }) => {
-  await launch(page); await requireAudio(page); await enableMusic(page);
+for (const toy of ['Squishy Friend', 'Penguin Bounce'])
+test(`T22/T23/T42: ${toy} SFX share the context, respect voice/rate/gain caps, and do not queue across pause`, async ({ page }) => {
+  await launch(page);
+  await page.getByRole('button', { name: 'Toybox', exact: true }).click();
+  await page.getByRole('button', { name: toy, exact: true }).click();
+  await requireAudio(page); await enableMusic(page);
   await page.getByRole('switch', { name: 'Toy sounds', exact: true }).click();
   await expect(page.getByRole('switch', { name: 'Toy sounds', exact: true })).toHaveAttribute('aria-checked', 'true');
   await page.getByRole('slider', { name: /Sound effect level/ }).press('End');
@@ -136,7 +144,12 @@ test('T22/T23: SFX share the context, respect voice/rate/gain caps, and do not q
   await page.getByRole('button', { name: 'Pause play', exact: true }).click(); await stopped(page);
   const beforeResume = (await snapshot(page)).starts.length;
   await page.getByRole('button', { name: 'Resume play', exact: true }).click(); await playing(page);
-  expect((await snapshot(page)).starts.length).toBe(beforeResume);
+  if (toy === 'Squishy Friend') expect((await snapshot(page)).starts.length).toBe(beforeResume);
+  else {
+    // Moving balls may make a new collision after resume, but old contacts do
+    // not replay as a burst. The shared rate/voice assertions above still apply.
+    expect((await snapshot(page)).starts.length - beforeResume).toBeLessThanOrEqual(1);
+  }
 });
 
 for (const reason of ['blur', 'hidden'] as const) {

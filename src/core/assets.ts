@@ -4,6 +4,7 @@ const paths = {
   ball: "/assets/ball.webp",
   ballTwo: "/assets/ball-two.webp",
   bubble: "/assets/bubble.webp",
+  penguin: "/assets/penguin.webp",
 } as const;
 export type ArtKey = keyof typeof paths;
 /** A single bounded set; scene disposal never retains an image or an async callback. */

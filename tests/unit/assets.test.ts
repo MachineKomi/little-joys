@@ -16,12 +16,15 @@ afterEach(() => {
 });
 
 describe("bounded asynchronous runtime art", () => {
-  it("T32: the store loads only five local images and failed optional art stays absent", () => {
+  it("T32/T43: the store loads only six local images and failed optional art stays absent", () => {
     vi.stubGlobal("Image", FakeImage);
     const ready = vi.fn();
     const store = new AssetStore();
     store.load(ready);
-    expect(FakeImage.created).toHaveLength(5);
+    expect(FakeImage.created).toHaveLength(6);
+    expect(
+      FakeImage.created.some((image) => image.src === "/assets/penguin.webp"),
+    ).toBe(true);
     expect(
       FakeImage.created.every((image) => image.src.startsWith("/assets/")),
     ).toBe(true);

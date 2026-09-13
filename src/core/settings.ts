@@ -10,12 +10,13 @@ export const defaults: SettingsV1 = {
   motion: "gentle",
   bubbleCount: 3,
   ballCount: 1,
+  bounceBallCount: 16,
   ballControl: "drag",
   startupToy: "last",
   lastToy: "squishy",
   diagnosticsEnabled: false,
 };
-const toys = ["squishy", "bubbles", "nest"];
+const toys = ["squishy", "bubbles", "nest", "bounce"];
 export function validateSettings(input: unknown): SettingsV1 {
   const x =
     input && typeof input === "object"
@@ -36,6 +37,8 @@ export function validateSettings(input: unknown): SettingsV1 {
     motion: x.motion === "playful" ? "playful" : "gentle",
     bubbleCount: x.bubbleCount === 6 ? 6 : 3,
     ballCount: x.ballCount === 2 ? 2 : 1,
+    bounceBallCount:
+      x.bounceBallCount === 8 ? 8 : x.bounceBallCount === 24 ? 24 : 16,
     ballControl: x.ballControl === "tap-place" ? "tap-place" : "drag",
     startupToy: toys.includes(String(x.startupToy))
       ? (x.startupToy as ToyId)

@@ -135,8 +135,9 @@ export async function auditAssets(root = resolve("."), output = "dist") {
   const uniqueRuntimeRasters = results.filter(
     (entry) => !entry.path.startsWith("/icons/"),
   ).length;
-  if (uniqueRuntimeRasters > 8)
-    throw new Error("More than 8 unique runtime source rasters");
+  // PENGUIN-BOUNCE-SPEC allocates one penguin and one selector tile; byte/RAM caps stay fixed.
+  if (uniqueRuntimeRasters > 10)
+    throw new Error("More than 10 unique runtime source rasters");
   const decodedBytes = results.reduce(
     (total, entry) => total + entry.decodedBytes,
     0,
