@@ -32,7 +32,7 @@ await page.goto(base);
 await page.locator('canvas[data-toy="squishy"]').waitFor();
 const actionable = performance.now() - started;
 await page.waitForFunction(
-  () => document.querySelector("canvas")?.getAttribute("data-art") === "5",
+  () => document.querySelector("canvas")?.getAttribute("data-art") === "6",
 );
 await page.evaluate(
   () =>
@@ -59,14 +59,21 @@ report.coldStart = {
   note: "Background offline precache (including optional music) measured separately by budget audit. No physical-device startup inference.",
 };
 await cold.close();
-for (const toy of ["squishy", "bubbles", "nest"]) {
+for (const { toy, motion } of [
+  { toy: "squishy", motion: "gentle" },
+  { toy: "bubbles", motion: "gentle" },
+  { toy: "nest", motion: "gentle" },
+  { toy: "bounce", motion: "gentle" },
+  { toy: "bounce", motion: "playful" },
+]) {
   const context = await browser.newContext({
     viewport: { width: 810, height: 1080 },
     deviceScaleFactor: 2,
     serviceWorkers: "block",
+    reducedMotion: "no-preference",
   });
   const p = await context.newPage();
-  await p.addInitScript((toy) => {
+  await p.addInitScript(({ toy, motion }) => {
     localStorage.setItem(
       "little-joys-settings-v1",
       JSON.stringify({
@@ -74,12 +81,14 @@ for (const toy of ["squishy", "bubbles", "nest"]) {
         diagnosticsEnabled: true,
         bubbleCount: 6,
         ballCount: 2,
+        bounceBallCount: 24,
+        motion,
       }),
     );
-  }, toy);
+  }, { toy, motion });
   await p.goto(base);
   await p.waitForFunction(
-    () => document.querySelector("canvas")?.getAttribute("data-art") === "5",
+    () => document.querySelector("canvas")?.getAttribute("data-art") === "6",
   );
   const frameSummary = await p.evaluate(
     async ({ toy, seconds }) => {
@@ -121,10 +130,19 @@ for (const toy of ["squishy", "bubbles", "nest"]) {
             bubbles: true,
           }),
         );
+      if (toy === "bounce") {
+        // Deliberate dense-board workload: fill the capped pool, then recycle
+        // four balls near the top every 600ms while four contacts influence it.
+        for (let i = 0; i < 24; i++) {
+          event("pointerdown", 0, .12 + (i % 8) * .105, .07 + Math.floor(i / 8) * .022);
+          event("pointerup", 0, .12 + (i % 8) * .105, .07);
+        }
+      }
       starts.forEach(([x, y], i) => event("pointerdown", i, x, y));
       const intervals = [];
       let previous = 0,
-        begin = 0;
+        begin = 0,
+        lastSpawn = 0;
       await new Promise((resolve) => {
         const frame = (t) => {
           begin ||= t;
@@ -138,6 +156,13 @@ for (const toy of ["squishy", "bubbles", "nest"]) {
               y + Math.cos((t - begin) / 700 + i) * 0.1,
             ),
           );
+          if (toy === "bounce" && t - lastSpawn >= 600) {
+            starts.forEach(([x, y], i) => {
+              event("pointerup", i, x, y);
+              event("pointerdown", i, .18 + i * .2, .08);
+            });
+            lastSpawn = t;
+          }
           if (t - begin < seconds * 1000) requestAnimationFrame(frame);
           else resolve();
         };
@@ -156,7 +181,7 @@ for (const toy of ["squishy", "bubbles", "nest"]) {
     { toy, seconds },
   );
   await p.waitForTimeout(350);
-  await p.screenshot({ path: `${directory}/${toy}-portrait.png` });
+  await p.screenshot({ path: `${directory}/${toy === "bounce" ? `${toy}-${motion}` : toy}-portrait.png` });
   await p
     .getByRole("button", { name: "Open parent settings", exact: true })
     .focus();
@@ -168,6 +193,8 @@ for (const toy of ["squishy", "bubbles", "nest"]) {
   const status = JSON.parse(await p.locator(".runtime-status").innerText());
   report.toys.push({
     toy,
+    motion,
+    workload: toy === "bounce" ? "24-ball cap, four synthetic contacts, four recycled spawns every 600ms" : "Maximum configured objects and four synthetic contacts",
     syntheticActiveRafMs: frameSummary,
     runtime: status,
   });

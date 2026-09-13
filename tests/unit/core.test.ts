@@ -79,6 +79,55 @@ describe("contact tracking", () => {
   });
 });
 
+describe("Penguin Bounce preferences T40/T41", () => {
+  it.each([8, 16, 24] as const)(
+    "persists the %s ball limit and fourth-toy startup without resetting existing preferences",
+    (bounceBallCount) => {
+      const saved = new Map<string, string>();
+      vi.stubGlobal("localStorage", {
+        getItem: (key: string) => saved.get(key) ?? null,
+        setItem: (key: string, value: string) => saved.set(key, value),
+      });
+      const settings = validateSettings({
+        ...defaults,
+        bounceBallCount,
+        startupToy: "bounce",
+        lastToy: "bounce",
+        bubbleCount: 6,
+        ballControl: "tap-place",
+      });
+      expect(saveSettings(settings)).toBe(true);
+      expect(loadSettings()).toMatchObject({
+        bounceBallCount,
+        startupToy: "bounce",
+        lastToy: "bounce",
+        bubbleCount: 6,
+        ballControl: "tap-place",
+      });
+    },
+  );
+
+  it("migrates prior schema1 preferences and rejects malformed ball limits", () => {
+    for (const bounceBallCount of [
+      undefined,
+      null,
+      "24",
+      0,
+      7,
+      9,
+      25,
+      Infinity,
+      NaN,
+      {},
+      [],
+    ]) {
+      expect(
+        validateSettings({ bounceBallCount, lastToy: "nest", ballCount: 2 }),
+      ).toMatchObject({ bounceBallCount: 16, lastToy: "nest", ballCount: 2 });
+    }
+  });
+});
+
 describe("CSS-space input and bounded canvas backing", () => {
   it.each([1, 1.5, 2])(
     "T07: DPR %s does not change logical hit coordinates on an offset canvas",

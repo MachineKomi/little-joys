@@ -101,6 +101,9 @@ export function materialFingerprint(entries) {
     let bytes = Buffer.from(raw);
     if (path === "package.json") bytes = Buffer.from(JSON.stringify(normalizedPackage(pkg)));
     else if (path === "package-lock.json") bytes = Buffer.from(JSON.stringify(normalizedLock(JSON.parse(bytes.toString()), pkg)));
+    // Vercel serializes this file as compact JSON before building. Preserve
+    // semantic settings/array order, not provider-specific whitespace/key order.
+    else if (path === "vercel.json") bytes = Buffer.from(JSON.stringify(sorted(JSON.parse(bytes.toString()))));
     else if (/\.(?:mjs|js|ts|tsx|css|json|html|webmanifest)$/.test(path) || path === ".vercelignore") bytes = Buffer.from(bytes.toString().replace(/\r\n/g, "\n"));
     hash.update(path); hash.update("\0"); hash.update(String(bytes.length)); hash.update("\0"); hash.update(bytes);
   }

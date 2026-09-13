@@ -38,6 +38,13 @@ const recipes = [
     width: 384,
     height: 384,
   },
+  {
+    source: "penguin-source-v1.png",
+    output: "penguin",
+    width: 512,
+    height: 512,
+    webp: { quality: 84, alphaQuality: 100, effort: 6 },
+  },
 ];
 const inventory = [];
 for (const recipe of recipes) {
@@ -50,7 +57,7 @@ for (const recipe of recipes) {
       fit: "contain",
       background: { r: 0, g: 0, b: 0, alpha: 0 },
     })
-    .webp({ quality: 92, alphaQuality: 100 })
+    .webp(recipe.webp ?? { quality: 92, alphaQuality: 100 })
     .toFile(`public/assets/${recipe.output}.webp`);
   inventory.push({
     ...recipe,
@@ -70,5 +77,5 @@ await writeFile(
   ) + "\n",
 );
 console.log(
-  "Exported five selected sprites. Next: node scripts/capture-assets.mjs with the dev server running.",
+  "Exported six selected sprites. Next: node scripts/capture-assets.mjs with the dev server running.",
 );

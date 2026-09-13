@@ -1,4 +1,4 @@
-export type ToyId = "squishy" | "bubbles" | "nest";
+export type ToyId = "squishy" | "bubbles" | "nest" | "bounce";
 export interface SettingsV1 {
   schemaVersion: 1;
   soundEnabled: boolean;
@@ -8,6 +8,7 @@ export interface SettingsV1 {
   motion: "gentle" | "playful";
   bubbleCount: 3 | 6;
   ballCount: 1 | 2;
+  bounceBallCount: 8 | 16 | 24;
   ballControl: "drag" | "tap-place";
   startupToy: ToyId | "last";
   lastToy: ToyId;
@@ -29,7 +30,7 @@ export interface SceneServices {
   settings: SettingsV1;
   sound: (toy: ToyId) => void;
   image?: (
-    key: "friend" | "bowl" | "ball" | "ballTwo" | "bubble",
+    key: "friend" | "bowl" | "ball" | "ballTwo" | "bubble" | "penguin",
   ) => HTMLImageElement | undefined;
 }
 export interface ToyScene {

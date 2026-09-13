@@ -1,4 +1,5 @@
-.git
+# The ignored-build gate needs Git history in Vercel's build checkout.
+# Only dist is published; Git metadata is never part of that static output.
 node_modules
 docs
 art

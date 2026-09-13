@@ -1,26 +1,26 @@
 {
   "date": "2026-09-13",
-  "buildId": "v0.1.0-228d3ff2889a",
+  "buildId": "v0.1.1-4a0451f16ac2",
   "command": "npm run check",
   "exitCode": 0,
   "unit": {
-    "files": 10,
-    "passed": 111,
+    "files": 11,
+    "passed": 140,
     "failed": 0
   },
   "browser": {
-    "total": 74,
-    "passed": 68,
+    "total": 88,
+    "passed": 81,
     "failed": 0,
-    "skipped": 6,
+    "skipped": 7,
     "chromium": {
-      "passed": 37,
+      "passed": 44,
       "failed": 0
     },
     "windowsWebKit": {
-      "passed": 31,
+      "passed": 37,
       "failed": 0,
-      "skipped": 6,
+      "skipped": 7,
       "skipReason": "No native AudioContext in this Windows WebKit build; audio-capability-specific tests unavailable, not passed."
     }
   },
@@ -34,8 +34,10 @@
   "physicalIPad": "not tested",
   "deployment": "See DELIVERY.md and hosted-check.json for separately verified hosted status.",
   "notes": [
-    "Fresh native Windows WebKit process per test; no retries. Multi-window and 100-switch scenarios preserve one process throughout each test.",
+    "All four toys covered, including dense24-ball physics, cancellation and offline operation.",
+    "Fresh native Windows WebKit process per test; no retries. Multi-window and100-switch scenarios preserve one process throughout each test.",
     "Offline verification denies the actual same-origin server. Chromium also uses its offline override. Windows WebKit override itself failed separately; documented in PWA-TEST-EVIDENCE.md.",
-    "Local raw final output remains .local/final-check.log; Playwright HTML report remains playwright-report/index.html. Private and machine-specific raw outputs are excluded from Git."
+    "Earlier dense Playful settling failure and its repair are retained in REVIEW.md. Final totals do not relabel that failed run.",
+    "Raw logs and Playwright artifacts remain local and excluded from Git."
   ]
 }

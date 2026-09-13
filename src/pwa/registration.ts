@@ -83,7 +83,7 @@ export async function refreshPwaStatus(): Promise<void> {
   if (updateAvailable && !registration?.installing)
     registration?.active?.postMessage({ type: "PRUNE_CACHES" });
   let message = ready
-    ? "Offline cache verified for all three toys. Browser storage can still be cleared."
+    ? "Offline cache verified for all four toys. Browser storage can still be cleared."
     : "Offline cache is unavailable or incomplete. Online play remains available; reconnect to save it again.";
   if (result && !sameBuild)
     message =

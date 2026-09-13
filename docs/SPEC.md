@@ -4,6 +4,8 @@ Implementation-time owner refinements to the raster and music restrictions are r
 
 The owner has approved a fourth toy for v0.1.1. Its normative additions and explicit raster-count allocation are in [PENGUIN-BOUNCE-SPEC.md](PENGUIN-BOUNCE-SPEC.md). The sections below describe the three-toy v0.1.0 baseline; the extension preserves its shared privacy, autonomy and resource limits.
 
+Subsequent phone feedback and prioritized refinements are recorded in [FEEDBACK-AND-REFINEMENTS.md](FEEDBACK-AND-REFINEMENTS.md). Its stronger squish, bubble-response, ball/bowl presentation and warmer-shell targets describe work still needed; they are not retrospective claims about the baseline or fourth-toy patch. The requested brighter, bounded Playful collision feedback is included in the current Penguin Bounce direction.
+
 ## 1. Product decision
 
 Build a small, attractive touchscreen toybox, not a curriculum, a smaller maze game, or an autism treatment. Its promise is: **touch something, immediately change it, enjoy the result, repeat or leave freely**.
@@ -363,10 +365,10 @@ Reuse selected owned artwork as documented in `ASSETS.md`. Copy neither the full
 
 ## 13. Definition of done and deliberate exclusions
 
-The complete MVP is done when all mandatory requirements are implemented, all specified automated checks pass, the three toys have been visually reviewed, the offline/update flow works, and target-device evidence is recorded or explicitly marked pending. A preview may be useful before the hardware gate, but it is not a verified full release.
+The complete owner-amended MVP is done when all mandatory requirements are implemented, all specified automated checks pass, all four toys (including the approved [Penguin Bounce extension](PENGUIN-BOUNCE-SPEC.md)) have been visually reviewed, the offline/update flow works, and target-device evidence is recorded or explicitly marked pending. A preview may be useful before the hardware gate, but it is not a verified full release.
 
 Technical correctness and perceived visual quality can be independently reviewed. Actual enjoyment and comfort for the intended child are unknown until observed. A reviewer must not score imagined enjoyment as a tested fact.
 
 **LATER, only after observations justify them:** finger-trail frog hopping without timed failure; wipe-to-reveal pictures; a two-person musical surface with optional sound; a small collection of different squishable characters; familiar-object matching; or communication supports chosen with the family's speech and language therapist. Add one meaningful variation at a time. Never automatically turn a liked repetitive toy into a more demanding task.
 
-The first product should be small enough that making the favourite toy excellent is a more important milestone than adding the fourth toy.
+The owner explicitly approved the fourth toy. Keep this four-toy product small enough that refining a chosen interaction takes priority over adding further toys without evidence or a new scope decision.

@@ -38,6 +38,18 @@
       "provenance": "Captured from the implemented nest scene and original generated sprites."
     },
     {
+      "id": "toy-bounce",
+      "kind": "raster",
+      "path": "/assets/toy-bounce.png",
+      "width": 384,
+      "height": 288,
+      "encodedBytes": 41455,
+      "decodedBytes": 442368,
+      "alpha": false,
+      "sha256": "107bb6c5e96ed049e4b702dd34daf31dd61b66b36c88aba4a473419c513d43b9",
+      "provenance": "Captured from the implemented bounce scene and original generated sprites."
+    },
+    {
       "id": "icon-192",
       "kind": "raster",
       "path": "/icons/icon-192.png",
@@ -134,6 +146,18 @@
       "provenance": "Original development-time OpenAI image generation. Inspected runtime export; art/PROVENANCE.md and art/SPRITE-PROMPTS.md."
     },
     {
+      "id": "penguin",
+      "kind": "raster",
+      "path": "/assets/penguin.webp",
+      "width": 512,
+      "height": 512,
+      "encodedBytes": 27914,
+      "decodedBytes": 1048576,
+      "alpha": true,
+      "sha256": "972d2c1c28d968ef2644762f543ed53fdf851eb349c5b8b10d1d47cc7ead6e72",
+      "provenance": "Original development-time OpenAI image generation. Inspected runtime export; art/PROVENANCE.md and art/SPRITE-PROMPTS.md."
+    },
+    {
       "id": "geometry-squishy",
       "kind": "procedural",
       "path": "src/toys/squishy/scene.ts",
@@ -149,6 +173,12 @@
       "id": "geometry-nest",
       "kind": "procedural",
       "path": "src/toys/nest/scene.ts",
+      "provenance": "Original Canvas2D geometry and drawing for Little Joys."
+    },
+    {
+      "id": "geometry-bounce",
+      "kind": "procedural",
+      "path": "src/toys/bounce/scene.ts",
       "provenance": "Original Canvas2D geometry and drawing for Little Joys."
     },
     {

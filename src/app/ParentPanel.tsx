@@ -163,6 +163,7 @@ export function ParentPanel(props: Props) {
         <label className="setting-row">
           <span className="setting-label">Motion</span>
           <select
+            aria-label="Motion"
             value={settings.motion}
             onChange={(event) =>
               change("motion", event.target.value as SettingsV1["motion"])
@@ -183,6 +184,7 @@ export function ParentPanel(props: Props) {
         <label className="setting-row">
           <span className="setting-label">Bubbles</span>
           <select
+            aria-label="Bubbles"
             value={settings.bubbleCount}
             onChange={(event) =>
               change("bubbleCount", Number(event.target.value) as 3 | 6)
@@ -199,6 +201,7 @@ export function ParentPanel(props: Props) {
         <label className="setting-row">
           <span className="setting-label">Balls</span>
           <select
+            aria-label="Balls"
             value={settings.ballCount}
             onChange={(event) =>
               change("ballCount", Number(event.target.value) as 1 | 2)
@@ -211,6 +214,7 @@ export function ParentPanel(props: Props) {
         <label className="setting-row">
           <span className="setting-label">Ball control</span>
           <select
+            aria-label="Ball control"
             value={settings.ballControl}
             onChange={(event) =>
               change(
@@ -228,8 +232,30 @@ export function ParentPanel(props: Props) {
           again to cancel.
         </p>
         <label className="setting-row">
+          <span className="setting-label">Bouncing balls</span>
+          <select
+            aria-label="Bouncing balls"
+            value={settings.bounceBallCount}
+            onChange={(event) =>
+              change(
+                "bounceBallCount",
+                Number(event.target.value) as 8 | 16 | 24,
+              )
+            }
+          >
+            <option value="8">Up to eight</option>
+            <option value="16">Up to sixteen</option>
+            <option value="24">Up to twenty-four</option>
+          </select>
+        </label>
+        <p className="field-note">
+          Tap open space to add or reuse a ball. Holding still does not add
+          more.
+        </p>
+        <label className="setting-row">
           <span className="setting-label">Open with</span>
           <select
+            aria-label="Open with"
             value={settings.startupToy}
             onChange={(event) =>
               change(
@@ -242,6 +268,7 @@ export function ParentPanel(props: Props) {
             <option value="squishy">Squishy Friend</option>
             <option value="bubbles">Bubble Pond</option>
             <option value="nest">Roll & Nest</option>
+            <option value="bounce">Penguin Bounce</option>
           </select>
         </label>
       </section>

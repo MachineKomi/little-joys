@@ -16,7 +16,11 @@ Tapping the play area should do something useful without precise aiming. Large b
 
 This is free exploration: no gambling presentation, stakes, scores, failure, life counter, loss of earned progress, or required finishing sequence. Repeated bounces must not multiply sounds or stimulation without bounds. Every ball must stay recoverable; no precise launch, successful shot, or timed input is required to continue. The current three toys and their shared access features remain available.
 
-Implementation and validation are in progress. This direction does not claim that the fourth toy is already delivered, that its final interaction tuning is settled, or that it has been checked on a physical iPad.
+The fourth toy is implemented and its complete automated checks have passed. Final measurements and actual hosting are recorded in [DELIVERY.md](DELIVERY.md); they must be checked separately. Its interaction tuning remains open to feedback, and physical iPad validation remains pending.
+
+## Reported phone feedback and next refinements
+
+The current original friend design and iridescent bubble finish should be retained. Reported shortcomings now prioritize substantially stronger and more expressive squishing, richer touch/release response, bubble variation and audio discoverability, ball/bowl halo/shadow/occlusion repairs, and a warmer presentation. The latest Penguin Bounce direction explicitly asks for lively permissive physics with brighter local lights and colorful effects; its Playful feedback is implemented and reviewed for this deployment. The other three toys' interaction changes are tracked separately and are not claimed as fixed by that patch. See [FEEDBACK-AND-REFINEMENTS.md](FEEDBACK-AND-REFINEMENTS.md) for the sanitized report and bounded acceptance targets. Private reactions remain outside public source.
 
 ## Later content interests
 

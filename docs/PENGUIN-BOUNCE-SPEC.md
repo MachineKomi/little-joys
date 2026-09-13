@@ -1,6 +1,6 @@
 # Penguin Bounce — approved fourth-toy extension
 
-Status: approved for implementation in **v0.1.1**. The three-toy v0.1.0 remains the baseline. This is an owner-requested addition, not evidence of player enjoyment or device qualification. Read alongside [SPEC.md](SPEC.md), [owner direction](OWNER-DIRECTION.md), [backlog](BACKLOG.md) and [roadmap](ROADMAP.md).
+Status: implemented and automatically checked for **v0.1.1**; see [DELIVERY.md](DELIVERY.md) for final measurements and verified hosting. The three-toy v0.1.0 remains the historical baseline. This is an owner-requested addition, not evidence of player enjoyment or device qualification. Read alongside [SPEC.md](SPEC.md), [owner direction](OWNER-DIRECTION.md), [backlog](BACKLOG.md) and [roadmap](ROADMAP.md).
 
 ## Intent
 
@@ -18,14 +18,16 @@ The penguin is an original painted sprite. Board geometry remains procedural, wi
 | P04 | Two generously sized deflectors have visible state and broad hit regions, at least 72 CSS pixels where the layout permits. Turning them changes actual collision geometry. |
 | P05 | Use deterministic fixed-step physics with capped catch-up, finite ball/peg/segment collision handling, bounded speed and correction, and no hidden-tab backlog. No physics-engine dependency is needed for this scope. |
 | P06 | Parent settings offer 8, 16 or 24 maximum balls, default 16. Never exceed 24 balls or 24 local effects. At capacity, the next valid spawn reuses an existing ball immediately, preferring a settled one. No timer or loss condition blocks reuse. |
-| P07 | Settled balls remain coherent in a bottom collecting area. Without further input the board must eventually settle and its animation scheduler sleep. No passive spawning or perpetual attract loop. |
-| P08 | Gentle motion and system reduced motion use lower-energy movement and quiet local feedback. Playful mode may add brief local glows; no full-screen flashes, strobing or rapid global light/dark changes. Pause freezes everything and mute remains immediately available. |
+| P07 | Balls collect in a bottom trough and may rest on physically supported stacks or mechanisms. Rest must follow actual support, not an arbitrary screen-height cutoff; removing or turning that support wakes affected balls. Without further input the board must eventually settle and its animation scheduler sleep. No passive spawning or perpetual attract loop. |
+| P08 | Gentle motion and system reduced motion use lower-energy movement and quiet local feedback. Playful mode adds clearly visible colored local collision lights and impact bursts, plus a small input-triggered penguin reaction that finishes naturally. Use brief smooth pulses; no full-screen flashes, strobing or rapid global light/dark changes. Pause freezes everything and mute remains immediately available. |
 | P09 | Collision sounds use the existing explicit adult-enabled, rate-limited two-voice service. The new toy is fully usable silently; music remains independently optional. |
 | P10 | Resizing/rotation preserves finite clamped state. Restored in-memory snapshots validate every number and count; invalid snapshots recover to a usable scene. Disposal retains no pointers, effects, callbacks or images. |
 | P11 | Pure physics stays independent of React and DOM rendering so its useful mechanics can later be reused. Do not add a generalized game engine, plugin system or cross-project dependency. |
 | P12 | Unit, production-browser, offline, asset-budget and build checks cover the fourth toy. An independent reviewer inspects actual rendered interaction and concrete failures are repaired before deploying the patch. |
 
 All original privacy, autonomy, input, audio, update and performance requirements continue to apply. The entire four-toy toybox keeps the existing **200 KiB gzip JavaScript, 2 MiB initial transfer, 8 MiB complete offline payload, 24 MiB decoded-raster estimate and 2M canvas-pixel** caps. One new penguin sprite and one matching selector tile increase the non-icon raster inventory cap from eight to **ten**; this is a planned content allocation and does not relax the byte, dimension or residency budgets. Asset provenance and measured totals must be refreshed before release.
+
+P07 was clarified during implementation after a dense stack extended just above the original trough-height cutoff and stayed awake despite physical support. Supported rest preserves the actual collision state; it does not teleport balls into the trough or force an active board asleep after a timer.
 
 ## Acceptance additions
 

@@ -5,7 +5,7 @@ import { mkdir, writeFile, readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 const browser = await chromium.launch();
 const page = await browser.newPage();
-await page.goto("http://127.0.0.1:5173");
+await page.goto(process.env.CAPTURE_ORIGIN ?? "http://127.0.0.1:5173");
 await mkdir("public/assets", { recursive: true });
 await mkdir("public/icons", { recursive: true });
 const assets = [];
@@ -33,6 +33,7 @@ async function render(toy, width, height) {
           squishy: "SquishyScene",
           bubbles: "BubbleScene",
           nest: "NestScene",
+          bounce: "BounceScene",
         };
         const module = await import(`/src/toys/${toy}/scene.ts`);
         const { defaults } = await import("/src/core/settings.ts");
@@ -44,15 +45,17 @@ async function render(toy, width, height) {
             ball: "ball",
             ballTwo: "ball-two",
             bubble: "bubble",
+            penguin: "penguin",
           }).map(
             ([key, name]) =>
-              new Promise((resolve) => {
+              new Promise((resolve, reject) => {
                 const img = new Image();
                 img.onload = () => {
                   images[key] = img;
                   resolve();
                 };
-                img.onerror = resolve;
+                img.onerror = () =>
+                  reject(new Error(`Missing selected sprite: ${name}`));
                 img.src = `/assets/${name}.webp`;
               }),
           ),
@@ -77,7 +80,7 @@ async function render(toy, width, height) {
   );
 }
 try {
-  for (const toy of ["squishy", "bubbles", "nest"]) {
+  for (const toy of ["squishy", "bubbles", "nest", "bounce"]) {
     const bytes = await render(toy, 512, 384);
     await sharp(bytes)
       .resize(384, 288)
@@ -108,13 +111,20 @@ try {
       "Original generated mascot captured in the implemented scene; art/PROVENANCE.md.",
     );
   }
-  for (const name of ["friend", "bowl", "ball", "ball-two", "bubble"])
+  for (const name of [
+    "friend",
+    "bowl",
+    "ball",
+    "ball-two",
+    "bubble",
+    "penguin",
+  ])
     await record(
       name,
       `/assets/${name}.webp`,
       "Original development-time OpenAI image generation. Inspected runtime export; art/PROVENANCE.md and art/SPRITE-PROMPTS.md.",
     );
-  for (const toy of ["squishy", "bubbles", "nest"])
+  for (const toy of ["squishy", "bubbles", "nest", "bounce"])
     assets.push({
       id: `geometry-${toy}`,
       kind: "procedural",
@@ -142,7 +152,7 @@ try {
     "public/assets/asset-manifest.json",
     JSON.stringify({ schemaVersion: 1, assets }, null, 2) + "\n",
   );
-  console.log("Exported 3 toy captures and 3 platform icon sizes.");
+  console.log("Exported 4 toy captures and 3 platform icon sizes.");
 } finally {
   await browser.close();
 }

@@ -7,8 +7,9 @@ export const toyNames: Record<ToyId, string> = {
   squishy: "Squishy Friend",
   bubbles: "Bubble Pond",
   nest: "Roll & Nest",
+  bounce: "Penguin Bounce",
 };
-const toys: ToyId[] = ["squishy", "bubbles", "nest"];
+const toys: ToyId[] = ["squishy", "bubbles", "nest", "bounce"];
 function Preview({ toy }: { toy: ToyId }) {
   const [failed, setFailed] = useState(false);
   return failed ? (
@@ -29,6 +30,13 @@ function Preview({ toy }: { toy: ToyId }) {
       )}
       {toy === "nest" && (
         <>
+          <i />
+          <b />
+        </>
+      )}
+      {toy === "bounce" && (
+        <>
+          <i />
           <i />
           <b />
         </>

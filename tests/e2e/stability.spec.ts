@@ -10,12 +10,13 @@ test('T32/T33: 100 DOM scene switches preserve the page and bounded idle resourc
   await page.goto('/');
   const canvas = page.getByTestId('play-canvas');
   await expect(canvas).toHaveAttribute('data-toy', 'squishy');
-  await expect(canvas).toHaveAttribute('data-art', '5');
+  await expect(canvas).toHaveAttribute('data-art', '6');
   const initialTimeOrigin = await page.evaluate(() => performance.timeOrigin);
   const initialNavigations = mainNavigations;
   const toys = [
     { name: 'Bubble Pond', id: 'bubbles' },
     { name: 'Roll & Nest', id: 'nest' },
+    { name: 'Penguin Bounce', id: 'bounce' },
     { name: 'Squishy Friend', id: 'squishy' },
   ];
 
@@ -41,7 +42,7 @@ test('T32/T33: 100 DOM scene switches preserve the page and bounded idle resourc
   await page.getByRole('button', { name: 'Refresh technical status', exact: true }).click();
   const status = JSON.parse(await page.locator('.runtime-status').innerText()) as Record<string, unknown>;
   expect(status).toMatchObject({
-    toy: 'bubbles', paused: true, residentImages: 5, pointers: 0,
+    toy: 'squishy', paused: true, residentImages: 6, pointers: 0,
     voices: 0, audioEnabled: false, musicEnabled: false, musicElements: 0,
   });
   expect(typeof status.buildId).toBe('string');

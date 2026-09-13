@@ -234,11 +234,13 @@ export function App() {
             </button>
           </div>
         )}
-        <div className="toy-caption" aria-hidden="true">
-          <span />
-          {toyNames[toy]}
-          <span />
-        </div>
+        {toy !== "bounce" && (
+          <div className="toy-caption" aria-hidden="true">
+            <span />
+            {toyNames[toy]}
+            <span />
+          </div>
+        )}
       </main>
       {panel === "toys" && (
         <ToyPicker

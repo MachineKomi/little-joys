@@ -51,11 +51,30 @@ describe("bounded optional audio T21–23", () => {
   it("never constructs context or sounds on fresh silent play", () => {
     const a = new AudioService();
     a.play("squishy");
+    a.play("bounce");
     expect(a.status()).toEqual({
       audioEnabled: false,
       audioState: "not-created",
       voices: 0,
     });
+  });
+  it("T42: dense bounce contacts share the existing voice and rate caps", async () => {
+    const a = new AudioService();
+    await a.enable();
+    const c = FakeAudio.latest;
+    for (let index = 0; index < 24; index++) a.play("bounce");
+    expect(c.created).toBe(1);
+    c.currentTime = 0.16;
+    a.play("bounce");
+    c.currentTime = 0.32;
+    a.play("bounce");
+    expect(c.created).toBe(2);
+    expect(a.status().voices).toBe(2);
+    a.mute();
+    c.nodes.forEach((node) => node.onended?.());
+    a.play("bounce");
+    expect(c.created).toBe(2);
+    expect(a.status().voices).toBe(0);
   });
   it("caps rapid starts and overlapping voices, mute fades every current node", async () => {
     const a = new AudioService();

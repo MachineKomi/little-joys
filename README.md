@@ -1,10 +1,10 @@
 # Little Joys
 
-A small, quiet touchscreen toybox: stretch **Squishy Friend**, sweep through **Bubble Pond**, or move soft balls into **Roll & Nest**. No scores, timers, accounts, tracking, instructions to answer, or progression. Three toys, with original painted sprites and optional music and effects.
+A small, quiet touchscreen toybox: stretch **Squishy Friend**, sweep through **Bubble Pond**, move soft balls into **Roll & Nest**, or send balls bouncing around **Penguin Bounce**. No scores, timers, accounts, tracking, instructions to answer, or progression. Four toys, with original painted sprites and optional music and effects.
 
 **Preview; physical iPad validation pending.** The engineering target is an eighth-generation iPad and similarly modest devices. Desktop browser tests do not qualify that hardware. See [delivery evidence](docs/DELIVERY.md), [requirements](docs/SPEC.md), and [review](docs/REVIEW.md).
 
-**[Open the playtest](https://little-joys-gules.vercel.app/).** The current three-toy v0.1.0 was checked online and after an offline reload on the actual HTTPS host. [Penguin Bounce](docs/PENGUIN-BOUNCE-SPEC.md), the approved fourth toy, is being implemented for v0.1.1. See the [owner direction](docs/OWNER-DIRECTION.md), [roadmap](docs/ROADMAP.md), and [backlog](docs/BACKLOG.md) for recoverable public planning.
+**[Open the playtest](https://littlejoys-play.vercel.app/).** [Penguin Bounce](docs/PENGUIN-BOUNCE-SPEC.md) is implemented for v0.1.1. The metadata-corrected four-toy release is completing final verification; [DELIVERY.md](docs/DELIVERY.md) distinguishes the checked local build from the last verified hosted release. See the [owner direction](docs/OWNER-DIRECTION.md), [roadmap](docs/ROADMAP.md), and [backlog](docs/BACKLOG.md) for recoverable public planning.
 
 ## Run locally
 
@@ -28,11 +28,14 @@ The production harness serves [http://127.0.0.1:4173](http://127.0.0.1:4173) wit
 
 - The last selected toy opens immediately; the first visit opens Squishy Friend.
 - Drag different parts of the friend, swipe across bubbles, or pick up and release balls near the bowl. Two balls can be removed independently.
+- In **Penguin Bounce**, tap open board space to add a ball, tap either broad wooden deflector to turn it, and swipe near balls to nudge them. The board settles after play; another tap always works, including when its ball pool is full.
 - **Pause** freezes play. **Mute** only turns sound off. Both music and effects start silent on every fresh visit until an adult enables them.
-- **Toybox** has three stable picture tiles. Hold the small parent control for two seconds to open settings; keyboard and assistive-technology activation are also supported.
-- Parent settings offer three/six bubbles, one/two balls, drag/tap-to-place, Gentle/Playful motion, startup toy, separate sound/music controls, and local technical status. System reduced motion always uses Gentle.
+- **Toybox** has four stable picture tiles. Hold the small parent control for two seconds to open settings; keyboard and assistive-technology activation are also supported.
+- Parent settings offer three/six bubbles, one/two nesting balls, drag/tap-to-place, eight/16/24 bouncing balls, Gentle/Playful motion, startup toy, separate sound/music controls, and local technical status. System reduced motion always uses Gentle.
 
 The DOM controls are labelled and keyboard reachable. Canvas toy manipulation is a direct-touch/pointer experience; full nonvisual toy interaction is not claimed.
+
+Phone feedback has identified interaction and presentation work still needed in the original three toys: stronger squish, more responsive/varied bubbles, ball/bowl halo/shadow/occlusion fixes and a warmer shell. The fourth-toy release does not claim to fix these. See the [prioritized refinement record](docs/FEEDBACK-AND-REFINEMENTS.md).
 
 ## Test
 
@@ -45,7 +48,9 @@ This runs unit tests, TypeScript and production build, asset/provenance audit, t
 
 Release-gate tests also require Git and a POSIX shell (Git for Windows at its standard installation path on Windows). They exercise real temporary Git history and the exact Vercel command, including failure paths.
 
-With the production harness running, `node scripts/measure-preview.mjs` records a documented desktop startup trace, bounded active workloads, and screenshots in `docs/evidence`. `TRACE_SECONDS=60` can lengthen the desktop workload. These are diagnostic proxies, not physical touch-to-photon or iPad performance measurements.
+With the production harness running, `node scripts/measure-preview.mjs` records a documented desktop startup trace, bounded active workloads, and screenshots in `docs/evidence`. It includes maximum-count Penguin Bounce in both motion modes. `TRACE_SECONDS=60` can lengthen the desktop workload. These are diagnostic proxies, not physical touch-to-photon or iPad performance measurements.
+
+After building the same revision as a deployed release, run `node scripts/verify-hosted.mjs https://littlejoys-play.vercel.app/` to verify exact hosted files, all four toys online/offline, silent startup, settings, CSP, and cached music ranges. This writes a hosted evidence report only on success; a different deployed build correctly fails comparison.
 
 ## Deploy to Vercel
 
