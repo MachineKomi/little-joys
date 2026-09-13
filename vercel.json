@@ -3,6 +3,9 @@
   "framework": null,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "installCommand": "npm ci",
+  "ignoreCommand": "node scripts/should-build.mjs; [ $? -ne 42 ]",
+  "git": { "deploymentEnabled": { "*": false, "main": true } },
   "headers": [
     {
       "source": "/(.*)",

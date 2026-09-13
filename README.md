@@ -41,6 +41,8 @@ npm run check
 
 This runs unit tests, TypeScript and production build, asset/provenance audit, transfer/memory-estimate budgets, and Chromium/WebKit browser tests. Browser tests use the production server and include synthetic multi-touch, cancellation, pause, settings, offline cache failures and safe two-window updates.
 
+Release-gate tests also require Git and a POSIX shell (Git for Windows at its standard installation path on Windows). They exercise real temporary Git history and the exact Vercel command, including failure paths.
+
 With the production harness running, `node scripts/measure-preview.mjs` records a documented desktop startup trace, bounded active workloads, and screenshots in `docs/evidence`. `TRACE_SECONDS=60` can lengthen the desktop workload. These are diagnostic proxies, not physical touch-to-photon or iPad performance measurements.
 
 ## Deploy to Vercel
@@ -48,11 +50,15 @@ With the production harness running, `node scripts/measure-preview.mjs` records 
 No deployment URL is claimed by this repository unless recorded in `docs/DELIVERY.md` after opening and checking it.
 
 1. Import the intended `MachineKomi/little-joys` repository into a new Vercel project. Do not attach another game's project.
-2. Choose **Vite**, repository root `.`, install command `npm ci`, build command `npm run build`, and output directory `dist`. No environment variables are required.
+2. Use the **Other** static preset (`framework: null` in `vercel.json`), repository root `.`, install command `npm ci`, build command `npm run build`, and output directory `dist`. Keep automatic system environment variables enabled; no application secrets are required.
 3. Deploy a preview. Open its actual HTTPS URL and check the build identifier in Parent settings against `dist/build-label.json`.
 4. Run the offline/install and physical-device checklist in [TASKS-AND-ACCEPTANCE.md](docs/TASKS-AND-ACCEPTANCE.md). Record real observations separately from public source.
 
-For an authenticated CLI workflow from this folder: `npx vercel` creates a preview using `vercel.json`; inspect the proposed project before linking it. Do not use `--prod` until choosing to promote a checked build. Configuration follows the [official Vite deployment guide](https://vercel.com/docs/frameworks/frontend/vite).
+For an authenticated CLI workflow from this folder: `npx vercel` creates a preview using `vercel.json`; inspect the proposed project before linking it. Use `--prod` only when deliberately promoting a checked build.
+
+GitHub remains the backup and collaboration source. Automatic Vercel builds are limited to `main` and require **both a higher stable app version and changed deployable inputs**, compared with the last successful deployment. Documentation, specifications, tests, source artwork and measurement/export tooling do not qualify. A version-only bump also skips. For the next material playtest release, run the checks, use `npm version patch --no-git-tag-version` (or the appropriate larger release), and commit both package files with the material changes. The build label includes the version and a digest of deployment inputs.
+
+The dependency-free `scripts/should-build.mjs` gate runs before installation. Missing deployment history fails closed, so an explicitly reviewed first deployment or rollback can require a manual dashboard deployment. An ignored push can leave a skipped/canceled history entry without uploading another game build. Vercel's [ignored-build documentation](https://vercel.com/docs/project-configuration/vercel-json#ignorecommand) specifies exit `0` to skip and `1` to build; its [system variables](https://vercel.com/docs/environment-variables/system-environment-variables#vercel_git_previous_sha) supply the last successful source revision. See [deployment policy](DEPLOYMENT.md) for the baseline and recovery procedure.
 
 Updates download and verify in the background and wait until all old app windows close. They never force a reload during play. Parent settings shows cache readiness and update availability. To roll back, redeploy a previously checked source revision; close all existing tabs/Home Screen windows and relaunch after the replacement cache has completed. Browser storage can be evicted: offline availability is verified, not permanent.
 

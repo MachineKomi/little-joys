@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "./fixtures";
 import { createServer, type Server } from "node:http";
 import {
   cp,
@@ -11,56 +11,6 @@ import {
 import { tmpdir } from "node:os";
 import { resolve, extname, sep } from "node:path";
 import { execFileSync } from "node:child_process";
-
-if (process.env.PWA_DIAG === "1") {
-  for (const scenario of ["initial-offline-override", "controlled-offline-override", "initial-server-closed", "controlled-server-closed"] as const) {
-    test(`diagnostic ${scenario}`, async ({ page, context }, testInfo) => {
-      const directory = resolve("dist");
-      const server = createServer(async (request, response) => {
-        try {
-          const url = new URL(request.url!, "http://localhost");
-          const path = resolve(directory, "." + (url.pathname === "/" ? "/index.html" : url.pathname));
-          const mime: Record<string, string> = { ".js": "text/javascript", ".html": "text/html", ".css": "text/css", ".json": "application/json", ".webmanifest": "application/manifest+json", ".png": "image/png", ".webp": "image/webp", ".mp3": "audio/mpeg" };
-          response.setHeader("Content-Type", mime[extname(path)] || "application/octet-stream");
-          response.setHeader("Cache-Control", "no-store");
-          response.end(await readFile(path));
-        } catch { response.writeHead(404); response.end("Not found"); }
-      });
-      await new Promise<void>(resolveListen => server.listen(0, "127.0.0.1", resolveListen));
-      const address = server.address();
-      if (!address || typeof address === "string") throw new Error("Missing diagnostic origin");
-      const origin = `http://127.0.0.1:${address.port}`;
-      const events: unknown[] = [];
-      const state = () => page.evaluate(async () => {
-        const registration = await navigator.serviceWorker.getRegistration();
-        return { controlled: Boolean(navigator.serviceWorker.controller), controllerState: navigator.serviceWorker.controller?.state, active: registration?.active?.state, waiting: registration?.waiting?.state, online: navigator.onLine, caches: await caches.keys() };
-      });
-      try {
-        page.on("requestfailed", request => events.push({ failed: request.url(), error: request.failure() }));
-        page.on("response", response => { if (response.request().isNavigationRequest()) events.push({ document: response.url(), status: response.status(), worker: response.fromServiceWorker() }); });
-        await page.goto(origin);
-        await expect.poll(async () => (await workerStatus(page))?.ready).toBe(true);
-        const initialState = await state();
-        if (scenario.startsWith("controlled")) await page.reload();
-        const beforeState = await state();
-        if (scenario.endsWith("override")) await context.setOffline(true);
-        else await new Promise<void>(resolveClose => server.close(() => resolveClose()));
-        const inPageFetch = await page.evaluate(async () => {
-          try { const response = await fetch("/index.html", { cache: "no-store" }); return { status: response.status, bytes: (await response.text()).length }; }
-          catch (error) { return { error: String(error) }; }
-        });
-        let navigation: unknown;
-        try { const response = await page.reload(); navigation = { status: response?.status(), worker: response?.fromServiceWorker(), canvas: await page.getByTestId("play-canvas").count(), after: await state() }; }
-        catch (error) { navigation = { error: String(error), url: page.url() }; }
-        const result = { scenario, initialState, beforeState, inPageFetch, navigation, events };
-        console.log(JSON.stringify(result));
-        await testInfo.attach(scenario, { body: JSON.stringify(result, null, 2), contentType: "application/json" });
-      } finally {
-        await new Promise<void>(resolveClose => server.close(() => resolveClose()));
-      }
-    });
-  }
-}
 
 async function openParents(page: Page) {
   await page
@@ -100,74 +50,133 @@ async function workerStatus(page: Page) {
 test("T28, T31: verified production cache runs every toy and settings offline under the actual CSP", async ({
   page,
   context,
-  baseURL,
-}) => {
-  const requests: string[] = [];
-  const errors: string[] = [];
-  page.on("request", (request) => requests.push(request.url()));
-  page.on("pageerror", (error) => errors.push(error.message));
-  await page.addInitScript(() => {
-    (window as unknown as { policyViolations: string[] }).policyViolations = [];
-    document.addEventListener("securitypolicyviolation", (event) =>
-      (
-        window as unknown as { policyViolations: string[] }
-      ).policyViolations.push(event.violatedDirective),
-    );
-  });
-  const response = await page.goto("/");
-  expect(response?.headers()["content-security-policy"]).toContain(
-    "script-src 'self'",
-  );
-  await expect(page.getByTestId("play-canvas")).toBeVisible();
-  await expect.poll(async () => (await workerStatus(page))?.ready).toBe(true);
-  await openParents(page);
-  await expect(page.getByText("Offline ready", { exact: true })).toBeVisible();
-  await page
-    .getByRole("combobox", { name: "Motion", exact: true })
-    .selectOption("playful");
-  await page
-    .getByRole("button", { name: "Back to the toy", exact: true })
-    .click();
-  await context.setOffline(true);
-  await page.reload();
-  const offlineMedia = await page.evaluate(async () => {
-    const response = await fetch("/assets/music.mp3", {
-      headers: { Range: "bytes=0-31" },
+  browserName,
+}, testInfo) => {
+  const serverModule = new URL("../../scripts/serve-dist.mjs", import.meta.url)
+    .href;
+  const { startServer } = (await import(serverModule)) as {
+    startServer(options: { port: number }): Promise<Server>;
+  };
+  const server = await startServer({ port: 0 });
+  const address = server.address();
+  if (!address || typeof address === "string")
+    throw new Error("Offline test origin unavailable");
+  const origin = `http://127.0.0.1:${address.port}`;
+  const closeOrigin = async () => {
+    if (server.listening) {
+      server.closeAllConnections();
+      await new Promise<void>((resolveClose) =>
+        server.close(() => resolveClose()),
+      );
+    }
+  };
+  try {
+    const requests: string[] = [];
+    const errors: string[] = [];
+    page.on("request", (request) => requests.push(request.url()));
+    page.on("pageerror", (error) => errors.push(error.message));
+    await page.addInitScript(() => {
+      (window as unknown as { policyViolations: string[] }).policyViolations =
+        [];
+      document.addEventListener("securitypolicyviolation", (event) =>
+        (
+          window as unknown as { policyViolations: string[] }
+        ).policyViolations.push(event.violatedDirective),
+      );
     });
-    return {
-      status: response.status,
-      bytes: (await response.arrayBuffer()).byteLength,
-      contentRange: response.headers.get("Content-Range"),
-    };
-  });
-  expect(offlineMedia.status).toBe(206);
-  expect(offlineMedia.bytes).toBe(32);
-  expect(offlineMedia.contentRange).toMatch(/^bytes 0-31\/\d+$/);
-  for (const toy of ["Squishy Friend", "Bubble Pond", "Roll & Nest"]) {
-    await page.getByRole("button", { name: "Toybox", exact: true }).click();
-    await page.getByRole("button", { name: toy, exact: true }).click();
+    const response = await page.goto(origin);
+    expect(response?.headers()["content-security-policy"]).toContain(
+      "script-src 'self'",
+    );
+    await expect(page.getByTestId("play-canvas")).toBeVisible();
+    await expect.poll(async () => (await workerStatus(page))?.ready).toBe(true);
+    await openParents(page);
     await expect(
-      page.getByRole("main", { name: toy, exact: true }),
+      page.getByText("Offline ready", { exact: true }),
     ).toBeVisible();
     await page
-      .getByTestId("play-canvas")
-      .click({ position: { x: 200, y: 200 } });
+      .getByRole("combobox", { name: "Motion", exact: true })
+      .selectOption("playful");
+    await page
+      .getByRole("button", { name: "Back to the toy", exact: true })
+      .click();
+    // Preserve the first offline navigation: the initial page is still uncontrolled.
+    expect(
+      await page.evaluate(() => Boolean(navigator.serviceWorker.controller)),
+    ).toBe(false);
+    await closeOrigin();
+    await expect(
+      fetch(origin, { signal: AbortSignal.timeout(2000) }),
+    ).rejects.toThrow();
+    // Windows Playwright WebKit's offline override rejects even controlled cached
+    // fetches before the worker handles them. The closed same-origin server denies
+    // every possible runtime network resource instead; Chromium also uses its override.
+    if (browserName === "chromium") await context.setOffline(true);
+    const offlineNavigation = await page.reload();
+    expect(offlineNavigation?.fromServiceWorker()).toBe(true);
+    await expect(page.getByTestId("play-canvas")).toBeVisible();
+    await expect(page.getByTestId("play-canvas")).toHaveAttribute("data-art", "5");
+    const offlineMedia = await page.evaluate(async () => {
+      const response = await fetch("/assets/music.mp3", {
+        headers: { Range: "bytes=0-31" },
+      });
+      return {
+        status: response.status,
+        bytes: (await response.arrayBuffer()).byteLength,
+        contentRange: response.headers.get("Content-Range"),
+      };
+    });
+    expect(offlineMedia.status).toBe(206);
+    expect(offlineMedia.bytes).toBe(32);
+    expect(offlineMedia.contentRange).toMatch(/^bytes 0-31\/\d+$/);
+    for (const toy of ["Squishy Friend", "Bubble Pond", "Roll & Nest"]) {
+      await page.getByRole("button", { name: "Toybox", exact: true }).click();
+      await page.getByRole("button", { name: toy, exact: true }).click();
+      await expect(
+        page.getByRole("main", { name: toy, exact: true }),
+      ).toBeVisible();
+      await page
+        .getByTestId("play-canvas")
+        .click({ position: { x: 200, y: 200 } });
+    }
+    await openParents(page);
+    await expect(
+      page.getByText("Offline ready", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("combobox", { name: "Motion", exact: true }),
+    ).toHaveValue("playful");
+    expect(errors).toEqual([]);
+    expect(
+      await page.evaluate(
+        () =>
+          (window as unknown as { policyViolations: string[] })
+            .policyViolations,
+      ),
+    ).toEqual([]);
+    expect(requests.filter((url) => new URL(url).origin !== origin)).toEqual(
+      [],
+    );
+    await testInfo.attach("offline-method", {
+      body: JSON.stringify(
+        {
+          browserName,
+          originClosed: true,
+          firstOfflineNavigationFromWorker:
+            offlineNavigation?.fromServiceWorker(),
+          browserOfflineOverride: browserName === "chromium",
+          navigatorOnline: await page.evaluate(() => navigator.onLine),
+          allRuntimeRequestsSameOrigin: true,
+          cachedMediaRange: offlineMedia,
+        },
+        null,
+        2,
+      ),
+      contentType: "application/json",
+    });
+  } finally {
+    await closeOrigin();
   }
-  await openParents(page);
-  await expect(page.getByText("Offline ready", { exact: true })).toBeVisible();
-  await expect(
-    page.getByRole("combobox", { name: "Motion", exact: true }),
-  ).toHaveValue("playful");
-  expect(errors).toEqual([]);
-  expect(
-    await page.evaluate(
-      () =>
-        (window as unknown as { policyViolations: string[] }).policyViolations,
-    ),
-  ).toEqual([]);
-  expect(
-    requests.filter((url) => new URL(url).origin !== new URL(baseURL!).origin),
-  ).toEqual([]);
 });
 
 test("T30: missing and evicted caches revoke adult offline-ready status", async ({

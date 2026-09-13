@@ -34,20 +34,27 @@ const actionable = performance.now() - started;
 await page.waitForFunction(
   () => document.querySelector("canvas")?.getAttribute("data-art") === "5",
 );
+await page.evaluate(
+  () =>
+    new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve)),
+    ),
+);
 const painted = performance.now() - started;
 report.coldStart = {
   actionableMs: Math.round(actionable),
-  paintedSpritesMs: Math.round(painted),
+  spritesRenderedMs: Math.round(painted),
   profile:
     "10 Mbps download/upload; 50ms protocol latency; fresh browser cache; service worker blocked to isolate first-interaction files; local production server with real CSP and uncompressed responses",
   requests: await page.evaluate(() =>
-    performance
-      .getEntriesByType("resource")
-      .map((r) => ({
-        path: new URL(r.name).pathname,
-        transferSize: r.transferSize,
-        encodedBodySize: r.encodedBodySize,
-      })),
+    [
+      ...performance.getEntriesByType("navigation"),
+      ...performance.getEntriesByType("resource"),
+    ].map((r) => ({
+      path: new URL(r.name).pathname,
+      transferSize: r.transferSize,
+      encodedBodySize: r.encodedBodySize,
+    })),
   ),
   note: "Background offline precache (including optional music) measured separately by budget audit. No physical-device startup inference.",
 };
@@ -155,6 +162,9 @@ for (const toy of ["squishy", "bubbles", "nest"]) {
     .focus();
   await p.keyboard.press("Enter");
   await p.getByText("Technical status", { exact: true }).click();
+  await p
+    .getByRole("button", { name: "Refresh technical status", exact: true })
+    .click();
   const status = JSON.parse(await p.locator(".runtime-status").innerText());
   report.toys.push({
     toy,

@@ -1,0 +1,214 @@
+{
+  "build": "v0.1.0-228d3ff2889a",
+  "browser": "153.0.8010.12",
+  "environment": "Windows desktop Chromium; synthetic pointer workload, not iPad",
+  "traceSecondsPerToy": 10,
+  "coldStart": {
+    "actionableMs": 471,
+    "spritesRenderedMs": 746,
+    "profile": "10 Mbps download/upload; 50ms protocol latency; fresh browser cache; service worker blocked to isolate first-interaction files; local production server with real CSP and uncompressed responses",
+    "requests": [
+      {
+        "path": "/",
+        "transferSize": 1410,
+        "encodedBodySize": 1110
+      },
+      {
+        "path": "/assets/index-7qvsj53n.js",
+        "transferSize": 275630,
+        "encodedBodySize": 275330
+      },
+      {
+        "path": "/assets/index-PQmrGs-k.css",
+        "transferSize": 11721,
+        "encodedBodySize": 11421
+      },
+      {
+        "path": "/assets/bowl.webp",
+        "transferSize": 26556,
+        "encodedBodySize": 26256
+      },
+      {
+        "path": "/assets/ball.webp",
+        "transferSize": 36250,
+        "encodedBodySize": 35950
+      },
+      {
+        "path": "/assets/ball-two.webp",
+        "transferSize": 38330,
+        "encodedBodySize": 38030
+      },
+      {
+        "path": "/assets/bubble.webp",
+        "transferSize": 46196,
+        "encodedBodySize": 45896
+      },
+      {
+        "path": "/assets/friend.webp",
+        "transferSize": 57638,
+        "encodedBodySize": 57338
+      }
+    ],
+    "note": "Background offline precache (including optional music) measured separately by budget audit. No physical-device startup inference."
+  },
+  "toys": [
+    {
+      "toy": "squishy",
+      "syntheticActiveRafMs": {
+        "samples": 601,
+        "p50": 16.699999999999818,
+        "p95": 16.700000000000728,
+        "max": 16.80000000000109,
+        "over50ms": 0
+      },
+      "runtime": {
+        "buildId": "v0.1.0-228d3ff2889a",
+        "toy": "squishy",
+        "paused": true,
+        "effectiveMotion": "gentle",
+        "residentImages": 5,
+        "pointers": 0,
+        "canvasPixels": 1771470,
+        "backingScale": 1.5,
+        "effects": 0,
+        "audioEnabled": false,
+        "audioState": "not-created",
+        "voices": 0,
+        "musicEnabled": false,
+        "musicPlaying": false,
+        "musicState": "not-created",
+        "musicElements": 0,
+        "diagnosticsEnabled": true,
+        "timings": {
+          "frameIntervalsMs": {
+            "samples": 628,
+            "p50": 16.699999999999818,
+            "p95": 16.700000000000728,
+            "max": 16.80000000000109,
+            "over50ms": 0
+          },
+          "updateDrawMs": {
+            "samples": 631,
+            "p50": 0.4000000059604645,
+            "p95": 0.7000000178813934,
+            "max": 1.5,
+            "over50ms": 0
+          },
+          "inputToRenderMs": {
+            "samples": 603,
+            "p50": 16.5,
+            "p95": 17.5,
+            "max": 18.5,
+            "over50ms": 0
+          }
+        }
+      }
+    },
+    {
+      "toy": "bubbles",
+      "syntheticActiveRafMs": {
+        "samples": 601,
+        "p50": 16.699999999999818,
+        "p95": 16.799999999999272,
+        "max": 16.80000000000109,
+        "over50ms": 0
+      },
+      "runtime": {
+        "buildId": "v0.1.0-228d3ff2889a",
+        "toy": "bubbles",
+        "paused": true,
+        "effectiveMotion": "gentle",
+        "residentImages": 5,
+        "pointers": 0,
+        "canvasPixels": 1771470,
+        "backingScale": 1.5,
+        "effectiveBubbleCount": 6,
+        "bubbleLayoutLimited": false,
+        "effects": 0,
+        "audioEnabled": false,
+        "audioState": "not-created",
+        "voices": 0,
+        "musicEnabled": false,
+        "musicPlaying": false,
+        "musicState": "not-created",
+        "musicElements": 0,
+        "diagnosticsEnabled": true,
+        "timings": {
+          "frameIntervalsMs": {
+            "samples": 429,
+            "p50": 16.699999999999818,
+            "p95": 16.799999999999727,
+            "max": 16.80000000000109,
+            "over50ms": 0
+          },
+          "updateDrawMs": {
+            "samples": 605,
+            "p50": 0.09999999403953552,
+            "p95": 0.20000001788139343,
+            "max": 0.30000001192092896,
+            "over50ms": 0
+          },
+          "inputToRenderMs": {
+            "samples": 603,
+            "p50": 16.599999994039536,
+            "p95": 17.5,
+            "max": 18.599999994039536,
+            "over50ms": 0
+          }
+        }
+      }
+    },
+    {
+      "toy": "nest",
+      "syntheticActiveRafMs": {
+        "samples": 601,
+        "p50": 16.699999999999818,
+        "p95": 16.700000000000728,
+        "max": 16.80000000000109,
+        "over50ms": 0
+      },
+      "runtime": {
+        "buildId": "v0.1.0-228d3ff2889a",
+        "toy": "nest",
+        "paused": true,
+        "effectiveMotion": "gentle",
+        "residentImages": 5,
+        "pointers": 0,
+        "canvasPixels": 1771470,
+        "backingScale": 1.5,
+        "effects": 0,
+        "audioEnabled": false,
+        "audioState": "not-created",
+        "voices": 0,
+        "musicEnabled": false,
+        "musicPlaying": false,
+        "musicState": "not-created",
+        "musicElements": 0,
+        "diagnosticsEnabled": true,
+        "timings": {
+          "frameIntervalsMs": {
+            "samples": 0,
+            "p50": 0,
+            "p95": 0,
+            "max": 0,
+            "over50ms": 0
+          },
+          "updateDrawMs": {
+            "samples": 605,
+            "p50": 0.09999999403953552,
+            "p95": 0.20000001788139343,
+            "max": 0.20000001788139343,
+            "over50ms": 0
+          },
+          "inputToRenderMs": {
+            "samples": 603,
+            "p50": 16.599999994039536,
+            "p95": 17.600000023841858,
+            "max": 20.099999994039536,
+            "over50ms": 0
+          }
+        }
+      }
+    }
+  ]
+}

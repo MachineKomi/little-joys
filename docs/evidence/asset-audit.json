@@ -1,0 +1,117 @@
+{
+  "passed": true,
+  "productionFiles": 20,
+  "rasterCount": 11,
+  "uniqueRuntimeRasters": 8,
+  "encodedRasterBytes": 646155,
+  "decodedRasterBytesEstimate": 7491136,
+  "note": "All shipped rasters counted conservatively; this estimate is not Safari total RAM. Audio is audited by encoded bytes and hash, and is streamed without a complete decoded AudioBuffer.",
+  "audio": [
+    {
+      "id": "music",
+      "path": "/assets/music.mp3",
+      "encodedBytes": 3458184
+    }
+  ],
+  "assets": [
+    {
+      "id": "toy-squishy",
+      "path": "/assets/toy-squishy.png",
+      "width": 384,
+      "height": 288,
+      "encodedBytes": 57076,
+      "decodedBytes": 442368,
+      "alpha": false
+    },
+    {
+      "id": "toy-bubbles",
+      "path": "/assets/toy-bubbles.png",
+      "width": 384,
+      "height": 288,
+      "encodedBytes": 29377,
+      "decodedBytes": 442368,
+      "alpha": false
+    },
+    {
+      "id": "toy-nest",
+      "path": "/assets/toy-nest.png",
+      "width": 384,
+      "height": 288,
+      "encodedBytes": 67919,
+      "decodedBytes": 442368,
+      "alpha": false
+    },
+    {
+      "id": "icon-192",
+      "path": "/icons/icon-192.png",
+      "width": 192,
+      "height": 192,
+      "encodedBytes": 41570,
+      "decodedBytes": 147456,
+      "alpha": false
+    },
+    {
+      "id": "icon-512",
+      "path": "/icons/icon-512.png",
+      "width": 512,
+      "height": 512,
+      "encodedBytes": 209551,
+      "decodedBytes": 1048576,
+      "alpha": false
+    },
+    {
+      "id": "apple-touch-icon",
+      "path": "/icons/apple-touch-icon.png",
+      "width": 180,
+      "height": 180,
+      "encodedBytes": 37192,
+      "decodedBytes": 129600,
+      "alpha": false
+    },
+    {
+      "id": "friend",
+      "path": "/assets/friend.webp",
+      "width": 768,
+      "height": 768,
+      "encodedBytes": 57338,
+      "decodedBytes": 2359296,
+      "alpha": true
+    },
+    {
+      "id": "bowl",
+      "path": "/assets/bowl.webp",
+      "width": 768,
+      "height": 231,
+      "encodedBytes": 26256,
+      "decodedBytes": 709632,
+      "alpha": true
+    },
+    {
+      "id": "ball",
+      "path": "/assets/ball.webp",
+      "width": 384,
+      "height": 384,
+      "encodedBytes": 35950,
+      "decodedBytes": 589824,
+      "alpha": true
+    },
+    {
+      "id": "ball-two",
+      "path": "/assets/ball-two.webp",
+      "width": 384,
+      "height": 384,
+      "encodedBytes": 38030,
+      "decodedBytes": 589824,
+      "alpha": true
+    },
+    {
+      "id": "bubble",
+      "path": "/assets/bubble.webp",
+      "width": 384,
+      "height": 384,
+      "encodedBytes": 45896,
+      "decodedBytes": 589824,
+      "alpha": true
+    }
+  ]
+}

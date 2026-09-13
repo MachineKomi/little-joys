@@ -2,6 +2,8 @@
 
 Implementation-time owner refinements to the raster and music restrictions are recorded in [IMPLEMENTATION-NOTES.md](IMPLEMENTATION-NOTES.md). Requirement IDs and all autonomy, privacy, input, motion, and budget limits remain in force.
 
+The owner has approved a fourth toy for v0.1.1. Its normative additions and explicit raster-count allocation are in [PENGUIN-BOUNCE-SPEC.md](PENGUIN-BOUNCE-SPEC.md). The sections below describe the three-toy v0.1.0 baseline; the extension preserves its shared privacy, autonomy and resource limits.
+
 ## 1. Product decision
 
 Build a small, attractive touchscreen toybox, not a curriculum, a smaller maze game, or an autism treatment. Its promise is: **touch something, immediately change it, enjoy the result, repeat or leave freely**.

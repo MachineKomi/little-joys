@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 import sharp from "sharp";
 
 // These are browser-injected PointerEvent checks, not physical touch or iPad evidence.
@@ -242,7 +242,7 @@ test("T23: Pause freezes the drawn toy and input until explicit Resume", async (
 
 for (const dpr of [1, 1.5, 2]) {
   test(`T07: logical touch location is consistent at DPR ${dpr}`, async ({
-    browser,
+    toyBrowser: browser,
     baseURL,
   }) => {
     const context = await browser.newContext({
@@ -348,7 +348,7 @@ test("T31/T33/T34: complete toy switching stays same-origin with neutral product
 });
 
 test("T33: delayed sprite completion cannot replace the selected toy", async ({
-  browser,
+  toyBrowser: browser,
   baseURL,
 }) => {
   const context = await browser.newContext({

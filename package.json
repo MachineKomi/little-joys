@@ -10,9 +10,10 @@
     "preview": "vite preview --host 0.0.0.0",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "check:types": "tsc --noEmit -p tsconfig.test.json",
     "check:assets": "node scripts/asset-audit.mjs",
     "check:budgets": "node scripts/budget-check.mjs",
-    "check": "npm run test && npm run build && npm run check:assets && npm run check:budgets && npm run test:e2e"
+    "check": "npm run check:types && npm run test && npm run build && npm run check:assets && npm run check:budgets && npm run test:e2e"
   },
   "dependencies": {
     "react": "^19.1.1",

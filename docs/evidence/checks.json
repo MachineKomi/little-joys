@@ -1,0 +1,41 @@
+{
+  "date": "2026-09-13",
+  "buildId": "v0.1.0-228d3ff2889a",
+  "command": "npm run check",
+  "exitCode": 0,
+  "unit": {
+    "files": 10,
+    "passed": 111,
+    "failed": 0
+  },
+  "browser": {
+    "total": 74,
+    "passed": 68,
+    "failed": 0,
+    "skipped": 6,
+    "chromium": {
+      "passed": 37,
+      "failed": 0
+    },
+    "windowsWebKit": {
+      "passed": 31,
+      "failed": 0,
+      "skipped": 6,
+      "skipReason": "No native AudioContext in this Windows WebKit build; audio-capability-specific tests unavailable, not passed."
+    }
+  },
+  "typeCheck": "passed",
+  "productionBuild": "passed",
+  "assetAudit": "passed",
+  "budgetAudit": "passed",
+  "npmAudit": {
+    "vulnerabilities": 0
+  },
+  "physicalIPad": "not tested",
+  "deployment": "See DELIVERY.md and hosted-check.json for separately verified hosted status.",
+  "notes": [
+    "Fresh native Windows WebKit process per test; no retries. Multi-window and 100-switch scenarios preserve one process throughout each test.",
+    "Offline verification denies the actual same-origin server. Chromium also uses its offline override. Windows WebKit override itself failed separately; documented in PWA-TEST-EVIDENCE.md.",
+    "Local raw final output remains .local/final-check.log; Playwright HTML report remains playwright-report/index.html. Private and machine-specific raw outputs are excluded from Git."
+  ]
+}

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 test('T32/T33: 100 DOM scene switches preserve the page and bounded idle resources', async ({ page }) => {
   test.setTimeout(90_000);
@@ -38,6 +38,7 @@ test('T32/T33: 100 DOM scene switches preserve the page and bounded idle resourc
   await page.getByRole('button', { name: 'Open parent settings', exact: true }).press('Enter');
   await expect(page.getByRole('dialog', { name: 'Parent settings', exact: true })).toBeVisible();
   await page.getByText('Technical status', { exact: true }).click();
+  await page.getByRole('button', { name: 'Refresh technical status', exact: true }).click();
   const status = JSON.parse(await page.locator('.runtime-status').innerText()) as Record<string, unknown>;
   expect(status).toMatchObject({
     toy: 'bubbles', paused: true, residentImages: 5, pointers: 0,
