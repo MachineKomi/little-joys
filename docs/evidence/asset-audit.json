@@ -3,7 +3,7 @@
   "productionFiles": 22,
   "rasterCount": 13,
   "uniqueRuntimeRasters": 10,
-  "encodedRasterBytes": 715524,
+  "encodedRasterBytes": 776772,
   "decodedRasterBytesEstimate": 8982080,
   "preparedMaterialBytes": 2359296,
   "preparationReadbackBytes": 2359296,
@@ -33,7 +33,7 @@
       "path": "/assets/toy-bubbles.png",
       "width": 384,
       "height": 288,
-      "encodedBytes": 29377,
+      "encodedBytes": 82623,
       "decodedBytes": 442368,
       "alpha": false
     },
@@ -42,7 +42,7 @@
       "path": "/assets/toy-nest.png",
       "width": 384,
       "height": 288,
-      "encodedBytes": 67919,
+      "encodedBytes": 74594,
       "decodedBytes": 442368,
       "alpha": false
     },
@@ -51,7 +51,7 @@
       "path": "/assets/toy-bounce.png",
       "width": 384,
       "height": 288,
-      "encodedBytes": 41455,
+      "encodedBytes": 42782,
       "decodedBytes": 442368,
       "alpha": false
     },

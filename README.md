@@ -30,17 +30,20 @@ The production harness serves [http://127.0.0.1:4173](http://127.0.0.1:4173) wit
 - Drag different parts of the friend, swipe across bubbles, or pick up and release balls near the bowl. The curl, cheeks, eyes and feet each stretch differently. In Playful, letting go of a pull slings the friend, and touching it catches it wherever it is. Two balls can be removed independently.
 - In **Penguin Bounce**, the penguin drops balls on its own for two minutes after the last touch. Tap open board space to add a ball, or tap the penguin for another from its chute. Tap a broad wooden deflector to turn it, the pinwheel to spin it or a bumper to pulse it, and swipe near balls to nudge them. When the two minutes pass, the board settles and sleeps; another tap always works, including when its ball pool is full.
 - **Pause** freezes play. **Mute** only turns sound off. Both music and effects start silent on every fresh visit until an adult enables them.
-- **Toybox** has four stable picture tiles. Hold the small parent control for two seconds to open settings; keyboard and assistive-technology activation are also supported.
+- **Toybox** has four stable picture tiles. Hold the small **Parents** control, marked Hold 2s, for two seconds to open settings; keyboard and assistive-technology activation are also supported.
 - Parent settings offer three/six bubbles, one/two nesting balls, drag/tap-to-place, eight/16/24 bouncing balls, Gentle/Playful motion, startup toy, separate sound/music controls, and local technical status. System reduced motion always uses Gentle.
 
 The DOM controls are labelled and keyboard reachable. Canvas toy manipulation is a direct-touch/pointer experience; full nonvisual toy interaction is not claimed.
 
-The working branch `codex/expressive-squish` carries an **undeployed** candidate for two toys:
+Version 0.1.2 combines two toy lanes:
 
 - **Squishy Friend:** much larger local squishes that depend on where the friend is touched. The curl pulls out like a tail, the cheeks squish wide, the eyes stretch and the feet stay stubby. In Playful, letting go slings the whole friend across the board. It squashes against the edges, sways like jelly and comes home within a few seconds, and a touch catches it mid-flight.
 - **Penguin Bounce:** a denser, brighter board. The penguin stands on a snow shelf and keeps dropping balls for two minutes after the last touch. The board adds bumpers, a pinwheel, funnel rails and six ball colours.
+- **Bubble Pond:** bubbles visibly break into iridescent arcs, with droplets and ripples in Playful, and come back in varied safe places.
+- **Roll & Nest:** a nested ball sits behind the bowl's painted front lip. In Playful, a released ball rolls, spins and rebounds from the edges, and two free balls can bump.
+- **Every toy** shows the version and a short build code in its top corner, and the parent control is marked Hold 2s.
 
-Gentle and system reduced motion keep both toys quiet. Bubble Pond and Roll & Nest refinements are in a separate lane. See [delivery evidence](docs/DELIVERY.md) and the [prioritized refinement record](docs/FEEDBACK-AND-REFINEMENTS.md); technical checks do not establish enjoyment.
+Gentle and system reduced motion keep every toy quiet. See [delivery evidence](docs/DELIVERY.md), which records where this version is hosted, and the [prioritized refinement record](docs/FEEDBACK-AND-REFINEMENTS.md); technical checks do not establish enjoyment.
 
 ## Test
 

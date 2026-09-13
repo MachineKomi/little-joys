@@ -20,7 +20,7 @@ This candidate carries the Squishy Friend and Penguin Bounce work (LJ-20, LJ-22)
 | Browser suite, both engines | 93 passed (Chromium 50, Windows WebKit 43), 7 skipped, 0 failed, 7.0 minutes |
 | `npm ci` | Not re-run: no dependency or lockfile change since the last clean install. A release run must include it. |
 
-The 7 skips are the Windows WebKit build's missing native AudioContext; they are unavailable audio cases, not passes. Earlier in this round, one combined Squishy-only run failed a Windows WebKit four-contact reclaim case and reported one error outside any test. That run's log was truncated, so its details were lost. Isolated reruns and both complete runs passed; the cause is not established. See [check record](evidence/checks.json).
+The 7 skips are the Windows WebKit build's missing native AudioContext; they are unavailable audio cases, not passes. Earlier in this round, one combined Squishy-only run failed a Windows WebKit four-contact reclaim case and reported one error outside any test. That run's log was truncated, so its details were lost. Isolated reruns and both complete runs passed; the cause is not established. See [check record](evidence/fable-lj20-lj22/checks-664e.json).
 
 | Measured budget | Result |
 |---|---|
@@ -55,7 +55,7 @@ The tinted balls are six prepared surfaces of at most 66px square, 104,544 bytes
 | Playful, four contacts | 33.4ms | 33.4ms | 33.3ms | 16.8ms |
 | Playful sling cycles | 33.4ms | 33.3ms | 16.8ms | 16.7ms |
 
-Both builds moved between one and two display intervals at p95 from run to run. Update/draw p95 stayed between 0.9 and 1.3ms in every Squishy workload. The review repairs therefore have no measurable timing cost on this host, and the 33ms figures reflect the machine's load at the time. No run had a probe gap over 50ms. Penguin Bounce Playful also measured 33.2ms p95 in the first pre-review run and 16.7–16.8ms in the other three. The runtime window's longer intervals, up to 166.7ms for the pre-review build and 100.0ms for this one, fall outside the input loop in both builds and have no established cause. The cold desktop start was actionable at 517ms, with all sprites rendered at 832ms and 569,804 bytes transferred. None of this is physical iPad performance. [Full timing summaries](evidence/desktop-performance.json).
+Both builds moved between one and two display intervals at p95 from run to run. Update/draw p95 stayed between 0.9 and 1.3ms in every Squishy workload. The review repairs therefore have no measurable timing cost on this host. Both builds produced the two-interval runs, and what causes them is not established. No run had a probe gap over 50ms. Penguin Bounce Playful also measured 33.2ms p95 in the first pre-review run and 16.7–16.8ms in the other three. The runtime window's longer intervals, up to 166.7ms for the pre-review build and 100.0ms for this one, fall outside the input loop in both builds and have no established cause. The cold desktop start was actionable at 517ms, with all sprites rendered at 832ms and 569,804 bytes transferred. None of this is physical iPad performance. [Full timing summaries](evidence/fable-lj20-lj22/desktop-performance-664e.json) and the [alternating-run summary](evidence/fable-lj20-lj22/ab-timing-summary.json).
 
 **Rendered evidence.** Frames captured from this build with a fake browser clock are in [evidence/fable-lj20-lj22](evidence/fable-lj20-lj22/README.md).
 

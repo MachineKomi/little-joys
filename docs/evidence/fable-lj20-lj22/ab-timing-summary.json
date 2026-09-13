@@ -1,0 +1,285 @@
+{
+  "note": "Alternating same-machine desktop Chromium runs of the pre-review build v0.1.2-329dc2c8d902 and candidate v0.1.2-664e98e42c76, 10-second synthetic workloads each, measured with scripts/measure-preview.mjs on 13 September 2026. Probe values are the live-input frame intervals; updateDrawP95 and runtimeMax come from the runtime window. Not physical iPad evidence.",
+  "runs": [
+    {
+      "run": 1,
+      "name": "baseline",
+      "build": "v0.1.2-329dc2c8d902",
+      "rows": [
+        {
+          "workload": "squishy/gentle",
+          "p50": 16.700000000000045,
+          "p95": 33.400000000000546,
+          "max": 49.899999999999636,
+          "over50": 0,
+          "updateDrawP95": 1.2000000178813934,
+          "runtimeMax": 49.899999999999636
+        },
+        {
+          "workload": "squishy/playful",
+          "p50": 16.69999999999999,
+          "p95": 33.399999999999636,
+          "max": 33.400000000001455,
+          "over50": 0,
+          "updateDrawP95": 1.2999999821186066,
+          "runtimeMax": 116.59999999999854
+        },
+        {
+          "workload": "squishy/playful/sling",
+          "p50": 16.699999999999818,
+          "p95": 33.399999999999636,
+          "max": 33.5,
+          "over50": 0,
+          "updateDrawP95": 1.0999999940395355,
+          "runtimeMax": 83.40000000000146
+        },
+        {
+          "workload": "bubbles/gentle",
+          "p50": 16.699999999999818,
+          "p95": 16.700000000000728,
+          "max": 16.80000000000109,
+          "over50": 0,
+          "updateDrawP95": 0.20000001788139343,
+          "runtimeMax": 16.80000000000109
+        },
+        {
+          "workload": "nest/gentle",
+          "p50": 16.699999999999818,
+          "p95": 16.700000000000728,
+          "max": 16.80000000000109,
+          "over50": 0,
+          "updateDrawP95": 0.20000001788139343,
+          "runtimeMax": 0
+        },
+        {
+          "workload": "bounce/gentle",
+          "p50": 16.699999999999818,
+          "p95": 16.700000000000728,
+          "max": 16.80000000000109,
+          "over50": 0,
+          "updateDrawP95": 1,
+          "runtimeMax": 116.70000000000073
+        },
+        {
+          "workload": "bounce/playful",
+          "p50": 16.699999999999818,
+          "p95": 33.19999999999891,
+          "max": 33.400000000000546,
+          "over50": 0,
+          "updateDrawP95": 1.199999988079071,
+          "runtimeMax": 166.70000000000073
+        }
+      ]
+    },
+    {
+      "run": 2,
+      "name": "current",
+      "build": "v0.1.2-664e98e42c76",
+      "rows": [
+        {
+          "workload": "squishy/gentle",
+          "p50": 16.699999999999932,
+          "p95": 33.399999999999636,
+          "max": 33.5,
+          "over50": 0,
+          "updateDrawP95": 1.2999999821186066,
+          "runtimeMax": 33.5
+        },
+        {
+          "workload": "squishy/playful",
+          "p50": 16.69999999999999,
+          "p95": 33.399999999999864,
+          "max": 33.400000000001455,
+          "over50": 0,
+          "updateDrawP95": 1.2000000178813934,
+          "runtimeMax": 100
+        },
+        {
+          "workload": "squishy/playful/sling",
+          "p50": 16.699999999999818,
+          "p95": 33.30000000000109,
+          "max": 33.5,
+          "over50": 0,
+          "updateDrawP95": 1.0999999940395355,
+          "runtimeMax": 100
+        },
+        {
+          "workload": "bubbles/gentle",
+          "p50": 16.699999999999818,
+          "p95": 16.700000000000728,
+          "max": 16.80000000000109,
+          "over50": 0,
+          "updateDrawP95": 0.20000001788139343,
+          "runtimeMax": 16.80000000000109
+        },
+        {
+          "workload": "nest/gentle",
+          "p50": 16.699999999999818,
+          "p95": 16.700000000000728,
+          "max": 16.80000000000109,
+          "over50": 0,
+          "updateDrawP95": 0.20000001788139343,
+          "runtimeMax": 0
+        },
+        {
+          "workload": "bounce/gentle",
+          "p50": 16.699999999999818,
+          "p95": 16.799999999999272,
+          "max": 16.80000000000109,
+          "over50": 0,
+          "updateDrawP95": 0.800000011920929,
+          "runtimeMax": 66.69999999999891
+        },
+        {
+          "workload": "bounce/playful",
+          "p50": 16.699999999999818,
+          "p95": 16.700000000000728,
+          "max": 16.800000000000182,
+          "over50": 0,
+          "updateDrawP95": 0.9000000059604645,
+          "runtimeMax": 100
+        }
+      ]
+    },
+    {
+      "run": 3,
+      "name": "baseline",
+      "build": "v0.1.2-329dc2c8d902",
+      "rows": [
+        {
+          "workload": "squishy/gentle",
+          "p50": 16.699999999999818,
+          "p95": 16.800000000000182,
+          "max": 33.400000000000546,
+          "over50": 0,
+          "updateDrawP95": 1,
+          "runtimeMax": 33.400000000000546
+        },
+        {
+          "workload": "squishy/playful",
+          "p50": 16.699999999999818,
+          "p95": 33.29999999999927,
+          "max": 33.400000000000546,
+          "over50": 0,
+          "updateDrawP95": 1,
+          "runtimeMax": 49.899999999999636
+        },
+        {
+          "workload": "squishy/playful/sling",
+          "p50": 16.699999999999818,
+          "p95": 16.799999999999272,
+          "max": 33.399999999999636,
+          "over50": 0,
+          "updateDrawP95": 0.9000000059604645,
+          "runtimeMax": 66.59999999999854
+        },
+        {
+          "workload": "bubbles/gentle",
+          "p50": 16.699999999999818,
+          "p95": 16.700000000000728,
+          "max": 16.80000000000109,
+          "over50": 0,
+          "updateDrawP95": 0.20000001788139343,
+          "runtimeMax": 16.80000000000109
+        },
+        {
+          "workload": "nest/gentle",
+          "p50": 16.699999999999818,
+          "p95": 16.700000000000728,
+          "max": 16.80000000000109,
+          "over50": 0,
+          "updateDrawP95": 0.20000001788139343,
+          "runtimeMax": 0
+        },
+        {
+          "workload": "bounce/gentle",
+          "p50": 16.699999999999818,
+          "p95": 16.700000000000728,
+          "max": 16.80000000000109,
+          "over50": 0,
+          "updateDrawP95": 0.9000000059604645,
+          "runtimeMax": 66.59999999999854
+        },
+        {
+          "workload": "bounce/playful",
+          "p50": 16.699999999999818,
+          "p95": 16.700000000000728,
+          "max": 16.80000000000109,
+          "over50": 0,
+          "updateDrawP95": 1,
+          "runtimeMax": 116.70000000000073
+        }
+      ]
+    },
+    {
+      "run": 4,
+      "name": "current",
+      "build": "v0.1.2-664e98e42c76",
+      "rows": [
+        {
+          "workload": "squishy/gentle",
+          "p50": 16.699999999999818,
+          "p95": 16.800000000000182,
+          "max": 33.5,
+          "over50": 0,
+          "updateDrawP95": 1,
+          "runtimeMax": 33.5
+        },
+        {
+          "workload": "squishy/playful",
+          "p50": 16.699999999999818,
+          "p95": 16.800000000000182,
+          "max": 33.400000000000546,
+          "over50": 0,
+          "updateDrawP95": 1,
+          "runtimeMax": 66.69999999999891
+        },
+        {
+          "workload": "squishy/playful/sling",
+          "p50": 16.699999999999818,
+          "p95": 16.700000000000728,
+          "max": 33.30000000000018,
+          "over50": 0,
+          "updateDrawP95": 0.9000000059604645,
+          "runtimeMax": 66.60000000000036
+        },
+        {
+          "workload": "bubbles/gentle",
+          "p50": 16.699999999999818,
+          "p95": 16.700000000000728,
+          "max": 16.80000000000109,
+          "over50": 0,
+          "updateDrawP95": 0.20000001788139343,
+          "runtimeMax": 16.80000000000109
+        },
+        {
+          "workload": "nest/gentle",
+          "p50": 16.699999999999818,
+          "p95": 16.799999999999272,
+          "max": 16.80000000000109,
+          "over50": 0,
+          "updateDrawP95": 0.20000001788139343,
+          "runtimeMax": 0
+        },
+        {
+          "workload": "bounce/gentle",
+          "p50": 16.699999999999818,
+          "p95": 16.700000000000728,
+          "max": 16.80000000000109,
+          "over50": 0,
+          "updateDrawP95": 0.800000011920929,
+          "runtimeMax": 50.10000000000001
+        },
+        {
+          "workload": "bounce/playful",
+          "p50": 16.699999999999818,
+          "p95": 16.700000000000728,
+          "max": 16.80000000000109,
+          "over50": 0,
+          "updateDrawP95": 1,
+          "runtimeMax": 99.89999999999964
+        }
+      ]
+    }
+  ]
+}

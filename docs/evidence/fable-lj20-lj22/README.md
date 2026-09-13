@@ -36,4 +36,6 @@ A poke changed the friend's height by -7% at 50ms and +2.5% at 83ms, and it was 
 | `bounce-phone-playful-2-flow-14s-no-touch.png` | Phone 360×640, Playful, 14 seconds with no touch. |
 | `bounce-landscape-playful-2-flow-14s-no-touch.png` | Landscape 1080×810, Playful, 14 seconds with no touch. |
 
+`desktop-performance-664e.json` holds the fourth alternating timing run for this build, `ab-timing-summary.json` summarizes all four alternating runs with the pre-review build, and `checks-664e.json` is its check record.
+
 Timing, budget and browser-test evidence for the same build are in [DELIVERY.md](../../DELIVERY.md) and [checks.json](../checks.json).

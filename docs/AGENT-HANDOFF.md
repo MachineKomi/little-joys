@@ -27,14 +27,24 @@ Useful local artifacts: `.local/squish-review-{1,2}/`, `.local/v012-perf-c63c/`,
 
 ## Fable lane progress (Squishy Friend and Penguin Bounce)
 
-Work continues on `codex/expressive-squish` in the main checkout. Nothing from this lane is deployed; the live build is still v0.1.1. [DELIVERY.md](DELIVERY.md) holds the actual check results for the candidate once complete.
+This lane's work is on `codex/expressive-squish` and is merged into `release/v0.1.2`, described below. [DELIVERY.md](DELIVERY.md) holds the actual check results.
 
 - **Penguin Bounce (LJ-20):** the penguin now stands on a snow shelf at the top of the board and drops balls from a chute. The board adds three bumpers, a pinwheel, two funnel rails, six-colour balls and a denser peg field, with the layout keeping a full ball passage everywhere. Passive flow runs for a 120-second attended window after entry or the last touch, then the board settles and sleeps. The contract change is recorded in [PENGUIN-BOUNCE-SPEC.md](PENGUIN-BOUNCE-SPEC.md).
 - **Squishy Friend (LJ-22):** pulls now depend on the region touched: the curl stretches like a tail, cheeks squish wide, eyes stretch tightly and feet stay stubby. In Playful, a pull slings the whole friend across the board. It squashes against edges, leans and sways, then returns home within 3.6 seconds, and a touch catches it mid-flight. Gentle and reduced motion keep the quiet local return. The contract change is recorded in [EXPRESSIVE-SQUISH-SPEC.md](EXPRESSIVE-SQUISH-SPEC.md).
 - **Review and checks:** an independent read-only review rated the pre-repair build 7/10 and found two material Squishy defects. Both are repaired with regression tests. Candidate v0.1.2-664e98e42c76 then passed the complete check, and an alternating same-machine timing comparison with the pre-repair build showed no measurable cost from the repairs. See [DELIVERY.md](DELIVERY.md).
 - **Shared file touched:** `src/core/runtime.ts` only gains five Bounce-only technical status fields: flow active, input spawns, flow spawns, deflector angles and pinwheel spin. No settings, audio, asset-manifest or parent-panel change was made in this lane.
 - **Shared-shell request:** passive flow overrides the general no-unsolicited-motion rule for Penguin Bounce, including in Gentle and under system reduced motion (see the Penguin amendment). An adult "supply balls on their own" switch in Parent settings would let families turn it off; it needs a settings and parent-panel change, so it is left for coordination rather than made in this lane.
-- **Integration notes:** the Penguin Bounce picture tile (`public/assets/toy-bounce.png`) still shows the old board. It should be recaptured on the integrated branch with `scripts/capture-assets.mjs`, which also rewrites the shared asset manifest. The Squishy tile and icons are unchanged, because the rest pose is identical. Browser checks in this lane use port 4273 with a separate config, so they never reuse another lane's production server on 4173.
+- **Integration notes:** browser checks in this lane used port 4273 with a separate config, so they never reused another lane's production server on 4173. The picture tiles were recaptured during integration; see below.
+
+## Integration and release, 13 September 2026
+
+The owner reported that Codex had finished and asked for every update to be deployed for a family playtest, leaving integration to either agent. The Fable session took over integration. Codex's worktree and branch were left untouched.
+
+- **Merged:** `release/v0.1.2` starts from the Fable lane at `ebc1252` and merges `origin/codex/bubble-nest` at `285d2f3`. No toy code overlapped. The only conflict was the backlog header, which now describes both lanes.
+- **Picture tiles:** the Penguin Bounce, Bubble Pond and Roll & Nest tiles were recaptured from the integrated scenes with `scripts/capture-assets.mjs`, which also rewrote the asset manifest. The Squishy tile and icons came out byte-identical. The script now renders the Bounce tile from a tablet-sized board, because small boards drop pegs to keep full ball passages.
+- **Version:** 0.1.2, the first stable patch after the live v0.1.1. Integration changed no shared runtime, settings, audio or parent-panel code.
+- **Checks, review and hosting:** recorded in [DELIVERY.md](DELIVERY.md).
+- **Still open:** the adult passive-flow switch requested above, the second-look proposals in [NEXT-PLAY-DESIGN.md](NEXT-PLAY-DESIGN.md), physical iPad checks and private play observations.
 
 ## Latest owner direction
 
