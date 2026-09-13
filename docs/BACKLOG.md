@@ -25,6 +25,19 @@ Updated 13 September 2026. Only the current Penguin Bounce patch is approved for
 | LJ-17 | Warmer, more playful presentation | Recorded design priority; preserve the approved character appearance. | Reduce the clinical/corporate feel with original toyroom details and tactile controls while preserving contrast, touch targets, simple navigation and resource limits. |
 | LJ-18 | Livelier Penguin Bounce feedback | Implemented and reviewed in v0.1.1; complete automated check passed. | Brighter local collision lights, colorful bounded impact bursts and a small touch-triggered penguin reaction in Playful mode. Preserve useful broad input, quiet Gentle behavior, supported sleep, pause and fixed effect/physics budgets. |
 
+## Second-look proposals: planning only
+
+The latest [owner feedback](feedback/BUBBLE-NEST-SECOND-LOOK.md) says the two toys improved but still need richer outcomes. The [design response](NEXT-PLAY-DESIGN.md) distinguishes original suggestions, recommended experiments and deferred options. These local IDs avoid colliding with the other agent's LJ entries; reconcile the ledgers during integration. None is a new implementation commitment in this turn.
+
+| ID | Proposed item | Next decision |
+|---|---|---|
+| BNX-01 | Convincing soft bubble-pop audio and adult-enable discovery | Verify actual playback separately from replacing the generic tone; retain silent default and shared bounds. |
+| BNX-02 | More beautiful shell breakup, colored/interior variants, safe mixed sizes and a warmer setting | Preserve current appealing glass; prove readable visual variety within the same asset/target budgets. |
+| BNX-03 | Rainbow interactions and optional finite Playful drift | Test a local shared ripple without a speed gate. Numeric counters and timed combos remain recorded alternatives, not chosen requirements. |
+| BNX-04 | Bounce & Catch ball/bowl reimagining | After combined playtest, prototype hop/catch/tip-out with a movable broad bowl; explicitly amend slot/physics rules before implementation. |
+| BNX-05 | Combined build and private voluntary-play observations | Keep current lanes through integration, deploy once, then observe choice/repetition/comfort without a prescribed session or telemetry. |
+| BNX-06 | Portfolio and ownership decision | Cross-review before swapping owners; decide refine, retain, reversible archive, or a distinct new activity. Animal Sound Garden is the leading proposed new-toy alternative, not a committed fifth toy. |
+
 ## How an idea becomes work
 
 Choose one item explicitly, state the visible behavior and its limits, update the implementation contract when needed, and add only the tests or measurements needed to verify that change. Distinguish completed code from checks still pending. Original art and sound must have recorded provenance before shipping.

@@ -20,6 +20,8 @@ BN06 also includes a visible `Hold 2s` sublabel beneath Parents. The owner repor
 
 ## Architecture and work split
 
+Follow-up feedback is preserved in [second-look notes](feedback/BUBBLE-NEST-SECOND-LOOK.md), with proposed next contracts in [NEXT-PLAY-DESIGN.md](NEXT-PLAY-DESIGN.md). Those are design-only alternatives; BN01–BN07 above still describe the checked candidate. Moving targets, mixed radii, rainbow interactions and gravity/catching require an explicit future amendment before implementation.
+
 Primary agent owns design, bubble scene/placement, nesting scene/occlusion integration, visual review and final release evidence. Requested Spark delegation, when account/tool access permits, handles small isolated tasks such as build-label markup, pure bounded physics helpers and tests under explicit file ownership. Every result is reviewed; a model selection or tool attempt is not proof of access or separate billing.
 
 Changes stay in `.local/bubble-nest-worktree` on `codex/bubble-nest`. Shared setting/audio/runtime edits are avoided unless required and coordinated. Feature-branch backups skip Vercel app builds. Do not deploy a stale combination over another lane's reviewed release; inspect main and integrate deliberately. Bubble/Nest completion does not qualify or modify Claude's two toys.
