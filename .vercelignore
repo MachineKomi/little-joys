@@ -1,0 +1,10 @@
+.git
+node_modules
+docs
+art
+tests
+test-results
+playwright-report
+.local
+private
+.env*

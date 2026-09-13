@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "id": "toy-squishy",
+      "kind": "raster",
+      "path": "/assets/toy-squishy.png",
+      "width": 384,
+      "height": 288,
+      "encodedBytes": 57076,
+      "decodedBytes": 442368,
+      "alpha": false,
+      "sha256": "e41042256d74f0de0d2f5a69f0e09669afb9a1eb1124a3b2e03bb23d294197e1",
+      "provenance": "Captured from the implemented squishy scene and original generated sprites."
+    },
+    {
+      "id": "toy-bubbles",
+      "kind": "raster",
+      "path": "/assets/toy-bubbles.png",
+      "width": 384,
+      "height": 288,
+      "encodedBytes": 29377,
+      "decodedBytes": 442368,
+      "alpha": false,
+      "sha256": "3401c1a0989d42faaeea1b566d1947760012054eff02538078818688796a54dc",
+      "provenance": "Captured from the implemented bubbles scene and original generated sprites."
+    },
+    {
+      "id": "toy-nest",
+      "kind": "raster",
+      "path": "/assets/toy-nest.png",
+      "width": 384,
+      "height": 288,
+      "encodedBytes": 67919,
+      "decodedBytes": 442368,
+      "alpha": false,
+      "sha256": "664be543668546b7d337c0b353e6648e555f7ca1c9e0f4e14f54af2b7b78ad9e",
+      "provenance": "Captured from the implemented nest scene and original generated sprites."
+    },
+    {
+      "id": "icon-192",
+      "kind": "raster",
+      "path": "/icons/icon-192.png",
+      "width": 192,
+      "height": 192,
+      "encodedBytes": 41570,
+      "decodedBytes": 147456,
+      "alpha": false,
+      "sha256": "fbda190575a5d1403471ab67bcf8128405ee7c56abafed1b69485c94915b891c",
+      "provenance": "Original generated mascot captured in the implemented scene; art/PROVENANCE.md."
+    },
+    {
+      "id": "icon-512",
+      "kind": "raster",
+      "path": "/icons/icon-512.png",
+      "width": 512,
+      "height": 512,
+      "encodedBytes": 209551,
+      "decodedBytes": 1048576,
+      "alpha": false,
+      "sha256": "fb776715c83a82a6a7e17333f35aabdff1b171c1bc560e66bf3c20023dd374c6",
+      "provenance": "Original generated mascot captured in the implemented scene; art/PROVENANCE.md."
+    },
+    {
+      "id": "apple-touch-icon",
+      "kind": "raster",
+      "path": "/icons/apple-touch-icon.png",
+      "width": 180,
+      "height": 180,
+      "encodedBytes": 37192,
+      "decodedBytes": 129600,
+      "alpha": false,
+      "sha256": "42095ed52837fafe30016173bef9efeddb99de50fbfdfc8207190037b9dc00c5",
+      "provenance": "Original generated mascot captured in the implemented scene; art/PROVENANCE.md."
+    },
+    {
+      "id": "friend",
+      "kind": "raster",
+      "path": "/assets/friend.webp",
+      "width": 768,
+      "height": 768,
+      "encodedBytes": 57338,
+      "decodedBytes": 2359296,
+      "alpha": true,
+      "sha256": "2bcb5be61ae4afe42052bfafe1b7fdcf143cab6477020c0e3cb2733b4399e811",
+      "provenance": "Original development-time OpenAI image generation. Inspected runtime export; art/PROVENANCE.md and art/SPRITE-PROMPTS.md."
+    },
+    {
+      "id": "bowl",
+      "kind": "raster",
+      "path": "/assets/bowl.webp",
+      "width": 768,
+      "height": 231,
+      "encodedBytes": 26256,
+      "decodedBytes": 709632,
+      "alpha": true,
+      "sha256": "22f7c1bef77ef8fec86afdfdd0e626f16360f9389334815feefe72ffdb9e6f4a",
+      "provenance": "Original development-time OpenAI image generation. Inspected runtime export; art/PROVENANCE.md and art/SPRITE-PROMPTS.md."
+    },
+    {
+      "id": "ball",
+      "kind": "raster",
+      "path": "/assets/ball.webp",
+      "width": 384,
+      "height": 384,
+      "encodedBytes": 35950,
+      "decodedBytes": 589824,
+      "alpha": true,
+      "sha256": "6754a40ec159130c0033bfb5e51c43ea09bfb59095c598b215a5ae55e5b01f1e",
+      "provenance": "Original development-time OpenAI image generation. Inspected runtime export; art/PROVENANCE.md and art/SPRITE-PROMPTS.md."
+    },
+    {
+      "id": "ball-two",
+      "kind": "raster",
+      "path": "/assets/ball-two.webp",
+      "width": 384,
+      "height": 384,
+      "encodedBytes": 38030,
+      "decodedBytes": 589824,
+      "alpha": true,
+      "sha256": "c893ab4b23e7729436c907d0a8dcffdac4f15eadaecd1323fd1c9f33fa7bb075",
+      "provenance": "Original development-time OpenAI image generation. Inspected runtime export; art/PROVENANCE.md and art/SPRITE-PROMPTS.md."
+    },
+    {
+      "id": "bubble",
+      "kind": "raster",
+      "path": "/assets/bubble.webp",
+      "width": 384,
+      "height": 384,
+      "encodedBytes": 45896,
+      "decodedBytes": 589824,
+      "alpha": true,
+      "sha256": "4b9bd55c4613763fac26d3780c1f679960772326050d84be28f994ebd5d2f9b4",
+      "provenance": "Original development-time OpenAI image generation. Inspected runtime export; art/PROVENANCE.md and art/SPRITE-PROMPTS.md."
+    },
+    {
+      "id": "geometry-squishy",
+      "kind": "procedural",
+      "path": "src/toys/squishy/scene.ts",
+      "provenance": "Original Canvas2D geometry and drawing for Little Joys."
+    },
+    {
+      "id": "geometry-bubbles",
+      "kind": "procedural",
+      "path": "src/toys/bubbles/scene.ts",
+      "provenance": "Original Canvas2D geometry and drawing for Little Joys."
+    },
+    {
+      "id": "geometry-nest",
+      "kind": "procedural",
+      "path": "src/toys/nest/scene.ts",
+      "provenance": "Original Canvas2D geometry and drawing for Little Joys."
+    },
+    {
+      "id": "sfx",
+      "kind": "procedural",
+      "path": "src/core/audio.ts",
+      "provenance": "Original bounded sine tone synthesis; one consistent frequency per toy."
+    },
+    {
+      "id": "music",
+      "kind": "audio",
+      "path": "/assets/music.mp3",
+      "encodedBytes": 3458184,
+      "sha256": "599ed6e8ebc1002854c6fe4241f0d60d0d9a552e316a175f89dcf690e8090365",
+      "provenance": "Owner-delivered original soundtrack, selectively reused with current owner authorization; art/AUDIO-PROVENANCE.md. Streamed through one element; not decoded as full-track AudioBuffer."
+    }
+  ]
+}

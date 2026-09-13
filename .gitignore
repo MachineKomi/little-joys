@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.vercel/
+.env*
+!.env.example
+test-results/
+playwright-report/
+.local/
+docs/*transcript*
+docs/Little-Joys-Complete-Build-Pack.md
+private/
+*.log

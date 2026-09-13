@@ -1,0 +1,83 @@
+{
+  "generatedDuringDevelopment": true,
+  "recipes": [
+    {
+      "source": "squishy-friend-sprite-v2.png",
+      "output": "friend",
+      "width": 768,
+      "height": 768,
+      "sourceBytes": 1084993,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "sourceHasAlpha": true,
+      "sourceSha256": "4557017125dba0a24b1b417beca1b4089e236fbcb67a3d9ae63b72e9494deec7"
+    },
+    {
+      "source": "bowl-v1.png",
+      "output": "bowl",
+      "crop": {
+        "left": 111,
+        "top": 85,
+        "width": 1950,
+        "height": 586
+      },
+      "width": 768,
+      "sourceBytes": 1074539,
+      "sourceWidth": 2172,
+      "sourceHeight": 724,
+      "sourceHasAlpha": true,
+      "sourceSha256": "5a987fc7df102affffb6f2ebba66c5bfc7c31ebc40bc953a3688d410105363d0"
+    },
+    {
+      "source": "ball-v1.png",
+      "output": "ball",
+      "crop": {
+        "left": 90,
+        "top": 108,
+        "width": 1096,
+        "height": 1080
+      },
+      "width": 384,
+      "height": 384,
+      "sourceBytes": 1557723,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "sourceHasAlpha": true,
+      "sourceSha256": "18b48f99cbda30fd3c3876f0f7652ee7ade3b23e3affd0c2192103b0692ff222"
+    },
+    {
+      "source": "ball-v2.png",
+      "output": "ball-two",
+      "crop": {
+        "left": 94,
+        "top": 98,
+        "width": 1067,
+        "height": 1076
+      },
+      "width": 384,
+      "height": 384,
+      "sourceBytes": 1548495,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "sourceHasAlpha": true,
+      "sourceSha256": "c3be2c79d1c5041d574c58526ff1d2d04a7fa01bf1de6e9a756ee3f04d44e9df"
+    },
+    {
+      "source": "bubble-v1.png",
+      "output": "bubble",
+      "crop": {
+        "left": 178,
+        "top": 171,
+        "width": 899,
+        "height": 899
+      },
+      "width": 384,
+      "height": 384,
+      "sourceBytes": 534927,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "sourceHasAlpha": true,
+      "sourceSha256": "3ad54e52bf189d2dd9fb48d1891a6b54a39f7d8ec038d97fed8ad3b99816c28c"
+    }
+  ]
+}
