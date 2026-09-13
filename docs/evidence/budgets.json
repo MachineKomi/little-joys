@@ -1,13 +1,13 @@
 {
   "passed": true,
-  "buildId": "v0.1.1-50d0640d1f04",
-  "cacheVersion": "e402da88df56f71e68696da5",
-  "appJavaScriptGzip": 91517,
-  "completeOfflinePayloadBytes": 4488912,
-  "activeAndWaitingPayloadBytes": 8977824,
-  "replacementInstallStagingPayloadBytes": 13466736,
-  "firstInteractionGzipUpperBound": 814207,
-  "allStaticGzipUpperBound": 4265841,
+  "buildId": "v0.1.2-c63c46ea7ceb",
+  "cacheVersion": "09d521227495f5d652dff025",
+  "appJavaScriptGzip": 93412,
+  "completeOfflinePayloadBytes": 4494555,
+  "activeAndWaitingPayloadBytes": 8989110,
+  "replacementInstallStagingPayloadBytes": 13483665,
+  "firstInteractionGzipUpperBound": 816102,
+  "allStaticGzipUpperBound": 4267736,
   "notes": [
     "First-interaction bound counts every static file except optional /assets/music.mp3, which uses preload=none and loads only through background precaching or an adult enable gesture. Full static and offline totals still include music. Actual startup network trace is reported separately.",
     "Gzip calculations use level 9; hosting compression depends on negotiation.",
@@ -58,10 +58,10 @@
       "sha256": "05af5d1a058fabdb705d04b52ee1f4f240527f43e25867506c8ed27dbc12525e"
     },
     {
-      "url": "/assets/index-DBPWradA.js",
-      "bytes": 294675,
-      "gzip": 91517,
-      "sha256": "49336bf8c2d5d454993052ea5583e692a4d99a9133855543bae913df94fc4a36"
+      "url": "/assets/index-sbCQjzKZ.js",
+      "bytes": 300318,
+      "gzip": 93412,
+      "sha256": "fda652433967abcb79fe86728d8bfa14b677aea78dd90ea58210f6b4ed8f32fc"
     },
     {
       "url": "/assets/music.mp3",
@@ -103,7 +103,7 @@
       "url": "/build-label.json",
       "bytes": 33,
       "gzip": 53,
-      "sha256": "052f3d89ffd4f736bac4e9f097dfb1e12a7c813e738ce881b272a8508ff25b44"
+      "sha256": "9e92eb7ec97b2b78a7e53a8d369962f707d2e13f543ec0e0713b6d1ff09eda9a"
     },
     {
       "url": "/icons/apple-touch-icon.png",
@@ -127,7 +127,7 @@
       "url": "/index.html",
       "bytes": 1108,
       "gzip": 505,
-      "sha256": "29de09bcbc7af043fc15b72a92ef6d7915994e11dc73c00aa52899e68b3d42a9"
+      "sha256": "1eb475cf0f4681e8023b749dff82f5ba8b33e9ad7b53204ed78b3a811160f2e0"
     },
     {
       "url": "/manifest.webmanifest",
@@ -138,14 +138,14 @@
     {
       "url": "/precache-manifest.json",
       "bytes": 3333,
-      "gzip": 1265,
-      "sha256": "be854a6070f8ee19ebc0d97a7fb808c41272a8221cfbea948adbb2b61170289c"
+      "gzip": 1266,
+      "sha256": "01f9f325cabdd359e578ba8e84f062858c75f9ed302570543e7e17561f5e44a5"
     },
     {
       "url": "/sw.js",
       "bytes": 10629,
-      "gzip": 4187,
-      "sha256": "37e93ed9b42e5798b0dbdf462a94d7d2b04777ca31457fe8181715836568ccb1"
+      "gzip": 4186,
+      "sha256": "a8688a551b4aee92a4f436a53c30aafb3f655c8cd9a139f81e03b6ef6f945794"
     }
   ]
 }

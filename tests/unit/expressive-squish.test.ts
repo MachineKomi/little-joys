@@ -10,6 +10,7 @@ import {
   GRID,
   materialPoint,
   restMesh,
+  surfacePoint,
   signedArea,
   targetMesh,
   triangles,
@@ -159,13 +160,13 @@ describe("v0.1.2 expressive squish requirements", () => {
     scene.pointerDown(point(1, 0, -0.8));
     scene.pointerMove(point(1, 0, -1.9));
     scene.update(1 / 60);
-    const m = mesh(),
-      vertex = (1 * (GRID + 1) + 7) * 2;
-    expect(Math.hypot(m[vertex], m[vertex + 1])).toBeGreaterThan(1.45);
-    scene.pointerDown(point(2, m[vertex], m[vertex + 1]));
+    // Fixed material location on the curl, independent of mesh subdivision.
+    const p = surfacePoint(mesh(), 0.195, -0.975)!;
+    expect(Math.hypot(p.x, p.y)).toBeGreaterThan(1.45);
+    scene.pointerDown(point(2, p.x, p.y));
     expect(scene.debug().grabs).toBe(2);
     scene.pointerEnd(1);
-    scene.pointerMove(point(2, m[vertex] + 0.15, m[vertex + 1] + 0.1));
+    scene.pointerMove(point(2, p.x + 0.15, p.y + 0.1));
     scene.update(1 / 60);
     expect(scene.debug().grabs).toBe(1);
     expect(validMesh(mesh())).toBe(true);

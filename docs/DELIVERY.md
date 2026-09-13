@@ -2,9 +2,11 @@
 
 Status: four-toy technical preview; physical iPad validation pending. Initial owner phone feedback is recorded privately, with sanitized product shortcomings in [FEEDBACK-AND-REFINEMENTS.md](FEEDBACK-AND-REFINEMENTS.md). No general enjoyment or educational outcome is claimed.
 
+**Scope changed after the latest owner review.** The live build remains v0.1.1. The c63c v0.1.2 candidate below passed regression but missed the desktop Squishy frame target; it was never deployed. Subsequent GRID8 work is preliminary and handed to the incoming session, with final checks/review still pending. Codex now owns Bubble Pond / Roll & Nest in a separate worktree. [AGENT-HANDOFF.md](AGENT-HANDOFF.md) is the current ownership and evidence boundary; do not read the historical candidate results below as a release approval.
+
 ## Delivered scope
 
-- Squishy Friend: original painted mint mascot, actual local texture deformation with four independent touch influences, stable return and forgiving pickup including the visible toes/curl.
+- Squishy Friend: original painted mint mascot, larger local deformation with four independent influences, pickup on the already-stretched material, a quiet Gentle return, and one bounded Playful rebound/body response. Preserves the visible toes/curl and original face.
 - Bubble Pond: three/six large bubbles, swept-path popping, quiet local feedback, bounded cooldowns, and no repeated respawn beneath a resting finger.
 - Roll & Nest: one/two individually removable plush balls, offset-preserving drag, a generous release-only bowl target, and an adult-selectable tap-to-place alternative.
 - Penguin Bounce: original painted penguin, useful tap-to-add/reuse, broad turnable deflectors, local swipe nudges, 8/16/24-ball settings, supported settling and sleeping animation, and bounded optional collision tones.
@@ -16,31 +18,34 @@ The combined build pack was split into README, SPEC, TASKS-AND-ACCEPTANCE, ASSET
 
 ## Build and validation
 
-Validated build: **`v0.1.1-50d0640d1f04`**, app version **0.1.1**. `npm run check` exited **0**: 140 unit tests in 11 files passed; **81 browser tests passed, 7 unavailable audio cases skipped, 0 failed**. Chromium passed 44 cases; Windows WebKit passed 37 with 7 explicit skips because its native AudioContext is unavailable. Production/test TypeScript checks, production build, asset audit and budgets all passed. Each browser also completed 100 actual DOM scene switches in one unchanged page/process. The earlier dense-board failure was repaired before this run; it remains recorded in [REVIEW.md](REVIEW.md). Sanitized [check results](evidence/checks.json) are included.
+Validated build: **`v0.1.2-c63c46ea7ceb`**, app version **0.1.2**. `npm run check` exited **0**: **153 unit tests in 12 files passed; 89 browser tests passed, 7 unavailable audio cases skipped, 0 failed**. Chromium passed 48; Windows WebKit passed 41, with seven explicit native-AudioContext skips. Production/test TypeScript checks, build, asset audit and budgets passed. Both engines also performed 100 actual DOM scene switches in one unchanged page/process. [Check results](evidence/checks.json) record the complete run; earlier failures and their repairs remain in [REVIEW.md](REVIEW.md).
 
 | Measured budget | Result |
 |---|---|
-| App JavaScript, gzip | 91,517 bytes |
-| Conservative initial non-music payload, gzip | 814,207 bytes |
-| Complete offline payload, including optional music | 4,488,912 bytes (4.28 MiB) |
-| Active plus waiting cache payloads | 8,977,824 bytes (8.56 MiB) |
-| Temporary replacement-install staging, three payloads | 13,466,736 bytes (12.84 MiB) |
+| App JavaScript, gzip | 93,412 bytes |
+| Conservative initial non-music payload, gzip | 816,102 bytes |
+| Complete offline payload, including optional music | 4,494,555 bytes (4.29 MiB) |
+| Active plus waiting cache payloads | 8,989,110 bytes (8.57 MiB) |
+| Temporary replacement-install staging, three payloads | 13,483,665 bytes (12.86 MiB) |
 | All shipped raster decoded estimate | 8,982,080 bytes (8.57 MiB) |
-| Canvas backing in the portrait workload | 1,771,470 pixels, DPR cap 1.5 |
+| Shipped rasters plus prepared Squishy material | 11,341,376 bytes (10.82 MiB) |
+| Above plus temporary material-preparation readback | 13,700,672 bytes (13.07 MiB) |
+| Visible canvas backing in portrait workload | 1,771,470 pixels, DPR cap 1.5 |
 
-These are asset/storage/backing budgets, **not measured Safari process RAM**. Six sprites are shared, audio streams without a complete decoded AudioBuffer, and finite pools bound contacts/objects/effects. Penguin Bounce caps balls and local effects at 24 each, uses fixed 1/120-second physics with at most eight catch-up steps, and sleeps after supported rest. [Full budgets](evidence/budgets.json) and [asset audit](evidence/asset-audit.json) include hashes and file-level counts.
+These are asset/storage/backing estimates, **not measured Safari process RAM**. Six original sprites are shared. Squishy prepares one 768×768 material surface (2.25 MiB) once on scene entry to remove interior alpha seams, with one equally sized temporary readback; the scene releases the surface on disposal. This is separate from the visible canvas, explicitly counted under the unchanged 24 MiB raster budget. Browser graphics copies and garbage-collection timing are unmeasured. At rest the original friend renders in one draw and the scheduler sleeps. Audio streams; four touches, toy object pools, short effects, sound voices and animation work remain bounded. [Full budgets](evidence/budgets.json) and [asset audit](evidence/asset-audit.json) retain hashes and file-level counts.
 
-The desktop cold trace used fresh browser cache, a 10 Mbps/50ms network profile and blocked service workers to isolate initial interaction: actionable at **479ms**, all six sprites rendered at **767ms**. Actual initial response transfers totaled **541,834 bytes** including HTML. Background offline precaching is counted separately above.
+The cold desktop trace used a fresh browser cache, 10 Mbps/50ms network profile and blocked service workers: actionable at **520ms**, all six sprites rendered at **830ms**. Initial response transfers totaled **547,477 bytes** including HTML. Offline background precaching is counted separately above.
 
-| Desktop synthetic workload (10s per scenario) | Active frame p95 | Update/draw p95 | Input-to-render proxy p95 | Active frame gaps >50ms | Runtime interval max / count >50ms |
+| Desktop synthetic workload (10s each) | Active frame p95 | Update/draw p95 | Input-to-render proxy p95 | Active gaps >50ms | Runtime interval max / count >50ms |
 |---|---|---|---|---|---|
-| Squishy Friend (gentle) | 16.8ms | 0.6ms | 19.1ms | 0 | 33.3ms / 0 |
-| Bubble Pond (gentle) | 16.7ms | 0.2ms | 17.6ms | 0 | 16.8ms / 0 |
-| Roll & Nest (gentle) | 16.8ms | 0.2ms | 17.7ms | 0 | No continuous-loop samples |
-| Penguin Bounce (gentle) | 16.7ms | 0.6ms | 17.9ms | 0 | 50.0ms / 0 |
-| Penguin Bounce (playful) | 16.8ms | 0.8ms | 18.0ms | 0 | 66.7ms / 1 |
+| Squishy Friend (gentle) | 49.9ms | 2.8ms | 38.7ms | 3 | 50.1ms / 3 |
+| Squishy Friend (playful) | 33.4ms | 3.9ms | 36.1ms | 0 | 66.7ms / 1 |
+| Bubble Pond (gentle) | 16.7ms | 0.4ms | 22.2ms | 0 | 16.8ms / 0 |
+| Roll & Nest (gentle) | 16.8ms | 0.4ms | 22.0ms | 0 | No continuous-loop samples |
+| Penguin Bounce (gentle) | 16.8ms | 1.0ms | 20.8ms | 0 | 100.1ms / 1 |
+| Penguin Bounce (playful) | 16.8ms | 1.2ms | 21.7ms | 0 | 133.3ms / 1 |
 
-These muted Windows desktop Chromium traces use synthetic contacts and maximum object counts. Both Penguin Bounce scenarios keep the 24-ball pool busy with four contacts and repeated recycled spawns. They do not establish physical iPad performance or touch-to-photon latency. The continuous-workload probe ends with the input loop; runtime diagnostics also cover the subsequent wait, screenshot and opening of parent status. Their interval windows differ, so a zero count in one must not conceal a gap in the other. Roll & Nest sleeps between inputs. [Sanitized timing summaries](evidence/desktop-performance.json) preserve sample counts, medians, maxima and exact conditions. The prior 4a trace's 66.6ms runtime interval is retained in [review history](REVIEW.md); no performance repair was made for the metadata correction.
+Both Squishy modes use four synthetic contacts and twice the preceding trace's drag amplitude. Both Bounce modes use 24 balls, four contacts and recycled spawns. These are muted Windows desktop measurements, not physical iPad performance or touch-to-photon latency. The continuous input probe and runtime timing windows differ: runtime diagnostics also cover the subsequent wait, screenshot and opening of parent status. A zero gap count in one must not conceal an interval in the other. Roll & Nest sleeps between inputs. [Full timing summaries](evidence/desktop-performance.json) retain medians, sample counts, maxima, and exact workload descriptions. Prior v0.1.1 measurements and outliers are preserved in Git history and REVIEW.md.
 
 Commands: `npm ci`; `npm run dev`; `npm run build`; `node scripts/serve-dist.mjs`; `npx playwright install chromium webkit`; `npm run check`. Root [README](../README.md) has the complete setup and Vercel procedure.
 
@@ -74,6 +79,9 @@ This mapping identifies evidence, not physical-device certification. Behavioral 
 | T36–T40 | P02–P08, P10 | Pure physics regressions for dense collisions, finite speed/counts, supported sleep, recycling, rotation and corrupt snapshots; both browser engines exercise real production input, limits, hold behavior, four contacts and all stop paths. Dense 24-ball scenes sleep within the unchanged 45-second assertion in both motion modes. |
 | T41–T43 | P01, P09, P12 | Four picture tiles/startup choices, explicit setting names, layout/focus checks, shared bounded audio, six-sprite offline operation and waiting-update production fixtures. Actual hosting is verified separately below. |
 | T44 | P05, P11, P12 | Independent board/interaction review and five measured desktop workloads, including both dense bouncing modes. Pure physics stays separate from DOM/React. Target-device checks remain pending. |
+| T45–T46 | SQ01–SQ03 | Larger local movement, 240 adversarial four-contact/layout cases, positive triangle areas throughout returns, inset bounds, inverse/forward material mapping and continuous re-grabs. Geometry/scene units and browser renders. |
+| T47–T48 | SQ04–SQ05, SQ07 | Finite Gentle/Playful returns, no queued response, reduced-motion override, pause/cancel/resize and exact eventual rest. Independent phone/tablet/landscape side/eye review, deployed-baseline comparison and retained original single-texture face. |
+| T49–T50 | SQ06, SQ08 | Six-workload and complete regression evidence, explicit prepared-raster budget/disposal, independent repair review, versioned backup and exact hosted verification are recorded for this sprint in this delivery record. Physical-device and private enjoyment evidence remain separate. |
 
 ## Independent review and repaired defects
 
@@ -113,12 +121,12 @@ GitHub backups are independent of release selection: automatic builds require a 
 
 1. Record actual eighth-generation hardware, iPadOS version, Safari versus Home Screen mode, build ID, orientation and case fitted. Confirm the proposed Safari/iPadOS 16.4 minimum against the real installed software.
 2. Check cold/warm online loads, actual icon/Add to Home Screen installation, completed cache, airplane-mode/offline relaunch, every toy and all settings offline, cache eviction, failed update and multi-window waiting update. Browser storage can be evicted; permanence is not promised.
-3. Use two and four real fingers, including simultaneous input from two people; add a fifth, lift in a different order, rest a finger on empty space, drag to every edge/outside the original object, rotate during drag, and inspect case-lip reach in both orientations. For Penguin Bounce, check both deflectors, useful taps at the edges, four simultaneous spawns, full-pool recycling, supported rest, and renewed input after the board sleeps.
+3. Use two and four real fingers, including simultaneous input from two people; add a fifth, lift in a different order, rest a finger on empty space, drag to every edge/outside the original object, rotate during drag, and inspect case-lip reach in both orientations. For Squishy, try strong side/eye/curl pulls, crossed fingers, opposite-side pickup during return, both release modes and eventual stillness. For Penguin Bounce, check both deflectors, useful taps at the edges, four simultaneous spawns, full-pool recycling, supported rest, and renewed input after the board sleeps.
 4. Test all pause/exit/mute paths, device lock/unlock, app switching and interrupted gestures. Verify fresh/return silence, explicit adult music/SFX enable, actual output gain/comfort, mute during active audio, offline streaming and no queued return sounds. Desktop Windows WebKit cannot provide audio evidence.
 5. Run a 60-second adult interaction trace per toy at maximum configured objects/contacts in both motion modes. Record active frame p50/p95/max and stalls, update/draw separately, input-to-render proxy, startup conditions and backing pixels. Compare against 33.4ms p95 frame / 8ms p95 update-draw targets; these remain unqualified on hardware.
 6. Run an adult-only 20-minute soak plus 100 on-device scene switches. Check app-induced reloads, crashes, progressive slowdown, stuck input, repeated sound and retained resources. Desktop switching does not replace this soak.
 7. Capture and inspect both orientations: every toy, locally stretched friend, two balls inside/removable from the bowl, selector, pause and scrolling/zoomed settings. Observe comfort, voluntary engagement and return preference separately, in private. No required play duration or performance score applies to a child.
 
-Known limits: physical touch/thermal/memory/performance and actual Safari media behavior are unmeasured; full nonvisual Canvas interaction is not implemented; quiet background and small toy collection are intentional. Any further toy/content expansion should follow actual observations, with the current four-toy behavior preserved.
+Known limits: physical touch/thermal/memory/performance and actual Safari media behavior are unmeasured; full nonvisual Canvas interaction is not implemented. The strongest Squishy outline can look slightly angular, and separate face cutouts are not implemented. One Windows WebKit window-creation failure remains unexplained in the preserved earlier regression run. The deliberately small toy collection remains open to feedback; warmer presentation is a recorded refinement rather than a finished design claim.
 
-Reported phone shortcomings remain open: small/under-expressive squish range and release response; repetitive bubble positions and inconsistent color impression; unclear silent/audio setup; an unwanted ball halo/floating shadow and reported bowl front-lip clipping; and an overly clinical presentation. These require the concrete work in LJ-13–LJ-17. The current Penguin Bounce patch expands the available interaction and improves its Playful effects; passing its technical checks does not close the other toys' reported issues. Exact phone/build/settings details were not recorded, so these reports are not substituted for reproduced test failures or physical-iPad evidence.
+The larger Squishy range and release response now have concrete implementation and comparative render evidence; further private feedback is needed to assess their feel. Remaining reported work is repetitive bubble positioning and inconsistent color impression, unclear silent/audio setup, an unwanted ball halo/floating shadow and bowl front-lip clipping, bounded roll/settle response, and warmer presentation (LJ-14–LJ-17). Penguin Bounce remains available with its Playful local lights/effects. Exact phone/build/settings details were not recorded for the initial report, so those observations do not replace reproduced test failures or physical-iPad evidence.

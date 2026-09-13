@@ -1,5 +1,5 @@
 import type { Grab } from "./deformation";
-export const GRID = 12;
+export const GRID = 8;
 export const VERTICES = (GRID + 1) ** 2;
 export const EXTENT = 1.17;
 export const restMesh = Float64Array.from({ length: VERTICES * 2 }, (_, i) => {
@@ -184,7 +184,7 @@ export function validMesh(points: Float64Array) {
   }
   return true;
 }
-/** 288 small affine patches. At rest the caller uses one normal drawImage. */
+/** Bounded affine patches. At rest the caller uses one normal drawImage. */
 export function drawMesh(
   ctx: CanvasRenderingContext2D,
   image: HTMLImageElement | HTMLCanvasElement,

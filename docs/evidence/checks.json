@@ -1,24 +1,24 @@
 {
   "date": "2026-09-13",
-  "buildId": "v0.1.1-50d0640d1f04",
+  "buildId": "v0.1.2-c63c46ea7ceb",
   "command": "npm run check",
   "exitCode": 0,
   "unit": {
-    "files": 11,
-    "passed": 140,
+    "files": 12,
+    "passed": 153,
     "failed": 0
   },
   "browser": {
-    "total": 88,
-    "passed": 81,
+    "total": 96,
+    "passed": 89,
     "failed": 0,
     "skipped": 7,
     "chromium": {
-      "passed": 44,
+      "passed": 48,
       "failed": 0
     },
     "windowsWebKit": {
-      "passed": 37,
+      "passed": 41,
       "failed": 0,
       "skipped": 7,
       "skipReason": "No native AudioContext in this Windows WebKit build; audio-capability-specific tests unavailable, not passed."
@@ -34,10 +34,10 @@
   "physicalIPad": "not tested",
   "deployment": "See DELIVERY.md and hosted-check.json for separately verified hosted status.",
   "notes": [
-    "All four toys covered, including dense 24-ball physics, cancellation and offline operation.",
-    "Fresh native Windows WebKit process per test; no retries. Multi-window and 100-switch scenarios preserve one process throughout each test.",
+    "All four toys covered, including expressive squish, dense 24-ball physics, cancellation and offline operation.",
+    "Fresh native Windows WebKit process per test; no retries within this run. Multi-window and 100-switch scenarios preserve one process throughout each test.",
     "Offline verification denies the actual same-origin server. Chromium also uses its offline override. Windows WebKit override itself failed separately; documented in PWA-TEST-EVIDENCE.md.",
-    "Earlier dense Playful settling failure and its repair are retained in REVIEW.md. Final totals do not relabel that failed run.",
+    "The first c63c full run had 88 browser passes and one WebKit page-creation failure before second-window navigation. Three unchanged diagnostic T29 samples and this subsequent complete run passed. The unexplained failure and earlier repairs are retained in REVIEW.md; final totals do not relabel those runs.",
     "Raw logs and Playwright artifacts remain local and excluded from Git."
   ]
 }

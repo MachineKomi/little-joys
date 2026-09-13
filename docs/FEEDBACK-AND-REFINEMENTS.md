@@ -4,6 +4,8 @@ Recorded 13 September 2026 from an owner phone review of the three-toy preview. 
 
 The checked v0.1.1 adds Penguin Bounce. It does **not** resolve the reported interaction limitations of the other three toys. Keep this boundary visible in the delivery record, roadmap and backlog.
 
+The v0.1.2 sprint implements the first refinement: larger local Squishy pulls, pickup during the returning deformation, and one bounded Playful rebound/body response. Independent review measured 53px versus 121px visible side displacement with the same gesture on deployed v0.1.1 and the candidate, and accepted the repaired original single-texture face. Cutout layers were evaluated as a technique choice through the actual larger face renders; separate cutout assets were not built. [DELIVERY.md](DELIVERY.md) records final checks and actual hosting status. Bubble, bowl and shell refinements remain open, and further private play feedback is needed to assess the changed feel.
+
 | Area | Retain | Reported shortcoming | Next bounded acceptance target |
 |---|---|---|---|
 | Squishy Friend | Current original character design, raster finish and local deformation quality. | The available stretch is too small and the response lacks expressive variation. | Prioritize a visibly larger range of local pulls on phone/tablet without mesh inversion, loss of four-contact ownership or unreachable geometry. Explore separate original face/eye/body layers with independent local response; evaluate the visual result before committing to that technique. Whole-image scaling is insufficient. |
@@ -14,6 +16,10 @@ The checked v0.1.1 adds Penguin Bounce. It does **not** resolve the reported int
 | Variety | All existing toys remain available. | Three simple interactions are insufficient variety. | Penguin Bounce supplies the already-approved fourth interaction. More animals, musical gaps, letters/numbers and optional vignettes remain separate backlog items. Refining the existing interactions has priority over adding another toy. |
 
 ## Status and authority
+
+The subsequent owner review reinforces shallow deformation/pop/physical response, unattractive ball halo/shadow, bad bowl clipping, overly pale/plain presentation, a weak brand mark, and an unclear parent control. Penguin Bounce is specifically reported to have too few interesting collisions, passive/underused character art, limited color/ball variety and no engaging activity when taps stop. The requested direction now includes continuous bounded ball flow and richer mechanisms. The reviewed build/settings were not recorded. A visible build label is required for future reports.
+
+Ownership is explicitly split: Codex works on Bubble Pond / Roll & Nest plus the visible build label; the incoming session works on Squishy / Penguin Bounce. See [AGENT-HANDOFF.md](AGENT-HANDOFF.md). The raw second report remains private, and these engineering directions make no player-outcome claim.
 
 This records the requested direction and concrete reproduction work. It does not retroactively claim that v0.1.1 fixes these items or that an implementation technique has been validated. The next refinement patch should select and specify bounded changes from LJ-13 through LJ-17, retaining the original input, privacy, audio, pause and resource requirements. Prefer original layered art where useful; do not copy an existing game's characters or implementation.
 

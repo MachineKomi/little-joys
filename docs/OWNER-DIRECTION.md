@@ -10,7 +10,7 @@ Quiet presentation should still feel polished, tactile, and appealing. Preserve 
 
 ## Approved next toy: Penguin Bounce
 
-The current material playtest patch is **v0.1.1**, adding a fourth toy with forgiving, pinball-style bouncing physics: **Penguin Bounce**. Penguins are the first new character theme.
+The **v0.1.1** patch added a fourth toy with forgiving, pinball-style bouncing physics: **Penguin Bounce**. Penguins are the first new character theme.
 
 Tapping the play area should do something useful without precise aiming. Large balls, readable obstacles, generous contacts, and clear cause and effect should make both brief taps and continued exploration worthwhile. The approved interaction direction includes adding balls and touching large mechanisms to turn or toggle their behavior. The implementation must keep finite object counts, bounded speed and effects, and a stable simulation suitable for the existing Canvas2D runtime. A settled scene should sleep; pausing must stop simulation and audio immediately.
 
@@ -19,6 +19,8 @@ This is free exploration: no gambling presentation, stakes, scores, failure, lif
 The fourth toy is deployed as part of the four-toy MVP, with complete automated checks, final desktop measurements and actual online/offline hosting verification recorded in [DELIVERY.md](DELIVERY.md). Its interaction tuning remains open to feedback, and physical iPad validation remains pending.
 
 ## Reported phone feedback and next refinements
+
+The current **v0.1.2 expressive-squish sprint** follows the owner's continuation request and selects LJ-13. It implements substantially larger local pulls, continuity when picking up returning material, and finite Gentle/Playful release behavior while retaining the current painted identity. [EXPRESSIVE-SQUISH-SPEC.md](EXPRESSIVE-SQUISH-SPEC.md) defines the bounded scope; [DELIVERY.md](DELIVERY.md) distinguishes completed technical evidence from hosting and device checks. Future content remains separate.
 
 The current original friend design and iridescent bubble finish should be retained. Reported shortcomings now prioritize substantially stronger and more expressive squishing, richer touch/release response, bubble variation and audio discoverability, ball/bowl halo/shadow/occlusion repairs, and a warmer presentation. The latest Penguin Bounce direction explicitly asks for lively permissive physics with brighter local lights and colorful effects; its Playful feedback is implemented and reviewed for this deployment. The other three toys' interaction changes are tracked separately and are not claimed as fixed by that patch. See [FEEDBACK-AND-REFINEMENTS.md](FEEDBACK-AND-REFINEMENTS.md) for the sanitized report and bounded acceptance targets. Private reactions remain outside public source.
 

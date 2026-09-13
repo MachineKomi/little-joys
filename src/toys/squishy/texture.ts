@@ -10,7 +10,10 @@ export function prepareTexture(
   canvas.width = Math.min(768, image.naturalWidth);
   canvas.height = Math.min(768, image.naturalHeight);
   try {
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    // Read once during preparation, then use this surface hundreds of times per
+    // moving frame. Keep the normal drawing path instead of requesting a CPU
+    // readback surface for an otherwise static texture.
+    const ctx = canvas.getContext("2d");
     if (!ctx) return undefined;
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
     const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);

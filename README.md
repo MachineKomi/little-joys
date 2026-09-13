@@ -35,7 +35,7 @@ The production harness serves [http://127.0.0.1:4173](http://127.0.0.1:4173) wit
 
 The DOM controls are labelled and keyboard reachable. Canvas toy manipulation is a direct-touch/pointer experience; full nonvisual toy interaction is not claimed.
 
-Phone feedback has identified interaction and presentation work still needed in the original three toys: stronger squish, more responsive/varied bubbles, ball/bowl halo/shadow/occlusion fixes and a warmer shell. The fourth-toy release does not claim to fix these. See the [prioritized refinement record](docs/FEEDBACK-AND-REFINEMENTS.md).
+The v0.1.2 refinement adds much larger local squishes and a short Playful rebound, preserving the original character. A controlled rendered side-pull comparison measured 53px → 121px visible displacement. Bubble variety/response, ball/bowl halo/shadow/occlusion fixes, bounded roll/settle response and a warmer shell remain open. See the [prioritized refinement record](docs/FEEDBACK-AND-REFINEMENTS.md); technical comparison does not establish enjoyment.
 
 ## Test
 
@@ -48,7 +48,7 @@ This runs unit tests, TypeScript and production build, asset/provenance audit, t
 
 Release-gate tests also require Git and a POSIX shell (Git for Windows at its standard installation path on Windows). They exercise real temporary Git history and the exact Vercel command, including failure paths.
 
-With the production harness running, `node scripts/measure-preview.mjs` records a documented desktop startup trace, bounded active workloads, and screenshots in `docs/evidence`. It includes maximum-count Penguin Bounce in both motion modes. `TRACE_SECONDS=60` can lengthen the desktop workload. These are diagnostic proxies, not physical touch-to-photon or iPad performance measurements.
+With the production harness running, `node scripts/measure-preview.mjs` records a documented desktop startup trace, six bounded active workloads, and screenshots in `docs/evidence`. It includes four-contact Squishy Friend and maximum-count Penguin Bounce in both motion modes. `TRACE_SECONDS=60` can lengthen the desktop workload. These are diagnostic proxies, not physical touch-to-photon or iPad performance measurements.
 
 After building the same revision as a deployed release, run `node scripts/verify-hosted.mjs https://littlejoys-play.vercel.app/` to verify exact hosted files, all four toys online/offline, silent startup, settings, CSP, and cached music ranges. This writes a hosted evidence report only on success; a different deployed build correctly fails comparison.
 
@@ -73,7 +73,7 @@ If an existing window still has three toys, open Parents and select **Check for 
 
 ## Architecture and assets
 
-React owns the semantic shell; an imperative Canvas2D runtime owns input and animation. Four tracked pointers, six bubbles, two nesting balls, 24 bouncing balls, 24 short effects, two SFX voices, one streaming music element, six shared sprite images, one canvas, and one active animation scheduler are bounded explicitly. DPR is capped at 1.5 and backing storage at two million pixels. Squishy Friend uses a locally deformed texture mesh; settled frames use a single image draw.
+React owns the semantic shell; an imperative Canvas2D runtime owns input and animation. Four tracked pointers, six bubbles, two nesting balls, 24 bouncing balls, 24 short effects, two SFX voices, one streaming music element, six shared sprite images, one visible canvas, and one active animation scheduler are bounded explicitly. DPR is capped at 1.5 and visible backing storage at two million pixels. Squishy Friend uses a 12×12 locally deformed texture mesh, positive-area guards, material-aware pickup and finite release curves. It prepares one 768×768 material surface on scene entry to prevent seams and releases it on disposal; that surface and its temporary readback are included in the raster budget. Settled frames use the original sprite in one draw and stop scheduling animation.
 
 Selected generated originals and sanitized prompts live under `art`, with [image provenance](art/PROVENANCE.md), [sprite prompts](art/SPRITE-PROMPTS.md), and [audio provenance](art/AUDIO-PROVENANCE.md). Only audited derivatives ship under `public`; no generation runs at build time. To reproduce exports, run `node scripts/export-sprites.mjs`, then `node scripts/capture-assets.mjs` with the dev server on port 5173. The latter captures the actual implemented toy scenes for selector tiles/icons and refreshes the asset inventory.
 

@@ -1,5 +1,7 @@
 # Art provenance
 
+The v0.1.2 expressive-squish refinement retains every original source and runtime raster unchanged. It changes procedural deformation and triangle rendering, with one bounded material-preparation surface created on scene entry to prevent near-opaque interior seams. No new image-generation call, edited sprite export, or separate facial cutout is claimed for that sprint.
+
 ## Squishy Friend concept v1
 
 - Asset: `reference/squishy-friend-concept-v1.png`

@@ -1,5 +1,7 @@
 # Little Joys — execution plan and acceptance tests
 
+This file retains the original three-toy foundation sequence and T01–T35 matrix. Owner-directed release amendments add [Penguin Bounce, T36–T44](PENGUIN-BOUNCE-SPEC.md) and [expressive Squishy Friend, T45–T50](EXPRESSIVE-SQUISH-SPEC.md). Their shared requirements remain in force. [DELIVERY.md](DELIVERY.md) maps the complete current four-toy implementation to actual evidence; foundation wording below is not the current toy count.
+
 ## 1. Execution order
 
 This is a staged build sequence, not a promise that a given amount of work fits a particular number of hours. Implement the smallest end-to-end path early. Do not complete a large speculative architecture before testing the first touch.
