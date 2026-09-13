@@ -1,13 +1,13 @@
 {
   "passed": true,
-  "buildId": "v0.1.0-228d3ff2889a",
-  "cacheVersion": "2ff8856b2a4ff4f31914c39f",
-  "appJavaScriptGzip": 85636,
-  "completeOfflinePayloadBytes": 4398616,
-  "activeAndWaitingPayloadBytes": 8797232,
-  "replacementInstallStagingPayloadBytes": 13195848,
-  "firstInteractionGzipUpperBound": 738684,
-  "allStaticGzipUpperBound": 4190318,
+  "buildId": "v0.1.1-4a0451f16ac2",
+  "cacheVersion": "2af2074f988325199fc7ce61",
+  "appJavaScriptGzip": 91517,
+  "completeOfflinePayloadBytes": 4488921,
+  "activeAndWaitingPayloadBytes": 8977842,
+  "replacementInstallStagingPayloadBytes": 13466763,
+  "firstInteractionGzipUpperBound": 814209,
+  "allStaticGzipUpperBound": 4265843,
   "notes": [
     "First-interaction bound counts every static file except optional /assets/music.mp3, which uses preload=none and loads only through background precaching or an adult enable gesture. Full static and offline totals still include music. Actual startup network trace is reported separately.",
     "Gzip calculations use level 9; hosting compression depends on negotiation.",
@@ -17,9 +17,9 @@
   "files": [
     {
       "url": "/assets/asset-manifest.json",
-      "bytes": 5897,
-      "gzip": 1432,
-      "sha256": "fad3d488d3a1d16b11b399e959fdd7f227dab1c6879f7a5ddcc04363c1dc4fa2"
+      "bytes": 6943,
+      "gzip": 1570,
+      "sha256": "09582459d900ea69161aab8dfe2ec5af0a40d18acff608b2e1778e04fd80eb04"
     },
     {
       "url": "/assets/ball-two.webp",
@@ -52,22 +52,34 @@
       "sha256": "2bcb5be61ae4afe42052bfafe1b7fdcf143cab6477020c0e3cb2733b4399e811"
     },
     {
-      "url": "/assets/index-7qvsj53n.js",
-      "bytes": 275330,
-      "gzip": 85636,
-      "sha256": "4a6560e74be611c6c23fc41a1c7d33203936e501e7ceff2cb4b43995d1af6d94"
+      "url": "/assets/index-B06gi7hw.css",
+      "bytes": 11967,
+      "gzip": 3522,
+      "sha256": "05af5d1a058fabdb705d04b52ee1f4f240527f43e25867506c8ed27dbc12525e"
     },
     {
-      "url": "/assets/index-PQmrGs-k.css",
-      "bytes": 11421,
-      "gzip": 3401,
-      "sha256": "71ca118cb71a487c461631660be3433b83fb5a9f84ff8cf7f834cddd5865c6a9"
+      "url": "/assets/index-CC_ao3e5.js",
+      "bytes": 294675,
+      "gzip": 91517,
+      "sha256": "aa35d69cabc87b779f69fd2e232f2e6a8d6c958f86b864ffc182d7ce5cecb546"
     },
     {
       "url": "/assets/music.mp3",
       "bytes": 3458184,
       "gzip": 3451634,
       "sha256": "599ed6e8ebc1002854c6fe4241f0d60d0d9a552e316a175f89dcf690e8090365"
+    },
+    {
+      "url": "/assets/penguin.webp",
+      "bytes": 27914,
+      "gzip": 27942,
+      "sha256": "972d2c1c28d968ef2644762f543ed53fdf851eb349c5b8b10d1d47cc7ead6e72"
+    },
+    {
+      "url": "/assets/toy-bounce.png",
+      "bytes": 41455,
+      "gzip": 41262,
+      "sha256": "107bb6c5e96ed049e4b702dd34daf31dd61b66b36c88aba4a473419c513d43b9"
     },
     {
       "url": "/assets/toy-bubbles.png",
@@ -91,7 +103,7 @@
       "url": "/build-label.json",
       "bytes": 33,
       "gzip": 53,
-      "sha256": "93f2e065de8174cd72784c77646b441d593a1298ffa9da6fe8c8fc7ae785e7b2"
+      "sha256": "9dc9367e1e634d4f84ae7ca23cf06d99e73b8f6e50a10ec31882f17c60ca6821"
     },
     {
       "url": "/icons/apple-touch-icon.png",
@@ -113,9 +125,9 @@
     },
     {
       "url": "/index.html",
-      "bytes": 1110,
-      "gzip": 504,
-      "sha256": "832a56ad5b02eacb41d8e2938365e2ce312a6fc1559dc3d63d4ecd3384ced009"
+      "bytes": 1109,
+      "gzip": 505,
+      "sha256": "ac038bba84d811dc8b1b17f14e835e63f787c88d5aefb589493d0820711bea00"
     },
     {
       "url": "/manifest.webmanifest",
@@ -125,15 +137,15 @@
     },
     {
       "url": "/precache-manifest.json",
-      "bytes": 3021,
-      "gzip": 1169,
-      "sha256": "bf7d9ad45bcb3442f4f0bcf9e9b07edf9e1a17e79d38c4cb9b6ee52b18cef1e2"
+      "bytes": 3333,
+      "gzip": 1263,
+      "sha256": "3ea89f1ce136ca1ee75ba20bdc28c113a63429719583eef2d43d0a321393852c"
     },
     {
       "url": "/sw.js",
-      "bytes": 10385,
-      "gzip": 4073,
-      "sha256": "25a1f72838e2d6c8880f369dd8270c58fc3971421b3b09ef1f606f22bcbb0da3"
+      "bytes": 10629,
+      "gzip": 4187,
+      "sha256": "f862e6cdf982d1ee9e34ab5ab1ac94d2fc64aaff50f7a738850a10e3c1c02eed"
     }
   ]
 }

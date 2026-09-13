@@ -1,10 +1,10 @@
 {
   "passed": true,
-  "productionFiles": 20,
-  "rasterCount": 11,
-  "uniqueRuntimeRasters": 8,
-  "encodedRasterBytes": 646155,
-  "decodedRasterBytesEstimate": 7491136,
+  "productionFiles": 22,
+  "rasterCount": 13,
+  "uniqueRuntimeRasters": 10,
+  "encodedRasterBytes": 715524,
+  "decodedRasterBytesEstimate": 8982080,
   "note": "All shipped rasters counted conservatively; this estimate is not Safari total RAM. Audio is audited by encoded bytes and hash, and is streamed without a complete decoded AudioBuffer.",
   "audio": [
     {
@@ -38,6 +38,15 @@
       "width": 384,
       "height": 288,
       "encodedBytes": 67919,
+      "decodedBytes": 442368,
+      "alpha": false
+    },
+    {
+      "id": "toy-bounce",
+      "path": "/assets/toy-bounce.png",
+      "width": 384,
+      "height": 288,
+      "encodedBytes": 41455,
       "decodedBytes": 442368,
       "alpha": false
     },
@@ -111,6 +120,15 @@
       "height": 384,
       "encodedBytes": 45896,
       "decodedBytes": 589824,
+      "alpha": true
+    },
+    {
+      "id": "penguin",
+      "path": "/assets/penguin.webp",
+      "width": 512,
+      "height": 512,
+      "encodedBytes": 27914,
+      "decodedBytes": 1048576,
       "alpha": true
     }
   ]

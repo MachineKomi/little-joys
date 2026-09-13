@@ -2,9 +2,10 @@ import type { SceneServices, ToyPointer, ToyScene, View } from '../../core/types
 import { BounceWorld, DEFLECTOR_TARGET_RADIUS, deflectorSegment, hitsDeflector, type Point } from './physics';
 
 type Contact = Point & { mechanism: number | null };
-type Glow = Point & { life: number; color: string };
+type Glow = Point & { life: number; duration: number; color: string; kind: 'input' | 'impact'; strength: number };
 const TAU = Math.PI * 2;
 const colors = ['#7dbab5', '#aaa1d1', '#e7b48e', '#82b9d7'];
+const lights = ['#f18467', '#efbf52', '#4fbab0', '#ac83d7'];
 
 export class BounceScene implements ToyScene {
   readonly id = 'bounce' as const;
@@ -12,14 +13,35 @@ export class BounceScene implements ToyScene {
   private pointers = new Map<number, Contact>();
   private mechanismOwners = new Map<number, number>();
   private glows: Glow[] = [];
+  private lightIndex = 0;
   private disposed = false;
   constructor(private services: SceneServices, snapshot?: unknown) {
     this.world = new BounceWorld({ width: 800, height: 600 }, { cap: services.settings.bounceBallCount, motion: services.settings.motion }, snapshot);
   }
   resize(view: View): void { this.cancelAll(); this.world.resize(view); }
-  private glow(point: Point, color = '#6baba6'): void {
-    if (this.glows.length >= 24) this.glows.shift();
-    this.glows.push({ x: point.x, y: point.y, life: .26, color });
+  private glow(point: Point, color = '#6baba6', kind: Glow['kind'] = 'input', strength = 1): void {
+    const playful = this.services.settings.motion === 'playful';
+    if (kind === 'impact') {
+      // Repeated contact in one spot strengthens one smooth pulse, without
+      // restarting it or piling multiple flashes onto the same surface.
+      const existing = this.glows.find(glow => glow.kind === 'impact' && Math.hypot(glow.x - point.x, glow.y - point.y) < 20);
+      if (existing) { existing.strength = Math.max(existing.strength, strength); return; }
+    }
+    if (this.glows.length >= 24) {
+      const oldImpact = this.glows.findIndex(glow => glow.kind === 'impact');
+      this.glows.splice(oldImpact >= 0 ? oldImpact : 0, 1);
+    }
+    const duration = playful ? kind === 'input' ? .46 : .38 : .26;
+    if (playful) { color = lights[this.lightIndex]; this.lightIndex = (this.lightIndex + 1) % lights.length; }
+    this.glows.push({ x: point.x, y: point.y, life: duration, duration, color, kind, strength });
+  }
+  private penguinBob(): number {
+    if (this.services.settings.motion !== 'playful') return 0;
+    // The newest input's existing effect supplies the clock. No separate
+    // animation, timer, retained object, or idle character loop is created.
+    let life = 0;
+    for (const glow of this.glows) if (glow.kind === 'input') life = Math.max(life, glow.life);
+    return life > 0 ? Math.sin((1 - life / .46) * Math.PI) : 0;
   }
   pointerDown(p: ToyPointer): void {
     if (this.disposed || this.pointers.has(p.id) || this.pointers.size >= 4 || !Number.isFinite(p.x) || !Number.isFinite(p.y)) return;
@@ -54,7 +76,7 @@ export class BounceScene implements ToyScene {
       // The common service supplies the 150 ms / two-voice cap. Geometry still
       // responds to every collision; no audio or visual event backlog exists.
       this.services.sound('bounce');
-      if (this.services.settings.motion === 'playful') for (const impact of this.world.impacts) this.glow(impact);
+      if (this.services.settings.motion === 'playful') for (const impact of this.world.impacts) this.glow(impact, '#6baba6', 'impact', .5 + .5 * Math.min(1, impact.strength / this.world.maxSpeed));
     }
     const dt = Number.isFinite(delta) ? Math.max(0, Math.min(delta, 1 / 15)) : 0;
     for (const glow of this.glows) glow.life -= dt;
@@ -75,7 +97,7 @@ export class BounceScene implements ToyScene {
     // decorative artwork. Scene retains no image object or asynchronous load.
     const penguin = this.services.image?.('penguin');
     const penguinSize = Math.min(176, w * .24, h * .25);
-    const penguinX = b.right - penguinSize - 12, penguinY = world.troughTop - penguinSize + 24;
+    const penguinX = b.right - penguinSize - 12, penguinY = world.troughTop - penguinSize + 24 - this.penguinBob() * Math.min(10, penguinSize * .065);
     if (penguin) ctx.drawImage(penguin, penguinX, penguinY, penguinSize, penguinSize);
     else this.drawPenguin(ctx, penguinX + penguinSize / 2, penguinY + penguinSize / 2, penguinSize / 2);
 
@@ -116,11 +138,37 @@ export class BounceScene implements ToyScene {
     // Thin front lip never covers the playable balls' centres or hit region.
     ctx.beginPath(); ctx.moveTo(b.left + 20, b.bottom + 4); ctx.quadraticCurveTo(w / 2, b.bottom + 18, b.right - 20, b.bottom + 4); ctx.strokeStyle = '#739e92'; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.stroke();
     for (const glow of this.glows) {
-      const progress = 1 - glow.life / .26;
-      const size = this.services.settings.motion === 'playful' ? 12 + progress * 10 : 12;
-      ctx.globalAlpha = glow.life / .26 * .55; ctx.strokeStyle = glow.color; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(glow.x, glow.y, size, 0, TAU); ctx.stroke();
+      if (this.services.settings.motion === 'playful') this.drawLight(ctx, glow);
+      else {
+        // Gentle retains its original static, fading contact mark exactly.
+        ctx.globalAlpha = glow.life / .26 * .55; ctx.strokeStyle = glow.color; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(glow.x, glow.y, 12, 0, TAU); ctx.stroke();
+      }
     }
     ctx.globalAlpha = 1; ctx.lineCap = 'butt';
+  }
+  private drawLight(ctx: CanvasRenderingContext2D, glow: Glow): void {
+    const progress = Math.max(0, Math.min(1, 1 - glow.life / glow.duration));
+    const fade = 1 - progress, pulse = Math.sin(progress * Math.PI);
+    const reach = (28 + progress * 15) * (.78 + glow.strength * .22);
+    const bloom = ctx.createRadialGradient(glow.x, glow.y, 1, glow.x, glow.y, reach);
+    bloom.addColorStop(0, '#fff3c9'); bloom.addColorStop(.22, glow.color); bloom.addColorStop(1, `${glow.color}00`);
+    ctx.globalAlpha = .64 * pulse * glow.strength;
+    ctx.fillStyle = bloom; ctx.beginPath(); ctx.arc(glow.x, glow.y, reach, 0, TAU); ctx.fill();
+
+    // A bright coloured rim and five short rays identify the local contact.
+    // Everything follows one outward arc and fade; no flicker or oscillation.
+    ctx.globalAlpha = .9 * fade; ctx.strokeStyle = glow.color; ctx.lineWidth = 3.5; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.arc(glow.x, glow.y, 8 + progress * 19, 0, TAU); ctx.stroke();
+    const turn = (glow.x + glow.y) * .015;
+    ctx.beginPath();
+    for (let ray = 0; ray < 5; ray++) {
+      const angle = ray / 5 * TAU + turn, start = 13 + progress * 23, end = start + 6 * fade + 2;
+      ctx.moveTo(glow.x + Math.cos(angle) * start, glow.y + Math.sin(angle) * start);
+      ctx.lineTo(glow.x + Math.cos(angle) * end, glow.y + Math.sin(angle) * end);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = .8 * pulse; ctx.fillStyle = '#fff8dc';
+    ctx.beginPath(); ctx.arc(glow.x, glow.y, 3.5 * fade, 0, TAU); ctx.fill();
   }
   private drawPenguin(ctx: CanvasRenderingContext2D, x: number, y: number, size: number): void {
     if (size <= 0) return;

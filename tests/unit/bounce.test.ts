@@ -144,6 +144,33 @@ describe('Penguin Bounce deterministic physics P02–P11', () => {
     const { value } = scene(); value.pointerDown(pointer(1, 100, 60)); value.pointerEnd(1, 'up');
     for (let i = 0; i < 40; i++) value.update(1 / 60); expect(value.debug().effects).toBe(0);
   });
+  it('P08: Playful gives one input-driven penguin reaction, Gentle stays static, and visual effects finish without changing physics', () => {
+    for (const motion of ['gentle', 'playful'] as const) {
+      const penguin = {} as HTMLImageElement, drawImage = vi.fn();
+      const methods: Record<string, unknown> = {
+        drawImage,
+        createLinearGradient: () => ({ addColorStop: vi.fn() }),
+        createRadialGradient: () => ({ addColorStop: vi.fn() }),
+      };
+      const ctx = new Proxy(methods, { get(target, key: string) { return target[key] ??= vi.fn(); } }) as unknown as CanvasRenderingContext2D;
+      const value = new BounceScene({ settings: { ...defaults, motion }, sound: vi.fn(), image: key => key === 'penguin' ? penguin : undefined });
+      value.resize(view); expect(value.update(1 / 60)).toBe(false); value.render(ctx);
+      const restingY = drawImage.mock.calls.at(-1)![2] as number;
+      const shape = value.debug().deflectorStates[0];
+      value.pointerDown(pointer(1, shape.x, shape.y)); value.pointerEnd(1, 'up');
+      const physicalState = value.snapshot();
+      for (let frame = 0; frame < 6; frame++) value.update(1 / 60);
+      value.render(ctx);
+      const reactionY = drawImage.mock.calls.at(-1)![2] as number;
+      if (motion === 'playful') { expect(reactionY).toBeLessThan(restingY - 2); expect(reactionY).toBeGreaterThanOrEqual(restingY - 10); }
+      else expect(reactionY).toBe(restingY);
+      expect(value.snapshot()).toEqual(physicalState);
+      for (let frame = 0; frame < 60; frame++) value.update(1 / 60);
+      expect(value.debug().effects).toBe(0); expect(value.update(1 / 60)).toBe(false);
+      value.render(ctx); expect(drawImage.mock.calls.at(-1)![2]).toBe(restingY);
+      expect(value.snapshot()).toEqual(physicalState);
+    }
+  });
   it('P07/T39 regression: the browser six-lane 24-tap workload settles within 45s across input cadences and layouts', () => {
     for (const size of [view, { width: 360, height: 532 }, { width: 1080, height: 702 }]) for (const motion of ['gentle', 'playful'] as const) for (const framesBetweenTaps of [0, 1, 2, 3, 4, 6, 8]) {
       const state = new BounceWorld(size, { cap: 24, motion });
