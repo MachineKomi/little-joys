@@ -81,7 +81,10 @@ async function render(toy, width, height) {
 }
 try {
   for (const toy of ["squishy", "bubbles", "nest", "bounce"]) {
-    const bytes = await render(toy, 512, 384);
+    // Penguin Bounce drops pegs to keep full ball passages on small boards, so
+    // its tile renders a tablet-sized board and scales it down like the others.
+    const [w, h] = toy === "bounce" ? [768, 576] : [512, 384];
+    const bytes = await render(toy, w, h);
     await sharp(bytes)
       .resize(384, 288)
       .removeAlpha()

@@ -19,10 +19,10 @@
       "path": "/assets/toy-bubbles.png",
       "width": 384,
       "height": 288,
-      "encodedBytes": 29377,
+      "encodedBytes": 82623,
       "decodedBytes": 442368,
       "alpha": false,
-      "sha256": "3401c1a0989d42faaeea1b566d1947760012054eff02538078818688796a54dc",
+      "sha256": "8e1afc9e5a16a183c7dd587b07b818e07493da8d689a07cfe596068281f45d38",
       "provenance": "Captured from the implemented bubbles scene and original generated sprites."
     },
     {
@@ -31,10 +31,10 @@
       "path": "/assets/toy-nest.png",
       "width": 384,
       "height": 288,
-      "encodedBytes": 67919,
+      "encodedBytes": 74594,
       "decodedBytes": 442368,
       "alpha": false,
-      "sha256": "664be543668546b7d337c0b353e6648e555f7ca1c9e0f4e14f54af2b7b78ad9e",
+      "sha256": "853b4dca7abaef0971cbaa334e88e2501ba29251406d8b4e0e1f9e0be74433d2",
       "provenance": "Captured from the implemented nest scene and original generated sprites."
     },
     {
@@ -43,10 +43,10 @@
       "path": "/assets/toy-bounce.png",
       "width": 384,
       "height": 288,
-      "encodedBytes": 41455,
+      "encodedBytes": 42782,
       "decodedBytes": 442368,
       "alpha": false,
-      "sha256": "107bb6c5e96ed049e4b702dd34daf31dd61b66b36c88aba4a473419c513d43b9",
+      "sha256": "1b9f4d6e0dd9d7c24ae656cab40eac7ac5cb9653db4e882a3a9bb8a6ecfe038d",
       "provenance": "Captured from the implemented bounce scene and original generated sprites."
     },
     {
