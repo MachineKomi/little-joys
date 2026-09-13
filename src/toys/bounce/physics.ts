@@ -66,6 +66,13 @@ export function limitVelocity(ball: Ball, limit: number): void {
   const length = Math.hypot(ball.vx, ball.vy);
   if (length > limit) { ball.vx *= limit / length; ball.vy *= limit / length; }
 }
+/** Nearest point on a segment, written into `out`, so hot loops allocate nothing per ball. */
+function nearestInto(out: Point, x: number, y: number, start: Point, end: Point): Point {
+  const dx = end.x - start.x, dy = end.y - start.y, denominator = dx * dx + dy * dy;
+  const t = denominator > 0 ? clamp(((x - start.x) * dx + (y - start.y) * dy) / denominator, 0, 1) : 0;
+  out.x = start.x + dx * t; out.y = start.y + dy * t;
+  return out;
+}
 
 export class BounceWorld {
   view: View;
@@ -98,6 +105,13 @@ export class BounceWorld {
   private hasStepped = false;
   stepsLastUpdate = 0;
   clampedUpdates = 0;
+  /** Mechanism segments for the current angles, refreshed whenever they turn. */
+  private deflectorSegments: [Point, Point][] = [];
+  private spinnerSegments: [Point, Point][][] = [];
+  /** Reusable nearest points and support flags: no allocation per ball per step. */
+  private near: Point = { x: 0, y: 0 };
+  private nearSupport: Point = { x: 0, y: 0 };
+  private supported = new Uint8Array(MAX_BALLS);
   constructor(view: View, options: WorldOptions, snapshot?: unknown) {
     this.view = { width: Math.max(160, view.width), height: Math.max(180, view.height) };
     this.options = { cap: [8, 16, 24].includes(options.cap) ? options.cap : 16, motion: options.motion === 'playful' ? 'playful' : 'gentle' };
@@ -186,6 +200,11 @@ export class BounceWorld {
         if (clear(peg)) this.pegs.push(peg);
       }
     }
+    this.refreshSegments();
+  }
+  private refreshSegments(): void {
+    this.deflectorSegments = this.deflectors.map(deflectorSegment);
+    this.spinnerSegments = this.spinners.map(spinnerArms);
   }
   /** Bounded deterministic relaxation: every pair of mechanisms (using the full
    * sweep of anything that turns), each mechanism and rail, and each mechanism
@@ -295,6 +314,7 @@ export class BounceWorld {
     const shape = this.deflectors[index]; if (!shape) return false;
     const [oldStart, oldEnd] = deflectorSegment(shape);
     shape.angleIndex = (shape.angleIndex + 1) % DEFLECTOR_ANGLES.length;
+    this.refreshSegments();
     const [start, end] = deflectorSegment(shape);
     for (const ball of this.balls) {
       const p = closestOnSegment(ball, start, end);
@@ -398,8 +418,8 @@ export class BounceWorld {
   }
   private spinnerCollision(ball: Ball, shape: Spinner): boolean {
     let supported = false;
-    for (const [start, end] of spinnerArms(shape)) {
-      const nearest = closestOnSegment(ball, start, end);
+    for (const [start, end] of this.spinnerSegments[shape.index] ?? spinnerArms(shape)) {
+      const nearest = nearestInto(this.near, ball.x, ball.y, start, end);
       const dx = ball.x - nearest.x, dy = ball.y - nearest.y, distance = Math.hypot(dx, dy);
       if (distance >= this.radius + shape.radius) continue;
       // Surface speed of the arm at the contact point, perpendicular to the arm radius.
@@ -422,13 +442,13 @@ export class BounceWorld {
   }
   private projectFromShapes(ball: Ball): void {
     for (const peg of this.pegs) this.shapeCollision(ball, peg, peg.radius, 'peg', peg.hue);
-    for (const shape of this.deflectors) {
-      const [start, end] = deflectorSegment(shape);
-      this.shapeCollision(ball, closestOnSegment(ball, start, end), shape.radius, 'deflector', 1);
+    for (let d = 0; d < this.deflectors.length; d++) {
+      const [start, end] = this.deflectorSegments[d];
+      this.shapeCollision(ball, nearestInto(this.near, ball.x, ball.y, start, end), this.deflectors[d].radius, 'deflector', 1);
     }
     for (const shape of this.bumpers) this.bumperCollision(ball, shape);
     for (const shape of this.spinners) this.spinnerCollision(ball, shape);
-    for (const rail of this.rails) this.shapeCollision(ball, closestOnSegment(ball, rail.start, rail.end), rail.radius, 'rail', 3);
+    for (const rail of this.rails) this.shapeCollision(ball, nearestInto(this.near, ball.x, ball.y, rail.start, rail.end), rail.radius, 'rail', 3);
     this.clampBall(ball);
   }
   private pairCollision(a: Ball, b: Ball): [boolean, boolean] {
@@ -470,16 +490,16 @@ export class BounceWorld {
     if (ball.y >= this.bounds.bottom - this.radius - 1) return true;
     for (const peg of this.pegs) if (ball.y < peg.y && Math.abs(Math.hypot(ball.x - peg.x, ball.y - peg.y) - this.radius - peg.radius) < 1.5) return true;
     for (const shape of this.bumpers) if (ball.y < shape.y && Math.abs(Math.hypot(ball.x - shape.x, ball.y - shape.y) - this.radius - shape.radius) < 1.5) return true;
-    for (const shape of this.deflectors) {
-      const [start, end] = deflectorSegment(shape), nearest = closestOnSegment(ball, start, end);
-      if (ball.y < nearest.y && Math.abs(Math.hypot(ball.x - nearest.x, ball.y - nearest.y) - this.radius - shape.radius) < 1.5) return true;
+    for (let d = 0; d < this.deflectors.length; d++) {
+      const [start, end] = this.deflectorSegments[d], nearest = nearestInto(this.nearSupport, ball.x, ball.y, start, end);
+      if (ball.y < nearest.y && Math.abs(Math.hypot(ball.x - nearest.x, ball.y - nearest.y) - this.radius - this.deflectors[d].radius) < 1.5) return true;
     }
     for (const rail of this.rails) {
-      const nearest = closestOnSegment(ball, rail.start, rail.end);
+      const nearest = nearestInto(this.nearSupport, ball.x, ball.y, rail.start, rail.end);
       if (ball.y < nearest.y && Math.abs(Math.hypot(ball.x - nearest.x, ball.y - nearest.y) - this.radius - rail.radius) < 1.5) return true;
     }
-    for (const shape of this.spinners) if (Math.abs(shape.spin) < .05) for (const [start, end] of spinnerArms(shape)) {
-      const nearest = closestOnSegment(ball, start, end);
+    for (const shape of this.spinners) if (Math.abs(shape.spin) < .05) for (const [start, end] of this.spinnerSegments[shape.index] ?? spinnerArms(shape)) {
+      const nearest = nearestInto(this.nearSupport, ball.x, ball.y, start, end);
       if (ball.y < nearest.y && Math.abs(Math.hypot(ball.x - nearest.x, ball.y - nearest.y) - this.radius - shape.radius) < 1.5) return true;
     }
     return this.balls.some(other => other !== ball && other.y > ball.y + this.radius * .3 && Math.abs(Math.hypot(ball.x - other.x, ball.y - other.y) - this.radius * 2) < 1.5);
@@ -499,21 +519,23 @@ export class BounceWorld {
         for (const ball of this.balls) if (ball.settled && Math.hypot(ball.x - shape.x, ball.y - shape.y) < shape.armLength + this.radius + shape.radius + 2) { ball.settled = false; ball.stillTime = 0; }
       }
     }
+    this.refreshSegments();
     this.wakeUnsupported();
     const gravity = (this.options.motion === 'gentle' ? 730 : 930) * this.radius / 20;
-    const supported = new Uint8Array(this.balls.length);
+    const supported = this.supported;
+    supported.fill(0, 0, this.balls.length);
     for (let i = 0; i < this.balls.length; i++) {
       const ball = this.balls[i]; if (ball.settled) continue;
       ball.vy += gravity * dt; ball.vx *= .997; ball.vy *= .999;
       limitVelocity(ball, this.maxSpeed); ball.x += ball.vx * dt; ball.y += ball.vy * dt;
       for (const peg of this.pegs) if (this.shapeCollision(ball, peg, peg.radius, 'peg', peg.hue)) supported[i] = 1;
-      for (const shape of this.deflectors) {
-        const [start, end] = deflectorSegment(shape);
-        if (this.shapeCollision(ball, closestOnSegment(ball, start, end), shape.radius, 'deflector', 1)) supported[i] = 1;
+      for (let d = 0; d < this.deflectors.length; d++) {
+        const [start, end] = this.deflectorSegments[d];
+        if (this.shapeCollision(ball, nearestInto(this.near, ball.x, ball.y, start, end), this.deflectors[d].radius, 'deflector', 1)) supported[i] = 1;
       }
       for (const shape of this.bumpers) if (this.bumperCollision(ball, shape)) supported[i] = 1;
       for (const shape of this.spinners) if (this.spinnerCollision(ball, shape)) supported[i] = 1;
-      for (const rail of this.rails) if (this.shapeCollision(ball, closestOnSegment(ball, rail.start, rail.end), rail.radius, 'rail', 3)) supported[i] = 1;
+      for (const rail of this.rails) if (this.shapeCollision(ball, nearestInto(this.near, ball.x, ball.y, rail.start, rail.end), rail.radius, 'rail', 3)) supported[i] = 1;
     }
     // Two bounded contact passes give small stacks room without a general solver.
     for (let pass = 0; pass < 2; pass++) for (let i = 0; i < this.balls.length; i++) for (let j = i + 1; j < this.balls.length; j++) {
@@ -612,6 +634,7 @@ export class BounceWorld {
     });
     this.nextId = Number.isInteger(saved.nextId) && (saved.nextId as number) >= 1 && (saved.nextId as number) <= 1_000_000_000 ? saved.nextId as number : Math.max(0, ...this.balls.map(ball => ball.id)) % 1_000_000_000 + 1;
     while (ids.has(this.nextId)) this.nextId = this.nextId >= 1_000_000_000 ? 1 : this.nextId + 1;
+    this.refreshSegments();
     this.hasStepped = true; this.removeOverlaps(); this.wakeUnsupported();
     return true;
   }

@@ -73,9 +73,8 @@ export function silhouetteBounds(mesh: Float64Array, matrix: Matrix, radius: num
 }
 /** Pixels kept between the traced outline and the inset, covering the curve between samples. */
 const OUTLINE_MARGIN = 3;
-/** A release with less finger travel and stretch than these (rest radii) is a poke. */
-const POKE_TRAVEL = 0.12,
-  POKE_STRETCH = 0.2;
+/** A release after less finger travel than this (rest radii) is a poke. */
+const POKE_TRAVEL = 0.12;
 const sameMatrix = (a: Matrix, b: Matrix) => a.every((value, i) => value === b[i]);
 
 export class SquishyScene implements ToyScene {
@@ -202,8 +201,7 @@ export class SquishyScene implements ToyScene {
       bottom: Math.max(EXTENT, (halfHeight - this.body.y) / r),
     };
   }
-  /** Room for the body centre so the painted silhouette, with its current
-   * deformation, lean, sway and squash, stays inside the 24px inset. */
+  /** Re-map the traced outline onto the current deformed surface, once per frame. */
   private measureOutline() {
     this.outline = OUTLINE.map(([x, y]) => surfacePoint(this.mesh, x, y) ?? { x, y });
   }
@@ -231,6 +229,21 @@ export class SquishyScene implements ToyScene {
       top: -halfHeight - minY,
       bottom: halfHeight - maxY,
     };
+  }
+  /** CSS pixels by which the painted outline on `mesh`, at the current body
+   * matrix, passes the inset kept for the body (zero or less when inside). */
+  private outlineExcess(mesh: Float64Array): number {
+    const r = this.radius,
+      edge = 24 + OUTLINE_MARGIN,
+      right = this.view.width - edge,
+      bottom = this.view.height - edge;
+    let excess = -Infinity;
+    for (const [x, y] of OUTLINE) {
+      const surface = surfacePoint(mesh, x, y) ?? { x, y };
+      const p = apply(this.matrix, surface.x * r, surface.y * r);
+      excess = Math.max(excess, edge - p.x, p.x - right, edge - p.y, p.y - bottom);
+    }
+    return excess;
   }
   private refreshMesh() {
     const r = this.radius,
@@ -278,6 +291,29 @@ export class SquishyScene implements ToyScene {
       this.meshScratch,
       this.baseMesh,
     );
+    // Away from home or mid-response, a pull toward an edge cannot push the
+    // painted outline past the inset: keep the largest share of this frame's
+    // new deformation that still fits. At rest, bounds() already guarantees it.
+    if (
+      (this.body.mode !== "rest" || this.body.x !== 0 || this.body.y !== 0) &&
+      this.outlineExcess(this.meshTarget) > 0 &&
+      this.outlineExcess(this.baseMesh) <= 0
+    ) {
+      let keep = 0,
+        drop = 1;
+      for (let i = 0; i < 10; i++) {
+        const share = (keep + drop) / 2;
+        for (let j = 0; j < this.meshScratch.length; j++)
+          this.meshScratch[j] =
+            this.baseMesh[j] + (this.meshTarget[j] - this.baseMesh[j]) * share;
+        if (validMesh(this.meshScratch) && this.outlineExcess(this.meshScratch) <= 0)
+          keep = share;
+        else drop = share;
+      }
+      for (let j = 0; j < this.meshTarget.length; j++)
+        this.meshTarget[j] =
+          this.baseMesh[j] + (this.meshTarget[j] - this.baseMesh[j]) * keep;
+    }
     this.mesh.set(this.meshTarget);
     this.dirty = false;
   }
@@ -294,22 +330,23 @@ export class SquishyScene implements ToyScene {
     this.returning.clear();
     this.dirty = false;
     // Gentle, system reduced motion and every cancellation finish quietly.
-    if (reason !== "up" || this.services.settings.motion !== "playful") {
+    if (!grab || reason !== "up" || this.services.settings.motion !== "playful") {
       this.body.settle();
       return;
     }
-    if (!grab) {
-      this.body.release();
-      return;
-    }
     const r = this.radius,
-      travel =
-        Math.hypot(grab.fingerX - grab.startX, grab.fingerY - grab.startY) / r,
-      stretch = Math.hypot(grab.dx, grab.dy);
-    // A poke squashes along its own axis; a pull slings the friend the other way.
-    if (travel < POKE_TRAVEL && stretch < POKE_STRETCH)
-      this.body.poke(grab.x, grab.y);
-    else this.body.launch(grab.dx * r, grab.dy * r);
+      pullX = grab.fingerX - grab.startX,
+      pullY = grab.fingerY - grab.startY,
+      travel = Math.hypot(pullX, pullY);
+    // A tap is a poke, even on a part still springing back: what counts is how
+    // far the finger drew the material, not where that material currently is.
+    if (travel < POKE_TRAVEL * r) this.body.poke(grab.x, grab.y);
+    else {
+      // A pull slings the friend opposite to it, no further than its reach.
+      const limit = (grab.reach ?? MAX_PULL) * r,
+        scale = travel > limit ? limit / travel : 1;
+      this.body.launch(pullX * scale, pullY * scale);
+    }
   }
   pointerDown(p: ToyPointer): void {
     const local = apply(this.inverse, p.x, p.y),

@@ -94,24 +94,49 @@ describe("Squishy Friend whole-body Playful response", () => {
     expect(farthest).toBeLessThan(80);
   });
 
-  it("hold stops travel at once and relaxes the pose in place; release springs home and stops", () => {
+  it("hold stops travel at once, relaxes the pose in place, then reports no motion; a poke springs it home", () => {
     const body = new BodyMotion();
     body.launch(258, 0);
     for (let i = 0; i < 6; i++) body.step(1 / 60, limits);
     body.hold();
     const caught = { x: body.x, y: body.y };
     let pose = Math.abs(body.tilt) + Math.abs(body.sway) + Math.abs(body.squash);
-    for (let i = 0; i < 30; i++) {
-      expect(body.step(1 / 60, limits)).toBe(true);
+    expect(pose).toBeGreaterThan(0);
+    let frames = 0;
+    while (body.step(1 / 60, limits)) {
+      frames++;
+      expect(frames).toBeLessThan(120);
       expect({ x: body.x, y: body.y }).toEqual(caught);
       const next = Math.abs(body.tilt) + Math.abs(body.sway) + Math.abs(body.squash);
       expect(next).toBeLessThanOrEqual(pose + 1e-12);
       pose = next;
     }
-    body.release();
+    // A still hold: an exactly relaxed pose and no motion, so the scheduler can sleep.
+    expect(body).toMatchObject({ mode: "held", tilt: 0, sway: 0, squash: 0 });
+    expect(body.stillHeld).toBe(true);
+    expect({ x: body.x, y: body.y }).toEqual(caught);
+    expect(body.step(1 / 60, limits)).toBe(false);
+    body.poke(0, -1);
     expect(body.mode).toBe("flying");
     toRest(body);
     expect(body).toMatchObject({ x: 0, y: 0, mode: "rest" });
+  });
+
+  it("held and settling bodies stay inside pose-dependent room, which only ever moves them toward home", () => {
+    const body = new BodyMotion();
+    body.launch(-300, 0);
+    for (let i = 0; i < 12; i++) body.step(1 / 60, limits);
+    expect(body.x).toBeGreaterThan(30);
+    body.hold();
+    body.step(1 / 60, () => ({ left: -140, right: 20, top: -220, bottom: 220 }));
+    expect(body.x).toBeLessThanOrEqual(20);
+    body.settle();
+    let previous = Math.abs(body.x);
+    while (body.step(1 / 60, () => ({ left: -140, right: 10, top: -220, bottom: 220 }))) {
+      expect(Math.abs(body.x)).toBeLessThanOrEqual(previous + 1e-12);
+      previous = Math.abs(body.x);
+    }
+    expect(body.mode).toBe("rest");
   });
 
   it("settle never overshoots: position and pose decay monotonically to exact rest", () => {

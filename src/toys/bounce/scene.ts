@@ -1,5 +1,5 @@
 import type { SceneServices, ToyPointer, ToyScene, View } from '../../core/types';
-import { BounceWorld, DEFLECTOR_TARGET_RADIUS, TINTS, deflectorSegment, hitsBumper, hitsDeflector, hitsSpinner, spinnerArms, type Point } from './physics';
+import { BounceWorld, DEFLECTOR_TARGET_RADIUS, TINTS, deflectorSegment, hitsBumper, hitsDeflector, hitsSpinner, spinnerArms, type Bumper, type Point } from './physics';
 
 type Contact = Point & { mechanism: string | null };
 type Glow = Point & { life: number; duration: number; color: string; kind: 'input' | 'impact' | 'pop'; strength: number };
@@ -21,10 +21,12 @@ export class BounceScene implements ToyScene {
   private tinted: HTMLCanvasElement[] = [];
   private tintedSize = 0;
   private tintedSource?: HTMLImageElement;
+  /** Static board, peg and bumper gradients, built once per layout and context. */
+  private paint?: { ctx: CanvasRenderingContext2D; width: number; height: number; board: CanvasGradient; snow: CanvasGradient; tray: CanvasGradient; glazes: CanvasGradient[]; domes: CanvasGradient[]; litDomes: CanvasGradient[] };
   constructor(private services: SceneServices, snapshot?: unknown) {
     this.world = new BounceWorld({ width: 800, height: 600 }, { cap: services.settings.bounceBallCount, motion: services.settings.motion }, snapshot);
   }
-  resize(view: View): void { this.cancelAll(); this.world.resize(view); }
+  resize(view: View): void { this.cancelAll(); this.world.resize(view); this.paint = undefined; }
   private playful(): boolean { return this.services.settings.motion === 'playful'; }
   private glow(point: Point, color: string, kind: Glow['kind'] = 'input', strength = 1): void {
     if (kind === 'impact') {
@@ -39,6 +41,11 @@ export class BounceScene implements ToyScene {
     }
     const duration = this.playful() ? kind === 'input' ? .46 : .38 : .3;
     this.glows.push({ x: point.x, y: point.y, life: duration, duration, color, kind, strength });
+  }
+  /** A soft ring where each recycled ball rested, read once, whether a tap or the flow recycled it. */
+  private showRecycled(): void {
+    for (const point of this.world.recycled) this.glow(point, '#ffffff', 'pop', .8);
+    this.world.recycled = [];
   }
   private react(): void {
     // One bounded character response clock; repetition restarts it, never queues it.
@@ -62,15 +69,18 @@ export class BounceScene implements ToyScene {
       if (deflector) { this.world.rotateDeflector(deflector.index); this.glow(deflector, PALETTE[1]); }
       else if (spinner) { this.world.spinSpinner(spinner.index); this.glow(spinner, PALETTE[4]); }
       else if (bumper) { this.world.pulseBumper(bumper.index); this.bumperCharge[bumper.index] = 1; this.glow(bumper, PALETTE[bumper.hue]); }
-      else { const ball = this.world.dispense(); this.glow(ball, PALETTE[ball.tint]); this.react(); }
+      else { const ball = this.world.dispense(); this.glow(ball, PALETTE[ball.tint]); this.showRecycled(); this.react(); }
     } else {
       const ball = this.world.spawn(p);
       this.glow(ball, PALETTE[ball.tint]);
+      this.showRecycled();
     }
     this.services.sound('bounce');
   }
   pointerMove(p: ToyPointer): void {
     const contact = this.pointers.get(p.id); if (!contact || this.disposed || !Number.isFinite(p.x) || !Number.isFinite(p.y)) return;
+    // A finger still moving is still attending: a long swipe keeps the flow going.
+    this.world.touch();
     if (contact.mechanism === null) this.world.nudge(contact, p);
     contact.x = p.x; contact.y = p.y;
   }
@@ -95,7 +105,7 @@ export class BounceScene implements ToyScene {
         if (playful || impact.kind === 'bumper' || impact.kind === 'spinner') this.glow(impact, PALETTE[impact.hue % PALETTE.length], 'impact', playful ? strength : Math.min(strength, .7));
       }
     }
-    for (const point of this.world.recycled) this.glow(point, '#ffffff', 'pop', .8);
+    this.showRecycled();
     if (this.world.dispensed.length) this.react();
     const dt = Number.isFinite(delta) ? Math.max(0, Math.min(delta, 1 / 15)) : 0;
     for (const glow of this.glows) glow.life -= dt;
@@ -132,20 +142,38 @@ export class BounceScene implements ToyScene {
     for (const canvas of this.tinted) canvas.width = canvas.height = 0;
     this.tinted = []; this.tintedSize = 0; this.tintedSource = undefined;
   }
+  private paints(ctx: CanvasRenderingContext2D) {
+    const world = this.world, { width, height } = world.view;
+    if (this.paint && this.paint.ctx === ctx && this.paint.width === width && this.paint.height === height) return this.paint;
+    const b = world.bounds, shelf = world.shelf;
+    const board = ctx.createLinearGradient(0, shelf.top - 4, 0, b.bottom);
+    board.addColorStop(0, '#eafaff'); board.addColorStop(.5, '#d3efff'); board.addColorStop(1, '#bfe3fb');
+    const snow = ctx.createLinearGradient(0, shelf.top, 0, shelf.bottom); snow.addColorStop(0, '#ffffff'); snow.addColorStop(1, '#e6f4fc');
+    const tray = ctx.createLinearGradient(0, world.troughTop, 0, b.bottom); tray.addColorStop(0, '#7fb6d6'); tray.addColorStop(1, '#a9d4ec');
+    const glazes = world.pegs.map(peg => {
+      const glaze = ctx.createRadialGradient(peg.x - peg.radius * .35, peg.y - peg.radius * .4, 1, peg.x, peg.y + peg.radius * .3, peg.radius * 1.4);
+      glaze.addColorStop(0, '#ffffff'); glaze.addColorStop(.35, PALETTE[peg.hue]); glaze.addColorStop(1, PALETTE_DEEP[peg.hue]);
+      return glaze;
+    });
+    const dome = (shape: Bumper, lit: boolean) => {
+      const gradient = ctx.createRadialGradient(shape.x - shape.radius * .3, shape.y - shape.radius * .35, 2, shape.x, shape.y, shape.radius);
+      gradient.addColorStop(0, lit ? '#ffffff' : '#fff6d6'); gradient.addColorStop(.45, PALETTE[shape.hue]); gradient.addColorStop(1, PALETTE_DEEP[shape.hue]);
+      return gradient;
+    };
+    this.paint = { ctx, width, height, board, snow, tray, glazes, domes: world.bumpers.map(shape => dome(shape, false)), litDomes: world.bumpers.map(shape => dome(shape, true)) };
+    return this.paint;
+  }
   render(ctx: CanvasRenderingContext2D): void {
-    const world = this.world, { width: w, height: h } = world.view, b = world.bounds, r = world.radius, playful = this.playful();
+    const world = this.world, { width: w, height: h } = world.view, b = world.bounds, r = world.radius, playful = this.playful(), paint = this.paints(ctx);
     ctx.fillStyle = '#fbf7ef'; ctx.fillRect(0, 0, w, h);
     // Bright icy board inside a warm cream frame.
     const frameTop = world.shelf.top - 4;
-    const board = ctx.createLinearGradient(0, frameTop, 0, b.bottom);
-    board.addColorStop(0, '#eafaff'); board.addColorStop(.5, '#d3efff'); board.addColorStop(1, '#bfe3fb');
     ctx.beginPath(); ctx.roundRect(b.left - 9, frameTop, b.right - b.left + 18, b.bottom - frameTop + 16, 30);
-    ctx.fillStyle = board; ctx.fill(); ctx.strokeStyle = '#8fc4e6'; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = paint.board; ctx.fill(); ctx.strokeStyle = '#8fc4e6'; ctx.lineWidth = 3; ctx.stroke();
     // Snow shelf across the top: the penguin's stand and the chute.
     const shelf = world.shelf;
     ctx.beginPath(); ctx.roundRect(b.left - 6, shelf.top, b.right - b.left + 12, shelf.bottom - shelf.top + 2, [26, 26, 18, 18]);
-    const snow = ctx.createLinearGradient(0, shelf.top, 0, shelf.bottom); snow.addColorStop(0, '#ffffff'); snow.addColorStop(1, '#e6f4fc');
-    ctx.fillStyle = snow; ctx.fill();
+    ctx.fillStyle = paint.snow; ctx.fill();
     ctx.beginPath(); ctx.moveTo(b.left + 10, shelf.bottom + 1); ctx.lineTo(b.right - 10, shelf.bottom + 1); ctx.strokeStyle = '#9fd0ee'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.stroke();
     // Chute mouth under the penguin.
     ctx.beginPath(); ctx.ellipse(world.chute.x, shelf.bottom + 2, r * 1.15, r * .42, 0, 0, TAU); ctx.fillStyle = '#5c8fb3'; ctx.fill();
@@ -153,8 +181,7 @@ export class BounceScene implements ToyScene {
 
     // Deep receiving trough with a bright rim.
     ctx.beginPath(); ctx.roundRect(b.left + 8, world.troughTop, b.right - b.left - 16, b.bottom - world.troughTop + 3, [18, 18, 24, 24]);
-    const tray = ctx.createLinearGradient(0, world.troughTop, 0, b.bottom); tray.addColorStop(0, '#7fb6d6'); tray.addColorStop(1, '#a9d4ec');
-    ctx.fillStyle = tray; ctx.fill(); ctx.strokeStyle = '#5b95bd'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = paint.tray; ctx.fill(); ctx.strokeStyle = '#5b95bd'; ctx.lineWidth = 2; ctx.stroke();
     ctx.beginPath(); ctx.moveTo(b.left + 25, world.troughTop + 8); ctx.lineTo(b.right - 25, world.troughTop + 8); ctx.strokeStyle = '#e9f7ff'; ctx.lineWidth = 2; ctx.stroke();
 
     for (const rail of world.rails) {
@@ -163,12 +190,10 @@ export class BounceScene implements ToyScene {
       ctx.strokeStyle = '#a6dcf8'; ctx.lineWidth = rail.radius * 2 - 2; ctx.stroke();
       ctx.beginPath(); ctx.moveTo(rail.start.x, rail.start.y - 3); ctx.lineTo(rail.end.x, rail.end.y - 3); ctx.strokeStyle = '#ffffffb0'; ctx.lineWidth = 3; ctx.stroke();
     }
-    for (const peg of world.pegs) {
+    world.pegs.forEach((peg, index) => {
       ctx.fillStyle = '#2f6a8a22'; ctx.beginPath(); ctx.ellipse(peg.x, peg.y + peg.radius + 4, peg.radius * .9, peg.radius * .3, 0, 0, TAU); ctx.fill();
-      const glaze = ctx.createRadialGradient(peg.x - peg.radius * .35, peg.y - peg.radius * .4, 1, peg.x, peg.y + peg.radius * .3, peg.radius * 1.4);
-      glaze.addColorStop(0, '#ffffff'); glaze.addColorStop(.35, PALETTE[peg.hue]); glaze.addColorStop(1, PALETTE_DEEP[peg.hue]);
-      ctx.beginPath(); ctx.arc(peg.x, peg.y, peg.radius, 0, TAU); ctx.fillStyle = glaze; ctx.fill(); ctx.strokeStyle = PALETTE_DEEP[peg.hue]; ctx.lineWidth = 1.4; ctx.stroke();
-    }
+      ctx.beginPath(); ctx.arc(peg.x, peg.y, peg.radius, 0, TAU); ctx.fillStyle = paint.glazes[index]; ctx.fill(); ctx.strokeStyle = PALETTE_DEEP[peg.hue]; ctx.lineWidth = 1.4; ctx.stroke();
+    });
     world.bumpers.forEach((shape, index) => {
       const charge = this.bumperCharge[index];
       if (charge > 0) {
@@ -179,9 +204,7 @@ export class BounceScene implements ToyScene {
       }
       ctx.fillStyle = '#2f6a8a22'; ctx.beginPath(); ctx.ellipse(shape.x, shape.y + shape.radius + 5, shape.radius * .95, shape.radius * .32, 0, 0, TAU); ctx.fill();
       ctx.beginPath(); ctx.arc(shape.x, shape.y, shape.radius + 4, 0, TAU); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.strokeStyle = PALETTE_DEEP[shape.hue]; ctx.lineWidth = 2; ctx.stroke();
-      const dome = ctx.createRadialGradient(shape.x - shape.radius * .3, shape.y - shape.radius * .35, 2, shape.x, shape.y, shape.radius);
-      dome.addColorStop(0, charge > .3 ? '#ffffff' : '#fff6d6'); dome.addColorStop(.45, PALETTE[shape.hue]); dome.addColorStop(1, PALETTE_DEEP[shape.hue]);
-      ctx.beginPath(); ctx.arc(shape.x, shape.y, shape.radius, 0, TAU); ctx.fillStyle = dome; ctx.fill();
+      ctx.beginPath(); ctx.arc(shape.x, shape.y, shape.radius, 0, TAU); ctx.fillStyle = (charge > .3 ? paint.litDomes : paint.domes)[index]; ctx.fill();
       ctx.beginPath(); ctx.arc(shape.x, shape.y, shape.radius * .45, 0, TAU); ctx.fillStyle = '#ffffffaa'; ctx.fill();
     });
     for (const shape of world.spinners) {
@@ -298,6 +321,7 @@ export class BounceScene implements ToyScene {
   debug() {
     return {
       ...this.world.debug(), pointers: this.pointers.size, mechanismOwners: this.mechanismOwners.size, effects: this.glows.length,
+      popEffects: this.glows.filter(glow => glow.kind === 'pop').length,
       preparedRasterBytes: this.tinted.length * this.tintedSize * this.tintedSize * 4,
       deflectorAngles: this.world.deflectors.map(shape => shape.angleIndex), spinnerSpin: this.world.spinners[0]?.spin ?? 0,
       ballStates: this.world.balls.map(ball => ({ ...ball })), pegStates: this.world.pegs.map(peg => ({ ...peg })), deflectorStates: this.world.deflectors.map(shape => ({ ...shape })),
@@ -305,5 +329,5 @@ export class BounceScene implements ToyScene {
       bounds: { ...this.world.bounds }, troughTop: this.world.troughTop, chute: { ...this.world.chute }, shelf: { ...this.world.shelf }, reaction: this.reaction,
     };
   }
-  dispose(): void { this.disposed = true; this.cancelAll(); this.glows = []; this.releaseTints(); this.world.balls = []; this.world.impacts = []; this.world.attention = 0; }
+  dispose(): void { this.disposed = true; this.cancelAll(); this.glows = []; this.releaseTints(); this.paint = undefined; this.world.balls = []; this.world.impacts = []; this.world.attention = 0; }
 }

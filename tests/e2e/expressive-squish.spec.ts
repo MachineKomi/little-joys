@@ -310,3 +310,22 @@ test("T47/SQ02/SQ04 (amended): a Playful sling travels and returns while every r
   await page.clock.runFor(4000);
   expect(await paintedBox(page)).toEqual(rest);
 });
+
+test("SPEC/SQ10: a still finger resting on the stretched friend lets the animation scheduler sleep", async ({
+  page,
+}) => {
+  await launch(page, "playful");
+  const requests = () =>
+    page.evaluate(
+      () =>
+        (window as unknown as { toyFrameRequests: number }).toyFrameRequests,
+    );
+  await contact(page, "pointerdown", 1, 0.6, 0);
+  await contact(page, "pointermove", 1, 1.2, 0);
+  await page.waitForTimeout(1200);
+  const settled = await requests();
+  await page.waitForTimeout(600);
+  expect(await requests()).toBe(settled);
+  await expect(page.locator("canvas")).toHaveAttribute("data-pointers", "1");
+  await contact(page, "pointerup", 1, 1.2, 0);
+});

@@ -11,6 +11,8 @@ export interface BodyLimits {
   bottom: number;
 }
 export type BodyMode = "rest" | "flying" | "held" | "settling";
+/** Room for the body centre; a function is re-evaluated from the pose on every step. */
+export type LimitsSource = BodyLimits | ((pose: BodyPose) => BodyLimits);
 export const BODY_STEP = 1 / 120;
 /** A flight hands over to a quiet settle after this long. */
 export const FLIGHT_SECONDS = 2.3;
@@ -75,7 +77,8 @@ export class BodyMotion {
     this.vy = vy;
     this.begin();
   }
-  /** A quick tap: a bounded squash along the tap axis and a small sway. */
+  /** A quick tap: a bounded squash along the tap axis and a small sway. The
+   * body then springs home from wherever it is, with a Playful overshoot. */
   poke(directionX: number, directionY: number): void {
     const length = Math.hypot(directionX, directionY);
     if (!Number.isFinite(length)) return;
@@ -87,10 +90,6 @@ export class BodyMotion {
     this.squashV = clamp(this.squashV + 4.2, -6, 6);
     this.swayV = clamp(this.swayV - nx * 0.9, -3, 3);
     this.begin();
-  }
-  /** Any release lets a caught or offset body spring home with overshoot. */
-  release(): void {
-    if (this.mode === "held") this.begin();
   }
   /** A finger holds the body where it is; travel stops and the pose relaxes. */
   hold(): void {
@@ -113,6 +112,16 @@ export class BodyMotion {
     this.elapsed = 0;
     this.accumulator = 0;
   }
+  /** Held with a fully relaxed pose: nothing moves until the finger does, so
+   * the animation scheduler may sleep under a still finger. */
+  get stillHeld(): boolean {
+    return (
+      this.mode === "held" &&
+      this.tilt === 0 &&
+      this.sway === 0 &&
+      this.squash === 0
+    );
+  }
   private begin(): void {
     this.mode = "flying";
     this.elapsed = 0;
@@ -120,28 +129,25 @@ export class BodyMotion {
     this.accumulator = 0;
   }
   /** Fixed-step advance with capped catch-up. Returns whether motion continues.
-   * Limits may depend on the pose, so a lean or sway never pushes the silhouette
-   * past an edge; they are then re-evaluated on every fixed step. */
-  step(delta: number, limits: BodyLimits | ((pose: BodyPose) => BodyLimits)): boolean {
-    if (this.mode === "rest") {
+   * Pose-dependent limits keep a lean or sway from pushing the silhouette past
+   * an edge; they are re-evaluated on every fixed step, in every mode. */
+  step(delta: number, limits: LimitsSource): boolean {
+    const idle = () => this.mode === "rest" || this.stillHeld;
+    if (idle()) {
       this.accumulator = 0;
       return false;
     }
     const dt = Number.isFinite(delta) ? clamp(delta, 0, 0.05) : 0;
     this.accumulator = Math.min(0.05, this.accumulator + dt);
-    // substep() can end the response, so re-read the mode through a function.
-    const resting = () => this.mode === "rest";
-    while (this.accumulator >= BODY_STEP - 1e-12 && !resting()) {
+    while (this.accumulator >= BODY_STEP - 1e-12 && !idle()) {
       this.substep(limits);
       this.accumulator -= BODY_STEP;
     }
-    if (resting()) this.accumulator = 0;
-    return !resting();
+    if (idle()) this.accumulator = 0;
+    return !idle();
   }
-  private substep(limitsOf: BodyLimits | ((pose: BodyPose) => BodyLimits)): void {
+  private substep(limits: LimitsSource): void {
     const h = BODY_STEP;
-    const room = (): BodyLimits =>
-      typeof limitsOf === "function" ? limitsOf(this) : limitsOf;
     if (this.mode === "held" || this.mode === "settling") {
       // Exponential decay is monotonic: no crossing, no oscillation.
       const k = Math.exp(-(this.mode === "held" ? HOLD_RATE : SETTLE_RATE) * h);
@@ -153,6 +159,9 @@ export class BodyMotion {
       this.sway *= k;
       this.squash *= k;
       this.vx = this.vy = this.tiltV = this.swayV = this.squashV = 0;
+      // Finish exactly, so a still hold and a completed settle can sleep.
+      if (this.poseSmall()) this.tilt = this.sway = this.squash = 0;
+      this.keepInside(limits);
       if (
         this.mode === "settling" &&
         Math.abs(this.x) < 0.3 &&
@@ -167,11 +176,11 @@ export class BodyMotion {
     this.vy += (-HOME * this.y - HOME_DAMPING * this.vy) * h;
     this.x += this.vx * h;
     this.y += this.vy * h;
-    const limits = room();
-    const left = Math.min(limits.left, 0),
-      right = Math.max(limits.right, 0),
-      top = Math.min(limits.top, 0),
-      bottom = Math.max(limits.bottom, 0);
+    const room = typeof limits === "function" ? limits(this) : limits;
+    const left = Math.min(room.left, 0),
+      right = Math.max(room.right, 0),
+      top = Math.min(room.top, 0),
+      bottom = Math.max(room.bottom, 0);
     if (this.x < left) {
       this.x = left;
       if (this.vx < 0) this.impact(-this.vx, 0, -1, 0, "x");
@@ -197,13 +206,9 @@ export class BodyMotion {
     this.sway = clamp(this.sway + this.swayV * h, -MAX_SWAY, MAX_SWAY);
     this.squashV += (-SQUASH_W * SQUASH_W * this.squash - 2 * SQUASH_Z * SQUASH_W * this.squashV) * h;
     this.squash = clamp(this.squash + this.squashV * h, -MAX_SQUASH, MAX_SQUASH);
-    if (typeof limitsOf === "function") {
-      // The pose changed this step (a sway can lean the top into a wall), so
-      // keep the whole painted silhouette inside the room it now needs.
-      const after = limitsOf(this);
-      this.x = clamp(this.x, Math.min(after.left, 0), Math.max(after.right, 0));
-      this.y = clamp(this.y, Math.min(after.top, 0), Math.max(after.bottom, 0));
-    }
+    // The pose changed this step (a sway can lean the top into a wall), so
+    // keep the whole painted silhouette inside the room it now needs.
+    this.keepInside(limits);
     if (this.elapsed >= FLIGHT_SECONDS) this.settle();
     else if (
       Math.abs(this.x) < 0.5 &&
@@ -214,6 +219,14 @@ export class BodyMotion {
       Math.abs(this.squashV) < 0.02
     )
       this.reset();
+  }
+  /** Clamp the centre into pose-dependent room. The room always includes home,
+   * so this can only move the body toward home, never away from it. */
+  private keepInside(limits: LimitsSource): void {
+    if (typeof limits !== "function") return;
+    const room = limits(this);
+    this.x = clamp(this.x, Math.min(room.left, 0), Math.max(room.right, 0));
+    this.y = clamp(this.y, Math.min(room.top, 0), Math.max(room.bottom, 0));
   }
   private poseSmall(): boolean {
     return (

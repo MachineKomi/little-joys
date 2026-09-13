@@ -155,3 +155,37 @@ This round covers LJ-20 and LJ-22 on `codex/expressive-squish`. The contracts ar
 **Unexplained browser failure.** A combined Squishy browser run failed one Windows WebKit four-contact reclaim case and reported one error outside any test. Its details were lost because that run's log was truncated. Isolated reruns of the same case passed in both engines. The cause is not established, and it is recorded here rather than counted as a pass.
 
 **Not claimed.** An independent review of this round, physical iPad behaviour and player enjoyment remain outside this record.
+
+## Fable lane: first independent review and repairs
+
+A separate reviewer inspected the Fable-lane code, amended specs and captured frames. It worked read-only and ran no tests, builds or browsers. It rated the slice **7/10 as a technical preview**.
+
+It verified the following as sound:
+
+- **Penguin Bounce flow timing.** Flow and the attended window use fixed steps, and there is no catch-up burst after any stop path.
+- **Bounce state.** Snapshot validation, the P06 recycling order and the unattended fail-safe all hold, and every pool and loop is bounded.
+- **Squishy stop paths.** Every cancellation path gives a monotonic settle.
+- **Squishy geometry and cost.** The body matrix inverts exactly, pickup maps through the drawn pose, and whole-body motion renders as one transform.
+
+Its findings and the repairs:
+
+- **Material: a still finger kept Squishy's animation running.** Every grab put the body into a held mode whose pose decayed toward zero without ever reaching it. The mesh was therefore recomputed and redrawn every frame under a still finger, in Gentle too. That regressed v0.1.1 and SPEC section 9's sleeping scheduler. The held pose now finishes exactly at zero, and a still, relaxed hold reports no motion. Unit tests cover both motion modes and a friend caught mid-flight. A browser test confirms that animation-frame requests stop under a resting finger.
+- **Material: a friend caught at a wall could be pulled past the inset.** The mesh bounds allowed the whole rest texture square, and held and settling bodies skipped the outline clamp. Pulling a caught friend toward its wall therefore squeezed out the transparent margin. A pull now keeps only the share of each frame's new deformation whose traced outline still fits, and held and settling bodies are clamped to the pose-dependent room too. A unit test catches the friend at a wall and pulls past it for 30 frames.
+- **Minor, repaired in code:**
+  - A tap that recycled a ball showed no ring, because the list was cleared before the scene read it.
+  - A long swipe did not renew the attended window.
+  - A quick tap on a part still springing back launched the friend, because the release decision measured the material's displacement rather than the finger's pull.
+  - An unreachable release path and a duplicated comment were removed.
+  - Each behaviour change has a regression test.
+- **Minor, repaired in documentation:**
+  - The spec gave a 1,800 px/s launch cap where the code caps at 1,600.
+  - SQ02 described a fixed margin rather than the traced outline.
+  - P08 claimed all lights share the 24-entry pool, but each bumper has its own fading glow.
+  - T44 claimed six peg layouts while the test covered three; it now covers six.
+  - Passive flow's conflict with SPEC section 7's no-unsolicited-motion rule is now an explicit, recorded override. An adult off switch is left to a shared-shell change.
+- **Minor, reduced:** static board, peg and bumper gradients are now built once per layout instead of every frame. The physics hot loops reuse cached mechanism segments, nearest points and support flags instead of allocating per ball per step. Whether this explains the longer runtime-window intervals is not established.
+- **Minor, not changed:**
+  - Strong eye and foot pulls still show short straight runs near the texture edge, where the narrow regional influence meets the positive-area guard. This remains a visual limit.
+  - The unit silhouette test uses the same traced outline as the clamp. The rendered-pixel browser test is the independent check.
+
+Re-verification of the repaired build is recorded in DELIVERY.md.

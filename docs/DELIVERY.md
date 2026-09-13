@@ -4,59 +4,69 @@ Status: four-toy technical preview; physical iPad validation pending. Initial ow
 
 **Scope changed after the latest owner review.** The live build remains v0.1.1. The c63c v0.1.2 candidate below passed regression but missed the desktop Squishy frame target; it was never deployed. Subsequent GRID8 work is preliminary and handed to the incoming session, with final checks/review still pending. Codex now owns Bubble Pond / Roll & Nest in a separate worktree. [AGENT-HANDOFF.md](AGENT-HANDOFF.md) is the current ownership and evidence boundary; do not read the historical candidate results below as a release approval. The Fable-lane candidate in the next section supersedes the c63c and 31fa candidates on this branch; it is not deployed either.
 
-## Fable-lane candidate `v0.1.2-329dc2c8d902` (not deployed)
+## Fable-lane candidate `v0.1.2-664e98e42c76` (not deployed)
 
-This candidate carries the Squishy Friend and Penguin Bounce work (LJ-20, LJ-22) on `codex/expressive-squish`. Its contracts are the [Penguin Bounce amendment](PENGUIN-BOUNCE-SPEC.md) and the [expressive-squish amendment](EXPRESSIVE-SQUISH-SPEC.md). Bubble Pond and Roll & Nest code is unchanged here. The package version stays 0.1.2; a release needs a coordinated integration with the other lane, a version decision and the release steps in [DEPLOYMENT.md](../DEPLOYMENT.md).
+This candidate carries the Squishy Friend and Penguin Bounce work (LJ-20, LJ-22) on `codex/expressive-squish`, with the repairs from its independent review. It supersedes the pre-review candidate `v0.1.2-329dc2c8d902`. Its contracts are the [Penguin Bounce amendment](PENGUIN-BOUNCE-SPEC.md) and the [expressive-squish amendment](EXPRESSIVE-SQUISH-SPEC.md). Bubble Pond and Roll & Nest code is unchanged here. The package version stays 0.1.2; a release needs a coordinated integration with the other lane and the release steps in [DEPLOYMENT.md](../DEPLOYMENT.md).
 
-**Checks run against this exact build.** The browser suite used a separate Playwright config with the repository's tests and settings, served on port 4273. Another lane's production server was already on 4173, and the default config would reuse it.
+**Checks run against this exact build.** The browser suite used a separate Playwright config with the repository's tests and settings, served on port 4273. Another lane's production server was on 4173 at the time, and the default config would reuse it.
 
 | Check | Result |
 |---|---|
 | Type-check (production and tests) | Passed |
-| Unit tests | 167 passed in 13 files |
-| Production build | `v0.1.2-329dc2c8d902` |
+| Unit tests | 180 passed in 15 files |
+| Production build | `v0.1.2-664e98e42c76` |
 | Asset audit | Passed; 10 unique runtime rasters, unchanged |
 | Budget audit | Passed |
-| Browser suite, both engines | 91 passed (Chromium 49, Windows WebKit 42), 7 skipped, 0 failed, 6.1 minutes |
+| Browser suite, both engines | 93 passed (Chromium 50, Windows WebKit 43), 7 skipped, 0 failed, 7.0 minutes |
 | `npm ci` | Not re-run: no dependency or lockfile change since the last clean install. A release run must include it. |
 
-The 7 skips are the Windows WebKit build's missing native AudioContext; they are unavailable audio cases, not passes. Earlier in this round, one combined Squishy-only run failed a Windows WebKit four-contact reclaim case and reported one error outside any test. That run's log was truncated, so its details were lost. Isolated reruns and this complete run passed; the cause is not established. See [check record](evidence/checks.json).
+The 7 skips are the Windows WebKit build's missing native AudioContext; they are unavailable audio cases, not passes. Earlier in this round, one combined Squishy-only run failed a Windows WebKit four-contact reclaim case and reported one error outside any test. That run's log was truncated, so its details were lost. Isolated reruns and both complete runs passed; the cause is not established. See [check record](evidence/checks.json).
 
 | Measured budget | Result |
 |---|---|
-| App JavaScript, gzip | 99,600 bytes |
-| Conservative initial non-music payload, gzip | 822,286 bytes |
-| Complete offline payload, including optional music | 4,514,562 bytes (4.31 MiB) |
-| Active plus waiting cache payloads | 9,029,124 bytes (8.61 MiB) |
-| Temporary replacement-install staging, three payloads | 13,543,686 bytes (12.92 MiB) |
+| App JavaScript, gzip | 100,335 bytes |
+| Conservative initial non-music payload, gzip | 823,024 bytes |
+| Complete offline payload, including optional music | 4,516,882 bytes (4.31 MiB) |
+| Active plus waiting cache payloads | 9,033,764 bytes (8.62 MiB) |
+| Temporary replacement-install staging, three payloads | 13,550,646 bytes (12.92 MiB) |
 | All shipped rasters, decoded estimate | 8,982,080 bytes (8.57 MiB) |
 | Above plus Squishy material, its readback and Penguin Bounce's six tinted balls | 13,805,216 bytes (13.17 MiB) |
 | Visible canvas backing in the portrait workload | 1,771,470 pixels, DPR cap 1.5 |
 
 The tinted balls are six prepared surfaces of at most 66px square, 104,544 bytes. They are released when the scene is disposed. These are asset and backing estimates, not measured Safari memory.
 
-**Desktop synthetic workloads, 10 seconds each.** Muted Windows Chromium 153, 810×1080 CSS at DPR 2, so the canvas is capped at 1.5. The live-input probe times only the input loop. The runtime window also covers the following wait, screenshot and opening of parent status.
+**Desktop synthetic workloads, 10 seconds each.** Muted Windows Chromium 153, 810×1080 CSS at DPR 2, so the canvas is capped at 1.5. The live-input probe times only the input loop. The runtime window also covers the following wait, screenshot and opening of parent status. Other browser automation was running on the same machine throughout this round.
 
 | Workload | Probe frame p95 / max | Probe gaps over 50ms | Runtime frame max, count over 50ms | Update/draw p95 | Input-to-render proxy p95 |
 |---|---|---|---|---|---|
-| Squishy Friend, Gentle, four contacts | 16.8 / 16.8ms | 0 | 16.8ms, 0 | 1.2ms | 17.7ms |
-| Squishy Friend, Playful, four contacts | 16.7 / 16.8ms | 0 | 16.8ms, 0 | 1.2ms | 17.8ms |
-| Squishy Friend, Playful sling cycles (new) | 16.8 / 16.8ms | 0 | 50.0ms, 0 | 0.9ms | 17.8ms |
-| Bubble Pond, Gentle | 16.7 / 16.8ms | 0 | 16.8ms, 0 | 0.2ms | 17.6ms |
-| Roll & Nest, Gentle | 16.7 / 16.8ms | 0 | No continuous-loop samples | 0.2ms | 17.6ms |
-| Penguin Bounce, Gentle, 24 balls with passive flow | 16.8 / 16.8ms | 0 | 66.7ms, 1 | 1.0ms | 17.6ms |
-| Penguin Bounce, Playful, 24 balls with passive flow | 16.7 / 16.8ms | 0 | 83.3ms, 2 | 1.2ms | 17.6ms |
+| Squishy Friend, Gentle, four contacts | 16.8 / 33.5ms | 0 | 33.5ms, 0 | 1.0ms | 20.9ms |
+| Squishy Friend, Playful, four contacts | 16.8 / 33.4ms | 0 | 66.7ms, 1 | 1.0ms | 21.1ms |
+| Squishy Friend, Playful sling cycles | 16.7 / 33.3ms | 0 | 66.6ms, 1 | 0.9ms | 17.8ms |
+| Bubble Pond, Gentle | 16.7 / 16.8ms | 0 | 16.8ms, 0 | 0.2ms | 17.9ms |
+| Roll & Nest, Gentle | 16.8 / 16.8ms | 0 | No continuous-loop samples | 0.2ms | 17.6ms |
+| Penguin Bounce, Gentle, 24 balls with passive flow | 16.7 / 16.8ms | 0 | 50.1ms, 1 | 0.8ms | 17.8ms |
+| Penguin Bounce, Playful, 24 balls with passive flow | 16.7 / 16.8ms | 0 | 99.9ms, 1 | 1.0ms | 18.1ms |
 
-The held c63c candidate measured Squishy frame p95 at 49.9ms (Gentle) and 33.4ms (Playful) under the same four-contact workload. This candidate measured 16.8ms and 16.7ms. The longer Penguin Bounce runtime-window intervals match the pattern of earlier rounds and have no established cause. The cold desktop start was actionable at 488ms, with all sprites rendered at 765ms and 567,484 bytes transferred. None of this is physical iPad performance. [Full timing summaries](evidence/desktop-performance.json).
+**Same-machine comparison with the pre-review build.** The first two measurements of this build put five of the six Squishy workloads at 33.3–33.4ms probe p95. Earlier in the day the pre-review build had measured 16.7–16.8ms. To separate the code from the machine, the pre-review build was rebuilt from its commit and confirmed as `v0.1.2-329dc2c8d902`. The two builds were then measured alternately with the same script and settings, four runs back to back. The table above is the fourth run.
+
+| Squishy probe frame p95 | Run 1, pre-review | Run 2, this build | Run 3, pre-review | Run 4, this build |
+|---|---|---|---|---|
+| Gentle, four contacts | 33.4ms | 33.4ms | 16.8ms | 16.8ms |
+| Playful, four contacts | 33.4ms | 33.4ms | 33.3ms | 16.8ms |
+| Playful sling cycles | 33.4ms | 33.3ms | 16.8ms | 16.7ms |
+
+Both builds moved between one and two display intervals at p95 from run to run. Update/draw p95 stayed between 0.9 and 1.3ms in every Squishy workload. The review repairs therefore have no measurable timing cost on this host, and the 33ms figures reflect the machine's load at the time. No run had a probe gap over 50ms. Penguin Bounce Playful also measured 33.2ms p95 in the first pre-review run and 16.7–16.8ms in the other three. The runtime window's longer intervals, up to 166.7ms for the pre-review build and 100.0ms for this one, fall outside the input loop in both builds and have no established cause. The cold desktop start was actionable at 517ms, with all sprites rendered at 832ms and 569,804 bytes transferred. None of this is physical iPad performance. [Full timing summaries](evidence/desktop-performance.json).
 
 **Rendered evidence.** Frames captured from this build with a fake browser clock are in [evidence/fable-lj20-lj22](evidence/fable-lj20-lj22/README.md).
 
-- **Sling, portrait Playful:** after a strong side pull, the painted friend's centre moved about 133px to the left within 67ms. It reached 23px from the canvas edge, the 24px inset with antialiasing. It then swung about 52px past home and returned to the exact rest frame.
-- **Poke:** a poke changed the friend's height by -6% and then +4% before resting within 300ms.
-- **Penguin Bounce, no touch:** the penguin kept supplying balls, photographed at 6 and 14 seconds. Mechanism taps visibly glowed, spun, turned and dispensed.
-- **Rendered-pixel browser test:** a new browser test measured 75 rendered sling frames in both engines. Every frame stayed inside the inset.
+- **Sling, portrait Playful:** after a strong side pull, the painted friend's centre moved 133px to the left within 67ms. Its left edge reached 23px from the canvas edge, the 24px inset with antialiasing. It swung 54px past home at 233ms, was within 1px of home at 500ms and returned to the exact rest frame.
+- **Poke:** a poke changed the friend's height by -7% at 50ms and +2.5% at 83ms, and it rested within 300ms.
+- **Penguin Bounce, no touch:** 14 seconds after entry, the penguin had kept supplying balls in portrait (both motion modes), phone and landscape layouts. Mechanism taps visibly glowed, spun, turned and dispensed.
+- **Browser tests on rendered pixels:** one test measured 75 rendered sling frames in both engines, and every frame stayed inside the inset. Another confirms that animation-frame requests stop under a resting finger.
 
-**Not established.** Independent review of this round is pending at the time of writing; its outcome is recorded in [REVIEW.md](REVIEW.md). Physical iPad behaviour, owner feedback and player enjoyment are not established by any of this. The Penguin Bounce picture tile still shows the old board and needs recapturing at integration.
+**Independent review.** A read-only reviewer rated the pre-review build 7/10 as a technical preview. It found two material defects: animation never slept under a still finger, and a friend caught at a wall could be pulled past the inset. Both are repaired with regression tests, as are the minor findings; see [REVIEW.md](REVIEW.md). The repairs are verified by those tests and the complete run above; they have not yet had a second independent review.
+
+**Not established.** Physical iPad behaviour, owner feedback and player enjoyment are not established by any of this. The Penguin Bounce picture tile still shows the old board and needs recapturing at integration.
 
 ## Delivered scope
 
