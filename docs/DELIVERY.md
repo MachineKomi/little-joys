@@ -2,7 +2,76 @@
 
 Status: four-toy technical preview; physical iPad validation pending. Initial owner phone feedback is recorded privately, with sanitized product shortcomings in [FEEDBACK-AND-REFINEMENTS.md](FEEDBACK-AND-REFINEMENTS.md). No general enjoyment or educational outcome is claimed.
 
-**Scope changed after the latest owner review.** The live build remains v0.1.1. The c63c v0.1.2 candidate below passed regression but missed the desktop Squishy frame target; it was never deployed. Subsequent GRID8 work is preliminary and handed to the incoming session, with final checks/review still pending. Codex now owns Bubble Pond / Roll & Nest in a separate worktree. [AGENT-HANDOFF.md](AGENT-HANDOFF.md) is the current ownership and evidence boundary; do not read the historical candidate results below as a release approval. The Fable-lane candidate in the next section supersedes the c63c and 31fa candidates on this branch; it is not deployed either.
+**Current release: combined v0.1.2.** The next section records the combined build now live at [littlejoys-play.vercel.app](https://littlejoys-play.vercel.app/), with its checks, review and hosted verification. The Fable-lane candidate after it and [BUBBLE-NEST-DELIVERY.md](BUBBLE-NEST-DELIVERY.md) keep each lane's own evidence. The c63c v0.1.2 candidate further below passed regression but missed the desktop Squishy frame target and was never deployed, and the GRID8 follow-up stayed preliminary. Do not read those historical candidate results as a release approval.
+
+## Combined release `v0.1.2-22157667feee`
+
+**Live at [littlejoys-play.vercel.app](https://littlejoys-play.vercel.app/) since 13 September 2026, 18:24 local time.** Vercel built and published it automatically after `main` moved to `60a3a3a`, and GitHub records the production deployment as complete. Every toy shows the build code V0.1.2-221576 in its top corner.
+
+This release combines the two toy lanes. The Fable lane reworked Squishy Friend and Penguin Bounce. The Codex lane refined Bubble Pond and Roll & Nest and added the visible build label and parent hold hint. Integration merged the branches without any toy-code overlap and recaptured three picture tiles from the integrated scenes; see [AGENT-HANDOFF.md](AGENT-HANDOFF.md). The lane record below and [BUBBLE-NEST-DELIVERY.md](BUBBLE-NEST-DELIVERY.md) keep each lane's own checks and reviews.
+
+- **Squishy Friend:** each region stretches differently. The curl pulls out like a tail, the cheeks squish wide, the eyes stretch tightly and the feet stay stubby. In Playful, releasing a pull slings the friend across the board with edge squash, lean and sway, and a touch catches it anywhere.
+- **Penguin Bounce:** the penguin drops a ball from its chute every second in Playful, or every 1.8 seconds in Gentle, for two minutes after entry or the last touch. The board has bumpers, a pinwheel, funnel rails, turnable deflectors, coloured pegs and six ball colours, and afterwards it settles and sleeps.
+- **Bubble Pond:** a pop breaks the bubble into iridescent arcs, with droplets and a ripple in Playful, and bubbles come back in varied safe places.
+- **Roll & Nest:** a nested ball sits behind the bowl's front lip. In Playful, a released ball rolls, spins, rebounds and bumps the other ball.
+- **Every toy:** the version and a short build code show in the top corner, and the parent control is marked Hold 2s.
+
+**Checks on this exact build.** The checks ran at commit `a0a098e` on `release/v0.1.2`. The later merge of Codex's workflow files changes no deployable input, and both the build identity and the release gate still compute `v0.1.2-22157667feee`. The browser suite ran on port 4273 through the repository's `LITTLE_JOYS_TEST_PORT` setting.
+
+| Check | Result |
+|---|---|
+| `npm ci` | Clean install of 105 packages. npm 11 did not run esbuild's optional install script, because the project has no allow-scripts entry for it; the build and every test ran without it. |
+| `npm audit` | 0 vulnerabilities, with and without development dependencies |
+| Type-check (production and tests) | Passed |
+| Unit tests | 204 passed in 17 files |
+| Production build | `v0.1.2-22157667feee` |
+| Asset audit | Passed; 10 unique runtime rasters |
+| Budget audit | Passed |
+| Browser suite, both engines | 101 passed (Chromium 54, Windows WebKit 47), 7 skipped, 0 failed, 6.8 minutes |
+
+The 7 skips are the Windows WebKit build's missing native AudioContext; they are unavailable audio cases, not passes. The first complete browser run on this build ended with 97 passed, 7 skipped and 4 Windows WebKit failures, one in each of four different specs. Each failure was the WebKit page closing mid-step with no failed assertion, while Windows recorded a low-virtual-memory condition on this busy host and another desktop application crashed. The four tests passed in an isolated rerun, and the browser results in the table are from a second complete run. See [check record](evidence/checks.json).
+
+| Measured budget | Result | Limit |
+|---|---|---|
+| App JavaScript, gzip | 102,717 bytes | 200 KiB |
+| Conservative initial non-music payload, gzip | 888,897 bytes | 2 MiB |
+| Complete offline payload, including optional music | 4,584,438 bytes (4.37 MiB) | 8 MiB |
+| Active plus waiting cache payloads | 9,168,876 bytes (8.74 MiB) | |
+| Temporary replacement-install staging, three payloads | 13,753,314 bytes (13.12 MiB) | |
+| All shipped rasters, decoded estimate | 8,982,080 bytes (8.57 MiB) | |
+| Above plus Squishy material, its readback and Penguin Bounce's six tinted balls | 13,805,216 bytes (13.17 MiB) | 24 MiB |
+| Visible canvas backing in the portrait workload | 1,771,470 pixels, DPR cap 1.5 | 2M pixels |
+
+The three recaptured tiles are 61,248 encoded bytes larger than before, mostly the new Bubble Pond water. These are asset and backing estimates, not measured Safari memory.
+
+**Desktop synthetic workloads, 10 seconds each.** Muted Windows Chromium 153, 810×1080 CSS at DPR 2, so the canvas is capped at 1.5. The live-input probe times only the input loop. The runtime window also covers the following wait, screenshot and opening of parent status. Another project's browser tests had finished before this run, and CPU load was about 15% when it started.
+
+| Workload | Probe frame p95 / max | Probe gaps over 50ms | Runtime frame max, count over 50ms | Update/draw p95 | Input-to-render proxy p95 |
+|---|---|---|---|---|---|
+| Squishy Friend, Gentle, four contacts | 33.3 / 33.5ms | 0 | 33.5ms, 0 | 1.1ms | 23.1ms |
+| Squishy Friend, Playful, four contacts | 33.4 / 33.5ms | 0 | 99.9ms, 1 | 1.1ms | 22.5ms |
+| Squishy Friend, Playful sling cycles | 16.8 / 33.4ms | 0 | 100.0ms, 1 | 1.0ms | 20.3ms |
+| Bubble Pond, Gentle | 16.8 / 16.8ms | 0 | 16.8ms, 0 | 0.2ms | 17.7ms |
+| Roll & Nest, Gentle | 16.8 / 16.8ms | 0 | No continuous-loop samples | 0.2ms | 17.7ms |
+| Penguin Bounce, Gentle, 24 balls with passive flow | 16.8 / 16.8ms | 0 | 100.0ms, 2 | 1.0ms | 17.8ms |
+| Penguin Bounce, Playful, 24 balls with passive flow | 16.7 / 16.8ms | 0 | 150.0ms, 1 | 1.0ms | 17.8ms |
+
+The Bubble Pond and Roll & Nest lane script measured both motion modes on the same build:
+
+| Workload | Frame p95 / max | Gaps over 50ms | Update/draw p95 | Input-to-render proxy p95 | Canvas stable after settling |
+|---|---|---|---|---|---|
+| Six bubbles, Gentle | 16.8 / 16.8ms | 0 | 0.2ms | 17.8ms | Yes |
+| Six bubbles, Playful | 16.8 / 16.8ms | 0 | 0.2ms | 17.7ms | Yes |
+| Two balls, Gentle | 16.8 / 16.8ms | 0 | 0.3ms | 17.6ms | Yes |
+| Two balls, Playful | 16.7 / 16.8ms | 0 | 0.3ms | 17.7ms | Yes |
+
+Squishy Friend's probe p95 was one display interval in the sling workload and two in both four-contact workloads. Both lane builds showed the same run-to-run pattern in the lane's alternating comparison. That is at, not below, the 33.4ms p95 frame target the physical iPad checks use, so Squishy remains the toy to watch on the device. Update/draw p95 stayed near 1ms against its 8ms target, and no workload had a probe gap over 50ms. The runtime window's longer intervals, up to 150ms in Penguin Bounce Playful, fall outside the input loop, as in earlier rounds. The cold desktop start was actionable at 497ms, with all sprites rendered at 810ms and 576,112 bytes transferred. None of this is physical iPad performance. See the [timing summaries](evidence/desktop-performance.json) and [Bubble/Nest timing](evidence/release-v0.1.2-bubble-nest-performance.json).
+
+**Independent integration review.** A separate read-only reviewer served this exact build locally and drove all four toys in desktop Chromium and WebKit at three screen sizes. It rated the build 8/10 as a technical preview and found no material defect. It measured both Squishy repairs directly: under a still finger, animation frames stopped within half a second in both motion modes, and a friend caught at the left or right wall stayed inside the inset through 60 frames of pulling past it. Penguin Bounce dispensed on schedule, drew nothing while hidden and released no burst on return, and every mechanism tap responded. Bubble Pond and Roll & Nest behaved as their lane records describe, including a fast release that still rolls. Two minor findings remain for follow-up. The build label covers the top-right corner of the Penguin Bounce snow shelf, clear of the penguin, chute and balls, and touches pass through it. Vertical slings did not reach the top and bottom walls, so the pull clamp is independently observed only at the side walls. See [REVIEW.md](REVIEW.md).
+
+**Hosting.** The repository's hosted verifier then checked the live site against this build in desktop Chromium. The remote build label and all 20 precached files matched the local build byte for byte. All four toys worked online and again after an actual offline reload, a fresh session stayed silent, all six sprites loaded, and the parent controls and service-worker cache were verified. The cached music answered a range request with 206, a missing asset returned 404, the production CSP was checked, and there were no third-party requests or page errors. See [hosted evidence](evidence/hosted-check.json). A device that already has v0.1.1 open keeps it until every old window closes, because updates never reload a toy mid-play. To switch, use Parents → Check for update, then close every Little Joys tab or Home Screen window and reopen the address.
+
+**Not established.** Physical iPad behaviour, owner feedback and player enjoyment. Penguin Bounce's passive flow has no adult off switch yet; that shared-settings change is recorded in [AGENT-HANDOFF.md](AGENT-HANDOFF.md).
 
 ## Fable-lane candidate `v0.1.2-664e98e42c76` (not deployed)
 
@@ -165,7 +234,9 @@ Source/privacy inspection excluded the private combined pack and transcript, che
 
 ## Deployment
 
-**The four-toy MVP is deployed and ready to try at [littlejoys-play.vercel.app](https://littlejoys-play.vercel.app/).** Source commit `c84af963e95fa647edc7f13622fb9ada575d7021`, app **v0.1.1**, hosted build **`v0.1.1-50d0640d1f04`**, deployment `9NuYnEVDFqBYf2fp3zsh4YL1JPCM`. It uses the existing Little Joys Vercel project and static `dist` output (`npm ci`, `npm run build`, Other preset). Vercel calls the stable alias's environment Production; this remains a technical playtest preview with physical-device checks pending. Analytics and Speed Insights were not enabled. The older `little-joys-gules.vercel.app` alias remains available. The shorter `little-joys.vercel.app` was already assigned elsewhere; no domain was purchased.
+This section records the v0.1.1 deployment. The combined v0.1.2 release at the top of this document replaced it at the same address on 13 September 2026.
+
+**The four-toy MVP was deployed and ready to try at [littlejoys-play.vercel.app](https://littlejoys-play.vercel.app/).** Source commit `c84af963e95fa647edc7f13622fb9ada575d7021`, app **v0.1.1**, hosted build **`v0.1.1-50d0640d1f04`**, deployment `9NuYnEVDFqBYf2fp3zsh4YL1JPCM`. It uses the existing Little Joys Vercel project and static `dist` output (`npm ci`, `npm run build`, Other preset). Vercel calls the stable alias's environment Production; this remains a technical playtest preview with physical-device checks pending. Analytics and Speed Insights were not enabled. The older `little-joys-gules.vercel.app` alias remains available. The shorter `little-joys.vercel.app` was already assigned elsewhere; no domain was purchased.
 
 The actual HTTPS page was opened and checked. A separate unauthenticated Chromium run verified the exact local build label and manifest, all **20 precached files byte-for-byte**, all **four toys online and after an actual offline reload**, fresh-session silence, six loaded sprites, parent controls, completed matching cache, a cached audio `206` range response, missing-file `404`, production CSP, zero third-party runtime requests, and zero page errors. See [hosted evidence](evidence/hosted-check.json). No label substitution or provider-specific reproduction was needed for this release.
 

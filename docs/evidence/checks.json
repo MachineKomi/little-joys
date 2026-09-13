@@ -1,43 +1,69 @@
 {
   "date": "2026-09-13",
-  "buildId": "v0.1.2-664e98e42c76",
-  "lane": "Fable: Squishy Friend and Penguin Bounce on codex/expressive-squish; not deployed",
-  "command": "npm run check:types; npx vitest run; npm run build; npm run check:assets; npm run check:budgets; npx playwright test with the repository tests/e2e and settings served on port 4273",
-  "exitCode": 0,
+  "buildId": "v0.1.2-22157667feee",
+  "sourceCommit": "a0a098e20cee7610361987bd1b0c2d5cc62b47ae",
+  "branch": "release/v0.1.2",
+  "scope": "Combined release: Fable lane (Squishy Friend, Penguin Bounce) and Codex lane (Bubble Pond, Roll & Nest, visible build label, parent hold hint)",
+  "command": "npm ci; npm audit --omit=dev; npm audit; LITTLE_JOYS_TEST_PORT=4273 npm run check; then a second complete browser run with LITTLE_JOYS_TEST_PORT=4273 npx playwright test",
+  "exitCodes": {
+    "npmCi": 0,
+    "npmAudit": 0,
+    "npmRunCheck": 1,
+    "secondCompleteBrowserRun": 0
+  },
+  "firstBrowserRun": {
+    "passed": 97,
+    "failed": 4,
+    "skipped": 7,
+    "durationMinutes": 7.2,
+    "failedTests": [
+      "[webkit] bubble-nest-refinement.spec.ts:10 BN04/BN05: 2ms coalesced release animates, pause stops it and resume cannot relaunch",
+      "[webkit] expressive-squish.spec.ts:81 T45/T48: large side, face and curl pulls remain visible on phone, portrait and landscape",
+      "[webkit] layout.spec.ts:16 T25/T26: reachable semantic layout at 1080x810",
+      "[webkit] pwa.spec.ts:259 T29: failed update preserves old version; successful update waits for every old window to close"
+    ],
+    "failure": "Target page, context or browser has been closed, in all four; no assertion failed",
+    "hostCondition": "Windows System event 2004 diagnosed a low virtual memory condition at 17:37:36 local time, during the WebKit half of the run, and another desktop application crashed at 17:38:06. About 2 GB of the 23 GB commit limit was free afterwards.",
+    "isolatedRerun": "The four tests and the other cases in their groups passed: 8 passed in Windows WebKit."
+  },
+  "npmCi": "Clean install of 105 packages. npm 11 did not run the optional esbuild install script (no allow-scripts entry); build and tests ran without it.",
+  "npmAudit": {
+    "productionVulnerabilities": 0,
+    "allVulnerabilities": 0
+  },
+  "typeCheck": "passed",
   "unit": {
-    "files": 15,
-    "passed": 180,
+    "files": 17,
+    "passed": 204,
     "failed": 0
   },
+  "productionBuild": "passed",
+  "assetAudit": "passed",
+  "budgetAudit": "passed",
   "browser": {
-    "total": 100,
-    "passed": 93,
+    "total": 108,
+    "passed": 101,
     "failed": 0,
     "skipped": 7,
-    "durationMinutes": 7.0,
+    "durationMinutes": 6.8,
     "chromium": {
-      "passed": 50,
+      "passed": 54,
       "failed": 0
     },
     "windowsWebKit": {
-      "passed": 43,
+      "passed": 47,
       "failed": 0,
       "skipped": 7,
       "skipReason": "No native AudioContext in this Windows WebKit build; audio-capability-specific tests unavailable, not passed."
     }
   },
-  "typeCheck": "passed",
-  "productionBuild": "passed",
-  "assetAudit": "passed",
-  "budgetAudit": "passed",
-  "independentReview": "A read-only reviewer scored the pre-repair build v0.1.2-329dc2c8d902 7/10 with two material defects (no sleep under a still finger; a friend caught at a wall could be pulled past the inset). Both were repaired with regression tests and re-verified in this run.",
-  "npmCi": "not re-run: dependencies and lockfile unchanged since the last clean install; required before a release",
-  "npmAudit": "not re-run in this round",
   "physicalIPad": "not tested",
-  "deployment": "not deployed; the live build remains v0.1.1-50d0640d1f04",
+  "deployment": "See DELIVERY.md for the separately verified hosted status.",
   "notes": [
-    "The browser run used a separate Playwright config on port 4273 with the repository tests and settings, because another lane's production server was already listening on 4173 and the default config reuses an existing server.",
-    "An earlier combined Squishy-only browser run in this round failed one Windows WebKit four-contact reclaim case and reported one error outside any test; its details were lost to log truncation. Isolated reruns and both complete runs passed. The cause is not established.",
-    "Fresh native Windows WebKit process per test; no retries. Raw logs and Playwright artifacts remain local and excluded from Git."
+    "The first complete browser run on this build ended with 97 passed, 7 skipped and 4 Windows WebKit failures, one in each of four different specs. Each failure was the WebKit page closing mid-step with no failed assertion, while Windows recorded a low-virtual-memory condition on this busy host and another desktop application crashed. The four tests passed in an isolated rerun, and the browser results in the table are from a second complete run.",
+    "The browser counts above are from the second complete run on the same build; type-check, unit, build and audit results are from the first run.",
+    "The later merge 60a3a3a added Codex's shared workflow files only. It changes no deployable input: buildIdentity() and the release gate both still compute v0.1.2-22157667feee.",
+    "Fresh native Windows WebKit process per test; no retries. Raw logs and Playwright artifacts remain local and excluded from Git.",
+    "Lane check records: docs/evidence/fable-lj20-lj22/checks-664e.json and docs/evidence/bubble-nest-checks.json."
   ]
 }

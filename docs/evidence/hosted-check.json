@@ -1,8 +1,8 @@
 {
   "status": "passed",
   "url": "https://littlejoys-play.vercel.app/",
-  "buildId": "v0.1.1-50d0640d1f04",
-  "checkedAt": "2026-09-13T12:35:55.351Z",
+  "buildId": "v0.1.2-22157667feee",
+  "checkedAt": "2026-09-13T17:26:54.702Z",
   "browser": "Playwright Chromium desktop",
   "summary": {
     "remoteBuildMatchesLocal": true,

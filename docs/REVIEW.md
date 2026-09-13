@@ -189,3 +189,22 @@ Its findings and the repairs:
   - The unit silhouette test uses the same traced outline as the clamp. The rendered-pixel browser test is the independent check.
 
 Re-verification of the repaired build is recorded in DELIVERY.md.
+
+## Combined v0.1.2 integration review
+
+A separate reviewer worked read-only against the production build `v0.1.2-22157667feee`, served locally with the real headers. It drove all four toys in desktop Chromium and WebKit at 360×640, 810×1080 and 1080×810. It rated the build **8/10 as a technical preview** and found no material defect.
+
+It verified the following as sound:
+
+- **Integration.** Every toy opens from the Toybox, and each recaptured tile matches its scene. The build label is visible on every toy, passes touches through to the canvas and overlaps no toolbar control or caption.
+- **Squishy repairs.** Under a still finger, animation frames stopped within 0.44 seconds in both motion modes and both engines, including for a friend caught mid-flight or held at a wall. A friend caught at the left or right wall stayed inside the inset through 60 frames of pulling past it, gripped at the centre or at the wall-side edge.
+- **Squishy motion.** A sling carried the friend 142 px and swung it 59 px past home before it rested. A poke squashed it by about 6% without launching it.
+- **Penguin Bounce.** The first ball dropped between 1.45 and 1.75 seconds after entry, and Playful dispensed faster than Gentle. A hidden page drew no frames and released no extra balls on return. Deflector, pinwheel, bumper and penguin taps each responded, and no mechanism tap added a board ball.
+- **Bubble Pond and Roll & Nest.** Pops, varied returns, finger-blocked returns, bowl depth and Playful release matched the lane records, including a release built from 2 ms coalesced samples.
+
+Two minor findings were not changed for this release:
+
+- **The build label covers the top-right corner of the Penguin Bounce snow shelf.** The overlap is about 96×22 CSS px at all three sizes. The penguin, chute and balls stay clear, and touches pass through. The label's fixed corner position meets the shelf's edge, so moving either one is a small follow-up.
+- **Top and bottom wall catches were not observed.** Vertical slings stopped short of those walls, so the pull clamp is independently observed only at the side walls. All four sides use the same code path.
+
+Two apparent problems came from the review tooling. WebKit logged a stylesheet error once per Playwright screenshot and never without one, and one early pause sample was read before the click had taken effect. Screenshots and scripts stay local. Physical iPads, audio, offline and update behaviour, and long soak runs were outside this review.

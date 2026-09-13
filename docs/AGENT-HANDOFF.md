@@ -13,7 +13,7 @@ Do not edit the other lane's toy files, reset its work, stage its changes, or de
 
 ## Live baseline
 
-The easy URL remains https://littlejoys-play.vercel.app/, last verified at **v0.1.1-50d0640d1f04**, source `c84af963e95fa647edc7f13622fb9ada575d7021`. Main backup is `34cc938dbf45363626409de27d27d265a87481ea`. No v0.1.2 squish candidate has been deployed. The owner could not see a build label during review, so the reviewed version is not independently established.
+The easy URL https://littlejoys-play.vercel.app/ serves the combined release **v0.1.2-22157667feee** from `main` at `60a3a3a89d359139662837aa4db1348ee9a50248`, verified on 13 September 2026; see [DELIVERY.md](DELIVERY.md). The previous live build was v0.1.1-50d0640d1f04. Every toy now shows its build code in the top corner, so feedback can name the exact build.
 
 ## Unfinished Squishy handoff
 
@@ -44,7 +44,7 @@ The owner reported that Codex had finished and asked for every update to be depl
 - **Picture tiles:** the Penguin Bounce, Bubble Pond and Roll & Nest tiles were recaptured from the integrated scenes with `scripts/capture-assets.mjs`, which also rewrote the asset manifest. The Squishy tile and icons came out byte-identical. The script now renders the Bounce tile from a tablet-sized board, because small boards drop pegs to keep full ball passages.
 - **Version:** 0.1.2, the first stable patch after the live v0.1.1. Integration changed no shared runtime, settings, audio or parent-panel code.
 - **Checks, review and hosting:** recorded in [DELIVERY.md](DELIVERY.md).
-- **Still open:** the adult passive-flow switch requested above, the second-look proposals in [NEXT-PLAY-DESIGN.md](NEXT-PLAY-DESIGN.md), physical iPad checks and private play observations.
+- **Still open:** the adult passive-flow switch requested above. Two minor integration-review findings: the build label covers the top-right corner of the Penguin Bounce shelf, and top and bottom wall catches were not observed (see [REVIEW.md](REVIEW.md)). Also the second-look proposals in [NEXT-PLAY-DESIGN.md](NEXT-PLAY-DESIGN.md), physical iPad checks and private play observations.
 
 ## Latest owner direction
 
