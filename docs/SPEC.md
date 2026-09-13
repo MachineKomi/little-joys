@@ -6,6 +6,8 @@ The owner has approved a fourth toy for v0.1.1. Its normative additions and expl
 
 Subsequent phone feedback and prioritized refinements are recorded in [FEEDBACK-AND-REFINEMENTS.md](FEEDBACK-AND-REFINEMENTS.md). Its stronger squish, bubble-response, ball/bowl presentation and warmer-shell targets describe work still needed; they are not retrospective claims about the baseline or fourth-toy patch. The requested brighter, bounded Playful collision feedback is included in the current Penguin Bounce direction.
 
+The current continuation sprint selects the stronger Squishy interaction in [EXPRESSIVE-SQUISH-SPEC.md](EXPRESSIVE-SQUISH-SPEC.md). Its SQ01–SQ08 requirements amend the small baseline stretch limit for v0.1.2 while preserving all shared limits. Delivery status remains separate from this implementation contract.
+
 ## 1. Product decision
 
 Build a small, attractive touchscreen toybox, not a curriculum, a smaller maze game, or an autism treatment. Its promise is: **touch something, immediately change it, enjoy the result, repeat or leave freely**.

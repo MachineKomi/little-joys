@@ -61,6 +61,7 @@ report.coldStart = {
 await cold.close();
 for (const { toy, motion } of [
   { toy: "squishy", motion: "gentle" },
+  { toy: "squishy", motion: "playful" },
   { toy: "bubbles", motion: "gentle" },
   { toy: "nest", motion: "gentle" },
   { toy: "bounce", motion: "gentle" },
@@ -73,19 +74,22 @@ for (const { toy, motion } of [
     reducedMotion: "no-preference",
   });
   const p = await context.newPage();
-  await p.addInitScript(({ toy, motion }) => {
-    localStorage.setItem(
-      "little-joys-settings-v1",
-      JSON.stringify({
-        lastToy: toy,
-        diagnosticsEnabled: true,
-        bubbleCount: 6,
-        ballCount: 2,
-        bounceBallCount: 24,
-        motion,
-      }),
-    );
-  }, { toy, motion });
+  await p.addInitScript(
+    ({ toy, motion }) => {
+      localStorage.setItem(
+        "little-joys-settings-v1",
+        JSON.stringify({
+          lastToy: toy,
+          diagnosticsEnabled: true,
+          bubbleCount: 6,
+          ballCount: 2,
+          bounceBallCount: 24,
+          motion,
+        }),
+      );
+    },
+    { toy, motion },
+  );
   await p.goto(base);
   await p.waitForFunction(
     () => document.querySelector("canvas")?.getAttribute("data-art") === "6",
@@ -134,8 +138,13 @@ for (const { toy, motion } of [
         // Deliberate dense-board workload: fill the capped pool, then recycle
         // four balls near the top every 600ms while four contacts influence it.
         for (let i = 0; i < 24; i++) {
-          event("pointerdown", 0, .12 + (i % 8) * .105, .07 + Math.floor(i / 8) * .022);
-          event("pointerup", 0, .12 + (i % 8) * .105, .07);
+          event(
+            "pointerdown",
+            0,
+            0.12 + (i % 8) * 0.105,
+            0.07 + Math.floor(i / 8) * 0.022,
+          );
+          event("pointerup", 0, 0.12 + (i % 8) * 0.105, 0.07);
         }
       }
       starts.forEach(([x, y], i) => event("pointerdown", i, x, y));
@@ -152,14 +161,18 @@ for (const { toy, motion } of [
             event(
               "pointermove",
               i,
-              x + Math.sin((t - begin) / 600 + i) * 0.12,
-              y + Math.cos((t - begin) / 700 + i) * 0.1,
+              x +
+                Math.sin((t - begin) / 600 + i) *
+                  (toy === "squishy" ? 0.24 : 0.12),
+              y +
+                Math.cos((t - begin) / 700 + i) *
+                  (toy === "squishy" ? 0.2 : 0.1),
             ),
           );
           if (toy === "bounce" && t - lastSpawn >= 600) {
             starts.forEach(([x, y], i) => {
               event("pointerup", i, x, y);
-              event("pointerdown", i, .18 + i * .2, .08);
+              event("pointerdown", i, 0.18 + i * 0.2, 0.08);
             });
             lastSpawn = t;
           }
@@ -181,7 +194,9 @@ for (const { toy, motion } of [
     { toy, seconds },
   );
   await p.waitForTimeout(350);
-  await p.screenshot({ path: `${directory}/${toy === "bounce" ? `${toy}-${motion}` : toy}-portrait.png` });
+  await p.screenshot({
+    path: `${directory}/${toy === "bounce" || toy === "squishy" ? `${toy}-${motion}` : toy}-portrait.png`,
+  });
   await p
     .getByRole("button", { name: "Open parent settings", exact: true })
     .focus();
@@ -194,7 +209,12 @@ for (const { toy, motion } of [
   report.toys.push({
     toy,
     motion,
-    workload: toy === "bounce" ? "24-ball cap, four synthetic contacts, four recycled spawns every 600ms" : "Maximum configured objects and four synthetic contacts",
+    workload:
+      toy === "bounce"
+        ? "24-ball cap, four synthetic contacts, four recycled spawns every 600ms"
+        : toy === "squishy"
+          ? "Four synthetic contacts, doubled drag amplitude (0.24 width / 0.20 height), final release sampled in both motion modes"
+          : "Maximum configured objects and four synthetic contacts",
     syntheticActiveRafMs: frameSummary,
     runtime: status,
   });

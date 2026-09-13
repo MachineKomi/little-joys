@@ -5,6 +5,15 @@ export interface Grab {
   y: number;
   dx: number;
   dy: number;
+  pressure?: number;
+}
+export const MAX_PULL = 1.1;
+export const RETURN_SECONDS = { gentle: 0.36, playful: 0.78 } as const;
+/** Finite analytical return: Gentle never crosses rest; Playful crosses once. */
+export function returnAmount(elapsed: number, motion: "gentle" | "playful") {
+  const t = clamp(elapsed / RETURN_SECONDS[motion], 0, 1);
+  const smooth = t * t * t * (t * (t * 6 - 15) + 10);
+  return (1 - smooth) * (motion === "playful" ? Math.cos(Math.PI * t) : 1);
 }
 export const ANCHORS = 64;
 export function restRadius(angle: number): number {

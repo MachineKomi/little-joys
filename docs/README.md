@@ -6,6 +6,8 @@ This folder preserves the researched specification and implementation handoff. T
 
 New owner feedback is organized in [OWNER-DIRECTION.md](OWNER-DIRECTION.md), [ROADMAP.md](ROADMAP.md), and [BACKLOG.md](BACKLOG.md). The approved fourth-toy extension is [PENGUIN-BOUNCE-SPEC.md](PENGUIN-BOUNCE-SPEC.md). [FEEDBACK-AND-REFINEMENTS.md](FEEDBACK-AND-REFINEMENTS.md) captures reported phone shortcomings and concrete next acceptance targets. Detailed personal context and raw messages stay in an ignored local folder and are never copied into these public records.
 
+The current continuation sprint is [EXPRESSIVE-SQUISH-SPEC.md](EXPRESSIVE-SQUISH-SPEC.md): larger local deformation and a finite release response for the existing painted friend. Consult DELIVERY.md for the separately verified live version.
+
 ## Start here
 
 Give the implementation agent this folder and `CODEX-PROMPT.md`. `SPEC.md` is the normative product and engineering contract. `TASKS-AND-ACCEPTANCE.md` provides the execution order and release tests. `ASSETS.md` contains the art brief and generation prompts. `RESEARCH.md` explains the evidence and its limits. `SOURCES.md` contains the source register. `PLAYTEST.md` is the family's observation template.

@@ -1,6 +1,6 @@
 # Little Joys backlog
 
-Updated 13 September 2026. Only the current Penguin Bounce patch is approved for implementation here. Future items record owner interests without committing them to a release. [OWNER-DIRECTION.md](OWNER-DIRECTION.md) supplies the design boundaries and [ROADMAP.md](ROADMAP.md) supplies release status.
+Updated 13 September 2026. The owner requested continued progress; the current selected sprint is the stronger Squishy Friend interaction in [EXPRESSIVE-SQUISH-SPEC.md](EXPRESSIVE-SQUISH-SPEC.md). Future items remain separate from that bounded release. [OWNER-DIRECTION.md](OWNER-DIRECTION.md) supplies the design boundaries and [ROADMAP.md](ROADMAP.md) supplies release status.
 
 | ID | Item | Status / next useful step | Completion boundary |
 |---|---|---|---|
@@ -16,7 +16,7 @@ Updated 13 September 2026. Only the current Penguin Bounce patch is approved for
 | LJ-10 | Triggered sprite vignettes | Future idea; separate from the physics patch. | Brief local actions caused by deliberate input, bounded art/animation/audio cost, no interruption or forced wait, and appropriate reduced-motion behavior. |
 | LJ-11 | Trains | Tentative, low-priority exploration only. | Establish whether one simple train interaction is worth exploring before selecting art or adding scope; no established preference is asserted. |
 | LJ-12 | Clear first-playtest handoff | Complete: four-toy MVP ready to try, with exact hosted verification in DELIVERY.md. | Use the configured, easy-to-type `littlejoys-play.vercel.app` address, verify the actual deployed build, and explicitly announce when the MVP is ready for the first human playtest and feedback. Keep hardware checks and enjoyment observations separate from automated readiness. |
-| LJ-13 | More expressive Squishy Friend | Highest-priority interaction refinement from reported phone feedback; not fixed by the fourth-toy patch. | Preserve the current original design; demonstrate substantially larger stable local deformation and evaluate independent original face/eye/body layers, four-touch behavior and bounded Playful rebound. |
+| LJ-13 | More expressive Squishy Friend | Active v0.1.2 sprint: larger local pulls, deformed-surface pickup and bounded release response. See EXPRESSIVE-SQUISH-SPEC.md; implementation and evidence pending. | Preserve the current original design; demonstrate substantially larger stable local deformation and evaluate independent original face/eye/body layers, four-touch behavior and bounded Playful rebound. |
 | LJ-14 | More responsive, varied bubbles | Prioritized refinement; reproduce color/audio observations. | Retain iridescent art, improve color coherence and safe respawn variety, strengthen silent visual feedback, and verify adult-enabled sound without changing silent defaults. |
 | LJ-15 | Ball/bowl presentation defects | Prioritized reproduction/fix; not yet independently reproduced. | Correct front-lip occlusion at different placement depths; remove or redesign the broad green halo and floating shadow while retaining a clear tap-selection state and independent retrieval. |
 | LJ-16 | More interesting roll/settle response | Next interaction refinement after placement defects. | Add bounded physical response without losing forgiving placement, pickup, tap-to-place or immediate stop paths. |

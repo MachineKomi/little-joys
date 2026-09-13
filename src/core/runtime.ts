@@ -277,6 +277,7 @@ export class Runtime {
       paused: this.paused,
       effectiveMotion: this.settings.motion,
       residentImages: this.assets.count,
+      preparedRasterBytes: debug.preparedRasterBytes ?? 0,
       pointers: this.pointers.active.size,
       canvasPixels: this.canvas.width * this.canvas.height,
       backingScale: backingScale(this.view, window.devicePixelRatio),

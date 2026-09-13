@@ -7,11 +7,24 @@ import type {
 import {
   ANCHORS,
   displace,
+  MAX_PULL,
+  RETURN_SECONDS,
+  returnAmount,
   radiusAt,
   restRadius,
   type Grab,
 } from "./deformation";
-import { drawMesh, restMesh, targetMesh, validMesh } from "./mesh";
+import {
+  constrainMesh,
+  drawMesh,
+  EXTENT,
+  materialPoint,
+  restMesh,
+  surfacePoint,
+  targetMesh,
+  validMesh,
+} from "./mesh";
+import { prepareTexture } from "./texture";
 export class SquishyScene implements ToyScene {
   readonly id = "squishy" as const;
   private view: View = { width: 800, height: 600 };
@@ -24,6 +37,21 @@ export class SquishyScene implements ToyScene {
   private radius = 180;
   private mesh = new Float64Array(restMesh);
   private meshTarget = new Float64Array(restMesh);
+  private meshScratch = new Float64Array(restMesh.length);
+  private returnStart = new Float64Array(restMesh);
+  private baseMesh = new Float64Array(restMesh);
+  private returning = new Map<
+    number,
+    { grab: Grab; elapsed: number; motion: "gentle" | "playful" }
+  >();
+  private returnElapsed: number | null = null;
+  private returnMotion: "gentle" | "playful" = "gentle";
+  private recoil = { x: 0, y: 0 };
+  private offset = { x: 0, y: 0 };
+  private returnOffset = { x: 0, y: 0 };
+  private dirty = false;
+  private materialTexture?: HTMLCanvasElement;
+  private textureAttempted = false;
   private meshMoving = false;
   constructor(
     private services: SceneServices,
@@ -66,12 +94,13 @@ export class SquishyScene implements ToyScene {
         Array.isArray(mesh) &&
         mesh.length === restMesh.length &&
         mesh.every(
-          (v, i) => Number.isFinite(v) && Math.abs(v - restMesh[i]) <= 0.36,
+          (v, i) => Number.isFinite(v) && Math.abs(v - restMesh[i]) <= 1.5,
         ) &&
         validMesh(Float64Array.from(mesh))
       ) {
         this.mesh.set(mesh);
         this.meshMoving = true;
+        this.beginReturn(undefined, "cancel");
       }
     }
   }
@@ -79,14 +108,105 @@ export class SquishyScene implements ToyScene {
     this.cancelAll();
     this.view = view;
     this.radius = Math.min(view.width, view.height) * 0.29;
+    constrainMesh(this.mesh, this.bounds());
+    constrainMesh(this.returnStart, this.bounds());
+    constrainMesh(this.baseMesh, this.bounds());
+    this.clampOffset();
   }
   private center() {
-    return { x: this.view.width / 2, y: this.view.height / 2 };
+    return {
+      x: this.view.width / 2 + this.offset.x,
+      y: this.view.height / 2 + this.offset.y,
+    };
+  }
+  private bounds() {
+    return {
+      x: Math.max(EXTENT, (this.view.width / 2 - 24) / this.radius),
+      y: Math.max(EXTENT, (this.view.height / 2 - 24) / this.radius),
+    };
+  }
+  private clampOffset() {
+    const bounds = this.bounds();
+    let minX = Infinity,
+      maxX = -Infinity,
+      minY = Infinity,
+      maxY = -Infinity;
+    for (let i = 0; i < this.mesh.length; i += 2) {
+      minX = Math.min(minX, this.mesh[i]);
+      maxX = Math.max(maxX, this.mesh[i]);
+      minY = Math.min(minY, this.mesh[i + 1]);
+      maxY = Math.max(maxY, this.mesh[i + 1]);
+    }
+    this.offset.x = Math.max(
+      (-bounds.x - minX) * this.radius,
+      Math.min((bounds.x - maxX) * this.radius, this.offset.x),
+    );
+    this.offset.y = Math.max(
+      (-bounds.y - minY) * this.radius,
+      Math.min((bounds.y - maxY) * this.radius, this.offset.y),
+    );
+  }
+  private refreshMesh() {
+    const influences = [...this.grabs.values()];
+    for (const state of this.returning.values()) {
+      const amount = returnAmount(state.elapsed, state.motion);
+      influences.push({
+        ...state.grab,
+        dx: state.grab.dx * amount,
+        dy: state.grab.dy * amount,
+        pressure: amount,
+      });
+    }
+    const local = influences.map((g) => {
+      const anchor = surfacePoint(this.baseMesh, g.x, g.y) ?? g;
+      return {
+        ...g,
+        x: anchor.x,
+        y: anchor.y,
+        dx: g.x + g.dx - this.offset.x / this.radius - anchor.x,
+        dy: g.y + g.dy - this.offset.y / this.radius - anchor.y,
+      };
+    });
+    targetMesh(
+      this.meshTarget,
+      local,
+      this.bounds(),
+      this.meshScratch,
+      this.baseMesh,
+    );
+    this.mesh.set(this.meshTarget);
+    this.dirty = false;
+    this.clampOffset();
+  }
+  private beginReturn(grab: Grab | undefined, reason: "up" | "cancel") {
+    this.returnStart.set(this.mesh);
+    this.baseMesh.set(this.mesh);
+    this.returnElapsed =
+      this.mesh.some((v, i) => Math.abs(v - restMesh[i]) > 1e-7) ||
+      this.offset.x ||
+      this.offset.y
+        ? 0
+        : null;
+    this.returnMotion =
+      reason === "up" ? this.services.settings.motion : "gentle";
+    this.returnOffset = { ...this.offset };
+    const playful = grab && reason === "up" && this.returnMotion === "playful";
+    this.recoil = playful
+      ? {
+          x: Math.max(-18, Math.min(18, -grab.dx * 18)),
+          y:
+            -Math.min(36, this.radius * 0.16) *
+            Math.min(1, 0.35 + Math.hypot(grab.dx, grab.dy)),
+        }
+      : { x: 0, y: 0 };
+    this.returning.clear();
+    this.dirty = false;
   }
   pointerDown(p: ToyPointer): void {
     const c = this.center(),
       x = (p.x - c.x) / this.radius,
       y = (p.y - c.y) / this.radius;
+    const material = materialPoint(this.mesh, x, y);
     const a = (Math.atan2(y, x) + Math.PI * 2) % (Math.PI * 2),
       i = Math.round((a / (Math.PI * 2)) * ANCHORS) % ANCHORS;
     // Include the rendered curl/toes and bounded texture displacement. This deliberately
@@ -95,11 +215,26 @@ export class SquishyScene implements ToyScene {
       ? 1.45
       : this.radii[i] + 0.035;
     if (
-      Math.hypot(x, y) <= hitRadius &&
+      (Boolean(material) || Math.hypot(x, y) <= hitRadius) &&
       this.grabs.size < 4 &&
-      ![...this.grabs.values()].some((g) => Math.hypot(x - g.x, y - g.y) < 0.12)
+      ![...this.grabs.values()].some(
+        (g) =>
+          Math.hypot((material?.x ?? x) - g.x, (material?.y ?? y) - g.y) < 0.12,
+      )
     ) {
-      this.grabs.set(p.id, { id: p.id, x, y, dx: 0, dy: 0 });
+      const anchor = material ?? { x, y };
+      this.returning.delete(p.id);
+      while (this.grabs.size + this.returning.size >= 4)
+        this.returning.delete(this.returning.keys().next().value!);
+      // Keep the existing return as a decaying base. A new local influence is
+      // composed over it, so an opposite-side touch cannot discard that pose.
+      this.grabs.set(p.id, {
+        id: p.id,
+        ...anchor,
+        dx: x + this.offset.x / this.radius - anchor.x,
+        dy: y + this.offset.y / this.radius - anchor.y,
+      });
+      this.dirty = true;
       this.services.sound("squishy");
     }
     if (this.marks.length === 24) this.marks.shift();
@@ -108,34 +243,73 @@ export class SquishyScene implements ToyScene {
   pointerMove(p: ToyPointer): void {
     const g = this.grabs.get(p.id);
     if (!g) return;
-    const c = this.center();
+    const c = { x: this.view.width / 2, y: this.view.height / 2 };
     let dx = (p.x - c.x) / this.radius - g.x,
       dy = (p.y - c.y) / this.radius - g.y;
     const l = Math.hypot(dx, dy);
-    if (l > 0.35) {
-      dx *= 0.35 / l;
-      dy *= 0.35 / l;
+    if (!Number.isFinite(l)) return;
+    if (l > MAX_PULL) {
+      dx *= MAX_PULL / l;
+      dy *= MAX_PULL / l;
     }
     g.dx = dx;
     g.dy = dy;
+    this.dirty = true;
   }
-  pointerEnd(id: number): void {
+  pointerEnd(id: number, reason: "up" | "cancel" = "up"): void {
+    const grab = this.grabs.get(id);
+    if (!grab) return;
+    // A complete quick tap can arrive between frames. Capture its local response
+    // before starting the finite return; do not drop it as an untouched rest pose.
+    if (this.dirty) this.refreshMesh();
     this.grabs.delete(id);
+    if (!this.grabs.size) this.beginReturn(grab, reason);
+    else
+      this.returning.set(id, {
+        grab: { ...grab },
+        elapsed: 0,
+        motion: reason === "up" ? this.services.settings.motion : "gentle",
+      });
   }
   cancelAll(): void {
     this.grabs.clear();
+    this.returning.clear();
+    this.beginReturn(undefined, "cancel");
   }
   update(dt: number): boolean {
-    const blend = 1 - Math.exp(-Math.min(dt, 0.05) * 18);
+    dt = Number.isFinite(dt) ? Math.max(0, Math.min(dt, 0.05)) : 0;
+    const blend = 1 - Math.exp(-dt * 18);
     let moving = false;
-    targetMesh(this.meshTarget, this.grabs.values());
+    if (this.returnElapsed !== null) {
+      this.returnElapsed += dt;
+      const amount = returnAmount(this.returnElapsed, this.returnMotion);
+      for (let i = 0; i < this.mesh.length; i++)
+        this.baseMesh[i] =
+          restMesh[i] + (this.returnStart[i] - restMesh[i]) * amount;
+      constrainMesh(this.baseMesh, this.bounds());
+      const t = Math.min(
+        1,
+        this.returnElapsed / RETURN_SECONDS[this.returnMotion],
+      );
+      const bounce = Math.sin(Math.PI * t) * (1 - t);
+      this.offset.x = this.returnOffset.x * (1 - t) + this.recoil.x * bounce;
+      this.offset.y = this.returnOffset.y * (1 - t) + this.recoil.y * bounce;
+      if (t === 1) {
+        this.returnElapsed = null;
+        this.offset = { x: 0, y: 0 };
+      } else moving = true;
+      this.dirty = true;
+    }
+    for (const [id, state] of this.returning) {
+      state.elapsed += dt;
+      if (state.elapsed >= RETURN_SECONDS[state.motion])
+        this.returning.delete(id);
+      this.dirty = true;
+    }
+    if (this.dirty) this.refreshMesh();
+    moving ||= this.returning.size > 0;
     this.meshMoving = false;
     for (let i = 0; i < this.mesh.length; i++) {
-      const d = this.meshTarget[i] - this.mesh[i];
-      if (Math.abs(d) > 0.00015) {
-        this.mesh[i] += d * (this.grabs.size ? 1 : blend);
-        moving = true;
-      } else this.mesh[i] = this.meshTarget[i];
       if (Math.abs(this.mesh[i] - restMesh[i]) > 0.00015)
         this.meshMoving = true;
     }
@@ -181,7 +355,12 @@ export class SquishyScene implements ToyScene {
     ctx.fill();
     const sprite = this.services.image?.("friend");
     if (sprite) {
-      if (this.meshMoving) drawMesh(ctx, sprite, this.mesh, r, c.x, c.y);
+      if (!this.textureAttempted) {
+        this.textureAttempted = true;
+        this.materialTexture = prepareTexture(sprite);
+      }
+      if (this.meshMoving)
+        drawMesh(ctx, this.materialTexture ?? sprite, this.mesh, r, c.x, c.y);
       else
         ctx.drawImage(
           sprite,
@@ -276,6 +455,14 @@ export class SquishyScene implements ToyScene {
       effects: this.marks.length,
       radii: Array.from(this.radii),
       radius: this.radius,
+      meshDisplacement: Math.max(
+        ...this.mesh.map((value, i) => Math.abs(value - restMesh[i])),
+      ),
+      returning: this.returnElapsed !== null || this.returning.size > 0,
+      mesh: Array.from(this.mesh),
+      preparedRasterBytes: this.materialTexture
+        ? this.materialTexture.width * this.materialTexture.height * 4
+        : 0,
       ...this.center(),
     };
   }
@@ -283,5 +470,8 @@ export class SquishyScene implements ToyScene {
     this.cancelAll();
     this.marks = [];
     this.face.clear();
+    if (this.materialTexture)
+      this.materialTexture.width = this.materialTexture.height = 0;
+    this.materialTexture = undefined;
   }
 }

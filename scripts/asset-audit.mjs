@@ -142,8 +142,14 @@ export async function auditAssets(root = resolve("."), output = "dist") {
     (total, entry) => total + entry.decodedBytes,
     0,
   );
-  if (decodedBytes > 24 * 1024 * 1024)
-    throw new Error(`Decoded raster estimate exceeds 24 MiB: ${decodedBytes}`);
+  const preparedMaterialBytes = 768 * 768 * 4;
+  const preparationReadbackBytes = preparedMaterialBytes;
+  const decodedWithPreparationPeak =
+    decodedBytes + preparedMaterialBytes + preparationReadbackBytes;
+  if (decodedWithPreparationPeak > 24 * 1024 * 1024)
+    throw new Error(
+      `Decoded raster plus preparation peak exceeds 24 MiB: ${decodedWithPreparationPeak}`,
+    );
   const manifest = JSON.parse(
     await readFile(resolve(dist, "manifest.webmanifest"), "utf8"),
   );
@@ -185,7 +191,11 @@ export async function auditAssets(root = resolve("."), output = "dist") {
       0,
     ),
     decodedRasterBytesEstimate: decodedBytes,
-    note: "All shipped rasters counted conservatively; this estimate is not Safari total RAM. Audio is audited by encoded bytes and hash, and is streamed without a complete decoded AudioBuffer.",
+    preparedMaterialBytes,
+    preparationReadbackBytes,
+    decodedWithPreparedMaterialBytes: decodedBytes + preparedMaterialBytes,
+    decodedWithPreparationPeak,
+    note: "All shipped rasters counted conservatively, plus one 768-square Squishy material surface and one temporary readback array during preparation. The scene releases its material surface on disposal; browser garbage collection and graphics copies are not measured. These estimates are not Safari total RAM. Audio streams without a complete decoded AudioBuffer.",
     audio,
     assets: results,
   };
