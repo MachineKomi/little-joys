@@ -4,6 +4,8 @@
 
 ## Recommendation
 
+Process follow-up: the owner invited a tailored version of Rebirth's BMAD Party Mode. [Toy Studio](TOY-STUDIO-WORKFLOW.md) proposes competing concrete play moments, a small specialist cast, and **Builder 1 → one independent Critic → Builder 2**, with explicit bounded exceptions. This prepares the next design/implementation loop without starting it or changing the integration-first sequence.
+
 First finish the current combined four-toy build, deploy it once with a visible version, and observe voluntary play. Keep current implementation ownership through that integration. Afterward, cross-review each other's toys before choosing another bounded sprint; a complete ownership swap is useful only when it addresses a concrete creative or technical problem.
 
 My preferred next experiments are **a richer Bubble Pond** and **Bounce & Catch as a possible replacement interaction for Roll & Nest**. Start with bubbles because the latest owner feedback identifies a working foundation. Do not add a fifth toy before seeing the combined four. If a different kind of activity is needed afterward, a small original animal sound garden offers a more distinct experiment than another ball-physics board.

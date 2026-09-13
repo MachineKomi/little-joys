@@ -8,6 +8,8 @@ New owner feedback is organized in [OWNER-DIRECTION.md](OWNER-DIRECTION.md), [RO
 
 ## Start here
 
+Proposed creative workflow: [Little Joys Toy Studio](TOY-STUDIO-WORKFLOW.md) adapts Rebirth's design debate and **Builder 1 → one independent Critic → Builder 2** cycle; the [sprint packet template](templates/TOY-SPRINT-PACKET.md) makes handoffs recoverable. Documentation only: no BMAD installation or new sprint has started.
+
 Current Bubble Pond / Roll & Nest lane: [refinement contract and ownership](BUBBLE-NEST-REFINEMENT.md), including the visible build label, and [scoped delivery / integration instructions](BUBBLE-NEST-DELIVERY.md). Track source, automated evidence and deployment separately.
 
 Latest design-only follow-up: [second-look owner feedback](feedback/BUBBLE-NEST-SECOND-LOOK.md) and [next-play options, recommendation and sequence](NEXT-PLAY-DESIGN.md). These preserve the newer request for richer bubbles and a more substantial ball/bowl activity; they do not change the checked runtime or delay its combined playtest with the other lane.

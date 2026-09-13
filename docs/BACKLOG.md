@@ -40,6 +40,8 @@ The latest [owner feedback](feedback/BUBBLE-NEST-SECOND-LOOK.md) says the two to
 
 ## How an idea becomes work
 
+**WF-01 — Tailored creative workflow (proposal documented).** The owner requested more experimentation/debate and consideration of Rebirth's BMAD Party Mode, retaining two Builder turns and one Critic report with some flexibility. [Toy Studio](TOY-STUDIO-WORKFLOW.md) and its [packet template](templates/TOY-SPRINT-PACKET.md) capture the adaptation, explicit exception/history rules, privacy, model/ownership boundaries and human feedback loop. No framework installation or new sprint is active; current combined integration remains first.
+
 Choose one item explicitly, state the visible behavior and its limits, update the implementation contract when needed, and add only the tests or measurements needed to verify that change. Distinguish completed code from checks still pending. Original art and sound must have recorded provenance before shipping.
 
 Do not copy private observations into issues, commits, generation prompts, or this file. A public backlog entry should state the reusable design decision without identifying who prompted it or exposing a personal profile. Documentation updates may be backed up normally; they do not by themselves authorize or trigger a new material app release under the [deployment policy](../DEPLOYMENT.md).

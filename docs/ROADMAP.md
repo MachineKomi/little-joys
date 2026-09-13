@@ -17,6 +17,8 @@ Keep the architecture small: React for the semantic shell, imperative Canvas2D f
 
 ## Release and backup cadence
 
+Workflow proposal: [Toy Studio](TOY-STUDIO-WORKFLOW.md) adds a small, relevant creative team for unresolved play ideas and a bounded two-Builder/one-Critic cycle. Keep the current combined release sequence below; apply the proposed packet to a later selected experiment, rather than restarting completed lanes or retroactively changing review history.
+
 Latest owner instruction is a **design-only pause on further feature work** while the current lanes finish and integrate. [NEXT-PLAY-DESIGN.md](NEXT-PLAY-DESIGN.md) proposes this sequence: one combined versioned playtest build; private voluntary-play observations; cross-review of the opposite toys; then a bounded bubble expansion or Bounce & Catch prototype. A new animal sound toy and reversible toy retirement remain portfolio options after observation. Do not delay the current combined release to implement the entire new brainstorm, or automatically swap ownership/start a fifth toy.
 
 The Codex lane has implemented and checked bubbles, nesting, build identification and the parent hold hint under [BN01–BN07](BUBBLE-NEST-REFINEMENT.md); [scoped delivery](BUBBLE-NEST-DELIVERY.md) records final tests and measurements. Claude's friend/bounce work remains separate until reviewed integration. The branch is based on v0.1.1; its digest identifies local candidates, and the stable version is advanced during deliberate integration rather than making competing lanes claim the same release.
