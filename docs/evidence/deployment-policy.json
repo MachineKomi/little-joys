@@ -1,0 +1,34 @@
+{
+  "date": "2026-09-13",
+  "method": "Observed signed-in Vercel deployment status and rendered build logs; no account metadata or private log dump retained.",
+  "publicUrl": "https://littlejoys-play.vercel.app/",
+  "materialRelease": {
+    "sourceCommit": "c84af963e95fa647edc7f13622fb9ada575d7021",
+    "deploymentId": "9NuYnEVDFqBYf2fp3zsh4YL1JPCM",
+    "status": "Ready",
+    "gateDecision": "BUILD",
+    "reason": "Material playtest release 0.1.0 -> 0.1.1",
+    "manualOverride": false,
+    "buildId": "v0.1.1-50d0640d1f04",
+    "verifiedPrecacheFiles": 20,
+    "completeOfflineBytes": 4488912,
+    "exactHostedVerification": "hosted-check.json"
+  },
+  "nonMaterialBackup": {
+    "sourceCommit": "9cb31a25467eba49466b755cf1f35839c5c01f65",
+    "deploymentId": "AstDnYJWMDdbWqrmPAF3KDetuVw4",
+    "changes": "Documentation, hosted evidence and command-usage copy in the deployment verifier; no production-input or app-version changes.",
+    "status": "Canceled",
+    "gateDecision": "SKIP",
+    "reason": "App version has not increased beyond the last successful deployment",
+    "ignoredBuildExitCode": 0,
+    "dependencyInstallRan": false,
+    "appBuildRan": false,
+    "completedGameUploaded": false
+  },
+  "limits": [
+    "A canceled deployment history entry still exists and can count toward provider quotas.",
+    "This receipt does not claim physical iPad qualification or observed enjoyment.",
+    "The earlier v0.1.0 backup skipped because Git history had been removed; it was not evidence of working provider-side version comparison."
+  ]
+}

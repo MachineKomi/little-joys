@@ -53,3 +53,5 @@ Rollbacks are deliberate manual deployments of a known checked revision. The aut
 ## Recorded evidence
 
 Current hosted status, source revision, build ID and the documentation-only gate check belong in [docs/DELIVERY.md](docs/DELIVERY.md). Only record a URL after actually opening and checking it.
+
+The v0.1.1 release now has actual provider evidence for both paths: a higher material version built automatically, and the following documentation/evidence backup skipped because its version had not increased. See the [sanitized deployment-policy receipt](docs/evidence/deployment-policy.json). The latter created only a canceled history entry and did not install dependencies, build the app or upload another completed game.
