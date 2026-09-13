@@ -4,7 +4,7 @@ A small, quiet touchscreen toybox: stretch **Squishy Friend**, sweep through **B
 
 **Preview; physical iPad validation pending.** The engineering target is an eighth-generation iPad and similarly modest devices. Desktop browser tests do not qualify that hardware. See [delivery evidence](docs/DELIVERY.md), [requirements](docs/SPEC.md), and [review](docs/REVIEW.md).
 
-**[Open the playtest](https://littlejoys-play.vercel.app/).** [Penguin Bounce](docs/PENGUIN-BOUNCE-SPEC.md) is implemented for v0.1.1. The metadata-corrected four-toy release is completing final verification; [DELIVERY.md](docs/DELIVERY.md) distinguishes the checked local build from the last verified hosted release. See the [owner direction](docs/OWNER-DIRECTION.md), [roadmap](docs/ROADMAP.md), and [backlog](docs/BACKLOG.md) for recoverable public planning.
+**[Open the playtest](https://littlejoys-play.vercel.app/).** [Penguin Bounce](docs/PENGUIN-BOUNCE-SPEC.md) is implemented for v0.1.1. The four-toy release has passed its final local checks and measurements; [DELIVERY.md](docs/DELIVERY.md) distinguishes that artifact from the last verified hosted release. See the [owner direction](docs/OWNER-DIRECTION.md), [roadmap](docs/ROADMAP.md), and [backlog](docs/BACKLOG.md) for recoverable public planning.
 
 ## Run locally
 
@@ -71,7 +71,7 @@ Updates download and verify in the background and wait until all old app windows
 
 ## Architecture and assets
 
-React owns the semantic shell; an imperative Canvas2D runtime owns input and animation. Four tracked pointers, six bubbles, two balls, 24 short effects, two SFX voices, one streaming music element, five shared sprite images, one canvas, and one active animation scheduler are bounded explicitly. DPR is capped at 1.5 and backing storage at two million pixels. Squishy Friend uses a locally deformed texture mesh; settled frames use a single image draw.
+React owns the semantic shell; an imperative Canvas2D runtime owns input and animation. Four tracked pointers, six bubbles, two nesting balls, 24 bouncing balls, 24 short effects, two SFX voices, one streaming music element, six shared sprite images, one canvas, and one active animation scheduler are bounded explicitly. DPR is capped at 1.5 and backing storage at two million pixels. Squishy Friend uses a locally deformed texture mesh; settled frames use a single image draw.
 
 Selected generated originals and sanitized prompts live under `art`, with [image provenance](art/PROVENANCE.md), [sprite prompts](art/SPRITE-PROMPTS.md), and [audio provenance](art/AUDIO-PROVENANCE.md). Only audited derivatives ship under `public`; no generation runs at build time. To reproduce exports, run `node scripts/export-sprites.mjs`, then `node scripts/capture-assets.mjs` with the dev server on port 5173. The latter captures the actual implemented toy scenes for selector tiles/icons and refreshes the asset inventory.
 

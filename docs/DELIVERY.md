@@ -16,33 +16,31 @@ The combined build pack was split into README, SPEC, TASKS-AND-ACCEPTANCE, ASSET
 
 ## Build and validation
 
-Release checkpoint: corrected metadata produces `v0.1.1-50d0640d1f04`. Its final verification is in progress after a proven resize-test timing issue was repaired. The completed preceding check below remains labelled with its actual `4a0451f16ac2` artifact; no failed or incomplete run is presented as passing.
-
-Validated build: **`v0.1.1-4a0451f16ac2`**, app version **0.1.1**. `npm run check` exited **0**: 140 unit tests in 11 files passed; **81 browser tests passed, 7 unavailable audio cases skipped, 0 failed**. Chromium passed 44 cases; Windows WebKit passed 37 with 7 explicit skips because its native AudioContext is unavailable. Production/test TypeScript checks, production build, asset audit and budgets all passed. Each browser also completed 100 actual DOM scene switches in one unchanged page/process. The earlier dense-board failure was repaired before this run; it remains recorded in [REVIEW.md](REVIEW.md). Sanitized [check results](evidence/checks.json) are included.
+Validated build: **`v0.1.1-50d0640d1f04`**, app version **0.1.1**. `npm run check` exited **0**: 140 unit tests in 11 files passed; **81 browser tests passed, 7 unavailable audio cases skipped, 0 failed**. Chromium passed 44 cases; Windows WebKit passed 37 with 7 explicit skips because its native AudioContext is unavailable. Production/test TypeScript checks, production build, asset audit and budgets all passed. Each browser also completed 100 actual DOM scene switches in one unchanged page/process. The earlier dense-board failure was repaired before this run; it remains recorded in [REVIEW.md](REVIEW.md). Sanitized [check results](evidence/checks.json) are included.
 
 | Measured budget | Result |
 |---|---|
 | App JavaScript, gzip | 91,517 bytes |
-| Conservative initial non-music payload, gzip | 814,209 bytes |
-| Complete offline payload, including optional music | 4,488,921 bytes (4.28 MiB) |
-| Active plus waiting cache payloads | 8,977,842 bytes (8.56 MiB) |
-| Temporary replacement-install staging, three payloads | 13,466,763 bytes (12.84 MiB) |
+| Conservative initial non-music payload, gzip | 814,207 bytes |
+| Complete offline payload, including optional music | 4,488,912 bytes (4.28 MiB) |
+| Active plus waiting cache payloads | 8,977,824 bytes (8.56 MiB) |
+| Temporary replacement-install staging, three payloads | 13,466,736 bytes (12.84 MiB) |
 | All shipped raster decoded estimate | 8,982,080 bytes (8.57 MiB) |
 | Canvas backing in the portrait workload | 1,771,470 pixels, DPR cap 1.5 |
 
 These are asset/storage/backing budgets, **not measured Safari process RAM**. Six sprites are shared, audio streams without a complete decoded AudioBuffer, and finite pools bound contacts/objects/effects. Penguin Bounce caps balls and local effects at 24 each, uses fixed 1/120-second physics with at most eight catch-up steps, and sleeps after supported rest. [Full budgets](evidence/budgets.json) and [asset audit](evidence/asset-audit.json) include hashes and file-level counts.
 
-The desktop cold trace used fresh browser cache, a 10 Mbps/50ms network profile and blocked service workers to isolate initial interaction: actionable at **484ms**, all six sprites rendered at **780ms**. Actual initial response transfers totaled **541,835 bytes** including HTML. Background offline precaching is counted separately above.
+The desktop cold trace used fresh browser cache, a 10 Mbps/50ms network profile and blocked service workers to isolate initial interaction: actionable at **479ms**, all six sprites rendered at **767ms**. Actual initial response transfers totaled **541,834 bytes** including HTML. Background offline precaching is counted separately above.
 
-| Desktop synthetic workload (10s per scenario) | Active frame p95 | Update/draw p95 | Input-to-render proxy p95 | Active frame gaps >50ms |
-|---|---|---|---|---|
-| Squishy Friend (gentle) | 16.8ms | 0.7ms | 20.3ms | 0 |
-| Bubble Pond (gentle) | 16.7ms | 0.2ms | 17.8ms | 0 |
-| Roll & Nest (gentle) | 16.8ms | 0.2ms | 17.6ms | 0 |
-| Penguin Bounce (gentle) | 16.7ms | 0.6ms | 17.7ms | 0 |
-| Penguin Bounce (playful) | 16.8ms | 0.7ms | 18.0ms | 0 |
+| Desktop synthetic workload (10s per scenario) | Active frame p95 | Update/draw p95 | Input-to-render proxy p95 | Active frame gaps >50ms | Runtime interval max / count >50ms |
+|---|---|---|---|---|---|
+| Squishy Friend (gentle) | 16.8ms | 0.6ms | 19.1ms | 0 | 33.3ms / 0 |
+| Bubble Pond (gentle) | 16.7ms | 0.2ms | 17.6ms | 0 | 16.8ms / 0 |
+| Roll & Nest (gentle) | 16.8ms | 0.2ms | 17.7ms | 0 | No continuous-loop samples |
+| Penguin Bounce (gentle) | 16.7ms | 0.6ms | 17.9ms | 0 | 50.0ms / 0 |
+| Penguin Bounce (playful) | 16.8ms | 0.8ms | 18.0ms | 0 | 66.7ms / 1 |
 
-These muted Windows desktop Chromium traces use synthetic contacts and maximum object counts. Both Penguin Bounce scenarios keep the 24-ball pool busy with four contacts and repeated recycled spawns. They do not establish physical iPad performance or touch-to-photon latency. Roll & Nest sleeps between inputs; the separate active-workload sampler records continuous browser pacing. [Sanitized timing summaries](evidence/desktop-performance.json) preserve sample counts, medians, maxima and exact conditions.
+These muted Windows desktop Chromium traces use synthetic contacts and maximum object counts. Both Penguin Bounce scenarios keep the 24-ball pool busy with four contacts and repeated recycled spawns. They do not establish physical iPad performance or touch-to-photon latency. The continuous-workload probe ends with the input loop; runtime diagnostics also cover the subsequent wait, screenshot and opening of parent status. Their interval windows differ, so a zero count in one must not conceal a gap in the other. Roll & Nest sleeps between inputs. [Sanitized timing summaries](evidence/desktop-performance.json) preserve sample counts, medians, maxima and exact conditions. The prior 4a trace's 66.6ms runtime interval is retained in [review history](REVIEW.md); no performance repair was made for the metadata correction.
 
 Commands: `npm ci`; `npm run dev`; `npm run build`; `node scripts/serve-dist.mjs`; `npx playwright install chromium webkit`; `npm run check`. Root [README](../README.md) has the complete setup and Vercel procedure.
 
@@ -95,11 +93,11 @@ Source/privacy inspection excluded the private combined pack and transcript, che
 
 ## Deployment
 
-**Verified playtest URL: [little-joys-gules.vercel.app](https://little-joys-gules.vercel.app/).** Source commit `8483f8cc8f44b0c38547a6e4a1b5c2c38930fbdf`, app v0.1.0, hosted build `v0.1.0-78ca7eb3ac60`. It uses its own Little Joys Vercel project and static `dist` output (`npm ci`, `npm run build`, Other preset). Vercel calls the stable alias's environment Production; the application remains a technical playtest preview with physical-device checks pending. Analytics and Speed Insights were not enabled.
+**Configured playtest URL: [littlejoys-play.vercel.app](https://littlejoys-play.vercel.app/).** The four-toy `v0.1.1-50d0640d1f04` artifact has completed local validation and awaits the material-release push and hosted verification. The last verified hosted build remains app v0.1.0, build `v0.1.0-78ca7eb3ac60`, source commit `8483f8cc8f44b0c38547a6e4a1b5c2c38930fbdf`. The older `little-joys-gules.vercel.app` alias also remains available. Both use the same Little Joys Vercel project and static `dist` output (`npm ci`, `npm run build`, Other preset). Vercel calls the stable alias's environment Production; the application remains a technical playtest preview with physical-device checks pending. Analytics and Speed Insights were not enabled.
 
 The actual HTTPS page was opened and checked. A separate unauthenticated Chromium run verified all 18 precached files byte-for-byte, all three toys online and after an actual offline reload, fresh-session silence, five loaded sprites, parent controls, completed matching cache, a cached audio `206` range response, missing-file `404`, production CSP, zero third-party runtime requests, and zero page errors. See [hosted evidence](evidence/hosted-check.json).
 
-The first exact-label check exposed a build-identity formatting defect: Vercel compacted `vercel.json`, changing the v0.1.0 input hash without changing configuration meaning. The hosted build was reproduced locally using only that temporary serialization change, then source formatting was restored. The complete remote manifest and bytes matched that reproduction; compared with the original full-suite artifact, JavaScript differed only in the embedded label. A semantic-configuration normalization and regression test are included in the v0.1.1 worktree. The initial full-suite/performance records above intentionally retain their original `228d3ff2889a` label. A separate smoke-helper selector mismatch was corrected to use the existing accessible combobox names; it was not a runtime failure.
+The first v0.1.0 exact-label check exposed a build-identity formatting defect: Vercel compacted `vercel.json`, changing the input hash without changing configuration meaning. The hosted build was reproduced locally using only that temporary serialization change, then source formatting was restored. The complete remote manifest and bytes matched that reproduction. Semantic-configuration normalization and a regression test are now included in v0.1.1. Earlier v0.1.0 evidence remains in Git history; the current validation above covers the corrected four-toy artifact. A separate smoke-helper selector mismatch was corrected to use the existing accessible combobox names; it was not a runtime failure.
 
 The initial automatic import correctly canceled with no successful baseline. The exact reviewed commit was then deliberately redeployed once with **Use project's Ignore Build Step** unchecked for that run. Future Git pushes still use the repository gate; no permanent always-build override was installed.
 
